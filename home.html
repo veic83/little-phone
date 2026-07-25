@@ -1212,7 +1212,7 @@ html,body{
   <nav class="dock">
     <div class="dock-bar">
       <a class="dock-item" href="chat.html">✦</a>
-      <a class="dock-item active" href="home.html">⌂</a>
+      <a class="dock-item active" href="javascript:void(0)" onclick="goToPage(0)">⌂</a>
       <a class="dock-item" href="yearling.html">⟁</a>
     </div>
   </nav>
@@ -1834,14 +1834,6 @@ function restorePageIndex(){
 
 applySettings();
 
-var savedPageIndex = restorePageIndex();
-if(savedPageIndex > 0 && savedPageIndex < 3){
-  requestAnimationFrame(function(){
-    setTimeout(function(){
-      pages.scrollLeft = savedPageIndex * pages.clientWidth;
-    }, 50);
-  });
-}
 loadLingyiStatus();
 loadMemoriesForHome();
 loadNestLogs();
