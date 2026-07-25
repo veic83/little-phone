@@ -2122,6 +2122,65 @@ document.addEventListener('keydown', function(e){
   }
 });
 
+/* ── 跨页音频播放器 ── */
+const LISTEN_KEY = 'little_phone_listen_v1';
+(function(){
+  var ha = document.createElement('audio');
+  ha.id = 'globalAudio'; ha.style.display = 'none';
+  document.body.appendChild(ha);
+
+  function loadAudio(){
+    var r = indexedDB.open('little_phone_audio_v1', 1);
+    r.onupgradeneeded = function(e){
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains('audio')) db.createObjectStore('audio');
+    };
+    r.onsuccess = function(e){
+      var tx = e.target.result.transaction('audio', 'readonly');
+      var req = tx.objectStore('audio').get('player_audio');
+      req.onsuccess = function(){
+        if(!req.result) return;
+        var url = URL.createObjectURL(req.result);
+        ha.src = url;
+        ha._loaded = true;
+        try{
+          var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+          if(d.isPlaying && ha.paused) ha.play().catch(function(){});
+          if(d.progress && ha.duration) ha.currentTime = (ha.duration * d.progress) / 100;
+        }catch(e){}
+      };
+    };
+  }
+
+  ha.addEventListener('timeupdate', function(){
+    if(!this.duration) return;
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      d.progress = (this.currentTime / this.duration) * 100;
+      localStorage.setItem(LISTEN_KEY, JSON.stringify(d));
+    }catch(e){}
+  });
+  ha.addEventListener('play', function(){
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      d.isPlaying = true; localStorage.setItem(LISTEN_KEY, JSON.stringify(d));
+    }catch(e){}
+  });
+  ha.addEventListener('pause', function(){
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      d.isPlaying = false; localStorage.setItem(LISTEN_KEY, JSON.stringify(d));
+    }catch(e){}
+  });
+  ha.addEventListener('ended', function(){
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      d.isPlaying = false; d.progress = 0; localStorage.setItem(LISTEN_KEY, JSON.stringify(d));
+    }catch(e){}
+  });
+
+  loadAudio();
+})();
 </script>
 </body>
 </html>
