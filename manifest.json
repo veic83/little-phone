@@ -1,0 +1,1 @@
+{"name":"小手机","short_name":"小手机","description":"AI 伴旅凌漪的透明小手机","start_url":"home.html","display":"standalone","background_color":"#0d1b30","theme_color":"#0d1b30","icons":[{"src":"icon_48.png","sizes":"48x48","type":"image/png"},{"src":"icon_192.png","sizes":"192x192","type":"image/png"},{"src":"icon_512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}

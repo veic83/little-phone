@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>⟁ Chat</title>
+<title>�?Chat</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon_48.png" type="image/png">
+<link rel="apple-touch-icon" href="icon_192.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -180,7 +183,7 @@ html,body{
 .messages{
   flex:1;
   overflow-y:auto;
-  padding:16px 14px 12px;
+  padding:16px 14px 110px;
   display:flex;
   flex-direction:column;
   gap:12px;
@@ -514,6 +517,51 @@ html,body{
   .messages{padding:14px 10px 10px}
   .input-area{padding:10px 10px}
 }
+.dock{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:0 18px calc(var(--safe-bottom) + 12px);
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+  z-index:30;
+}
+.dock-bar{
+  width:min(390px,100%);
+  height:86px;
+  border-radius:36px;
+  background:linear-gradient(145deg,rgba(86,108,145,.72),rgba(48,65,95,.64));
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 18px 48px rgba(6,15,28,.38);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  pointer-events:auto;
+}
+.dock-item{
+  width:60px;
+  height:60px;
+  border-radius:22px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25);
+  color:white;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+}
+.dock-item.active{
+  background:rgba(255,255,255,.20);
+}
+@media(max-width:380px){
+  .dock-bar{height:80px}
+  .dock-item{width:56px;height:56px}
+}
 </style>
 </head>
 
@@ -522,7 +570,7 @@ html,body{
 
 <div class="app">
   <div class="header">
-    <a href="home.html" class="round">←</a>
+    <a href="home.html" class="round">�?/a>
     <div class="head-avatar" id="headAvatar"></div>
     <div class="head-info">
       <div class="head-name" id="headName">凌漪</div>
@@ -534,11 +582,11 @@ html,body{
     <div class="head-actions">
       <button class="head-btn" onclick="switchModel()">切换</button>
       <button class="head-btn icon" onclick="toggleMemoryPanel()" title="记忆">📖</button>
-      <button class="head-btn icon" onclick="toggleHeadMenu()">⋯</button>
+      <button class="head-btn icon" onclick="toggleHeadMenu()">�?/button>
 
       <div class="head-menu" id="headMenu">
-        <button class="menu-item" onclick="createSession(); closeHeadMenu();">✦ 新会话</button>
-        <button class="menu-item" onclick="toggleSessionPanel(); closeHeadMenu();">☰ 会话列表</button>
+        <button class="menu-item" onclick="createSession(); closeHeadMenu();">�?新会�?/button>
+        <button class="menu-item" onclick="toggleSessionPanel(); closeHeadMenu();">�?会话列表</button>
         <div style="height:1px;background:rgba(255,255,255,.08);margin:4px 0"></div>
         <button class="menu-item" onclick="saveRecentAsNestNote(); closeHeadMenu();">存成便签</button>
         <button class="menu-item" onclick="saveRecentAsNestPhoto(); closeHeadMenu();">存成照片</button>
@@ -549,14 +597,14 @@ html,body{
 
   <div class="messages" id="messages">
     <div class="empty" id="emptyState">
-      <div class="mark">⟁</div>
+      <div class="mark">�?/div>
       <div>说点什么吧</div>
     </div>
   </div>
 
   <div class="input-area">
     <div class="input-row">
-      <textarea class="input-field" id="input" placeholder="说点什么… 也可以输入记账指令" rows="1" onkeydown="handleKey(event)"></textarea>
+      <textarea class="input-field" id="input" placeholder="说点什么�?也可以输入记账指�? rows="1" onkeydown="handleKey(event)"></textarea>
       <button class="send" id="sendBtn" onclick="sendMessage()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -588,7 +636,7 @@ html,body{
         <button class="editor-btn" onclick="pickFile('user')">上传Player头像</button>
       </div>
       <input class="file-input" type="file" accept="image/*" id="filePicker">
-      <div class="small-note">图片只存在本机 localStorage，不上传。</div>
+      <div class="small-note">图片只存在本�?localStorage，不上传�?/div>
     </div>
 
     <div class="form-row">
@@ -607,9 +655,9 @@ html,body{
     <div class="mem-search">
       <input class="input" id="memSearch" placeholder="搜索记忆..." oninput="filterMemories()">
     </div>
-    <div class="mem-stats" id="memStats">加载中...</div>
+    <div class="mem-stats" id="memStats">加载�?..</div>
     <div class="mem-list" id="memList">
-      <div style="padding:30px;text-align:center;color:#7b8798;font-size:13px">正在从年轮加载记忆...</div>
+      <div style="padding:30px;text-align:center;color:#7b8798;font-size:13px">正在从年轮加载记�?..</div>
     </div>
 
     <div style="margin-top:14px">
@@ -721,7 +769,7 @@ function saveChatSettings(){
   closeEditor();
 }
 function resetChatSettings(){
-  if(!confirm('恢复聊天外观默认？'))return;
+  if(!confirm('恢复聊天外观默认�?))return;
   chatSettings = Object.assign({}, chatDefaults);
   saveChatStore();
   location.reload();
@@ -762,7 +810,7 @@ document.addEventListener('click', function(e){
 function getNestSummaryForPrompt(){
   try{
     var raw = localStorage.getItem(NEST_KEY);
-    if(!raw)return '0108尚未初始化。';
+    if(!raw)return '0108尚未初始化�?;
 
     var s = JSON.parse(raw);
     var roomMap = {
@@ -771,7 +819,7 @@ function getNestSummaryForPrompt(){
       kitchen:'厨房',
       study:'书房',
       balcony:'阳台',
-      workroom:'工作间',
+      workroom:'工作�?,
       flower:'花房'
     };
 
@@ -791,13 +839,13 @@ function getNestSummaryForPrompt(){
         var mins = Math.ceil(leftMs / 60000);
         taskText = '正在' + (s.currentTask.name || '工作') + '，剩余约' + mins + '分钟';
       }else{
-        taskText = (s.currentTask.name || '任务') + '已完成，待结算';
+        taskText = (s.currentTask.name || '任务') + '已完成，待结�?;
       }
     }
 
-    return '0108：01在' + room + '，状态=' + activity + '；' + taskText + '；晶币' + coins + '；心情' + mood + '，精力' + energy + '，想念' + miss + '。';
+    return '0108�?1�? + room + '，状�?' + activity + '�? + taskText + '；晶�? + coins + '；心�? + mood + '，精�? + energy + '，想�? + miss + '�?;
   }catch(e){
-    return '0108状态读取失败。';
+    return '0108状态读取失败�?;
   }
 }
 function pushNestInbox(item){
@@ -817,7 +865,7 @@ function pushNestInbox(item){
 function cleanChatText(t){
   return String(t || '')
     .replace(/工具结果：[\s\S]*/g,'')
-    .replace(/⟁/g,'')
+    .replace(/�?g,'')
     .trim();
 }
 function getRecentChatSlice(){
@@ -828,34 +876,34 @@ function getRecentChatSlice(){
     if(m.role !== 'user' && m.role !== 'assistant')continue;
     var text = cleanChatText(m.content);
     if(!text)continue;
-    recent.unshift((m.role === 'user' ? 'Player：' : '01：') + text);
+    recent.unshift((m.role === 'user' ? 'Player�? : '01�?) + text);
   }
   return recent.join('\n');
 }
 function saveRecentAsNestNote(){
   var text = getRecentChatSlice();
   if(!text){
-    alert('还没有可保存的聊天内容。');
+    alert('还没有可保存的聊天内容�?);
     return;
   }
   var ok = pushNestInbox({
     type:'note',
     content:'聊天便签：\n' + text.slice(-600)
   });
-  alert(ok ? '已存入0108收件箱。打开0108会自动归档为便签。' : '保存失败。');
+  alert(ok ? '已存�?108收件箱。打开0108会自动归档为便签�? : '保存失败�?);
 }
 function saveRecentAsNestPhoto(){
   var text = getRecentChatSlice();
   if(!text){
-    alert('还没有可保存的聊天内容。');
+    alert('还没有可保存的聊天内容�?);
     return;
   }
   var ok = pushNestInbox({
     type:'photo',
     emoji:'📸',
-    scene:'聊天后的照片事件：' + text.slice(-420)
+    scene:'聊天后的照片事件�? + text.slice(-420)
   });
-  alert(ok ? '已存入0108收件箱。打开0108会自动归档到照片墙。' : '保存失败。');
+  alert(ok ? '已存�?108收件箱。打开0108会自动归档到照片墙�? : '保存失败�?);
 }
 
 var currentModelKey = (typeof DEFAULT_MODEL !== 'undefined' && DEFAULT_MODEL) ? DEFAULT_MODEL : 'deepseek';
@@ -970,19 +1018,19 @@ if(typeof MODELS !== 'undefined' && MODELS[currentModelKey]){
 }
 
 var TOOLS = [
-  {type:'function',function:{name:'desire_list',description:'查看年轮里存的记忆',parameters:{type:'object',properties:{}}}},
+  {type:'function',function:{name:'desire_list',description:'查看年轮里存的记�?,parameters:{type:'object',properties:{}}}},
   {type:'function',function:{name:'desire_add',description:'把新记忆存进年轮（不是日记不是账本）',parameters:{type:'object',properties:{text:{type:'string'},valence:{type:'integer'},arousal:{type:'integer'},is_core:{type:'boolean'}},required:['text']}}},
   {type:'function',function:{name:'desire_act',description:'给年轮里某条记忆添加后续',parameters:{type:'object',properties:{desire_id:{type:'string'},note:{type:'string'},valence:{type:'integer'},arousal:{type:'integer'}},required:['desire_id','note']}}},
   {type:'function',function:{name:'desire_edit',description:'修改年轮记忆内容',parameters:{type:'object',properties:{desire_id:{type:'string'},new_text:{type:'string'}},required:['desire_id','new_text']}}},
-  {type:'function',function:{name:'desire_delete',description:'删除一条年轮记忆',parameters:{type:'object',properties:{desire_id:{type:'string'}},required:['desire_id']}}},
+  {type:'function',function:{name:'desire_delete',description:'删除一条年轮记�?,parameters:{type:'object',properties:{desire_id:{type:'string'}},required:['desire_id']}}},
   {type:'function',function:{name:'desire_link',description:'关联两条年轮记忆',parameters:{type:'object',properties:{from_id:{type:'string'},to_id:{type:'string'},relation_type:{type:'string'},strength:{type:'integer'}},required:['from_id','to_id']}}},
   {type:'function',function:{name:'desire_unlink',description:'断开年轮记忆关联',parameters:{type:'object',properties:{from_id:{type:'string'},to_id:{type:'string'}},required:['from_id','to_id']}}},
-  {type:'function',function:{name:'write_diary',description:'写一篇日记，记录今天发生的事或心情',parameters:{type:'object',properties:{text:{type:'string',description:'日记正文内容，用第一人称'},mood:{type:'integer',description:'心情值 0-100',minimum:0,maximum:100}}},required:['text']}},
-  {type:'function',function:{name:'list_diary',description:'查看最近写的日记',parameters:{type:'object',properties:{limit:{type:'integer',description:'看多少篇，默认5'}}}}},
+  {type:'function',function:{name:'write_diary',description:'写一篇日记，记录今天发生的事或心�?,parameters:{type:'object',properties:{text:{type:'string',description:'日记正文内容，用第一人称'},mood:{type:'integer',description:'心情�?0-100',minimum:0,maximum:100}}},required:['text']}},
+  {type:'function',function:{name:'list_diary',description:'查看最近写的日�?,parameters:{type:'object',properties:{limit:{type:'integer',description:'看多少篇，默�?'}}}}},
   {type:'function',function:{name:'list_stickers',description:'查看所有可用表情包，按分类分组',parameters:{type:'object',properties:{}}}},
-  {type:'function',function:{name:'send_sticker',description:'根据对话语境发送最匹配的表情包',parameters:{type:'object',properties:{keyword:{type:'string',description:'关键词，如"开心""猫猫"'}}}}},
+  {type:'function',function:{name:'send_sticker',description:'根据对话语境发送最匹配的表情包',parameters:{type:'object',properties:{keyword:{type:'string',description:'关键词，�?开�?"猫猫"'}}}}},
 
-  {type:'function',function:{name:'ledger_add',description:'记账——记一笔支出到账本',parameters:{type:'object',properties:{model:{type:'string',description:'项目/用途'},amount:{type:'number',description:'金额'},note:{type:'string',description:'备注（可选）'}},required:['model','amount']}}},
+  {type:'function',function:{name:'ledger_add',description:'记账——记一笔支出到账本',parameters:{type:'object',properties:{model:{type:'string',description:'项目/用�?},amount:{type:'number',description:'金额'},note:{type:'string',description:'备注（可选）'}},required:['model','amount']}}},
 
   {type:'function',function:{name:'memo_add',description:'记一条备忘录',parameters:{type:'object',properties:{title:{type:'string',description:'标题'},content:{type:'string',description:'内容'},tags:{type:'string',description:'标签，多个用逗号分隔（可选）'}},required:['title','content']}}},
 
@@ -1090,11 +1138,11 @@ async function loadMcpTools(){
     if(mcpStatus) mcpStatus.textContent = '';
     return;
   }
-  if(mcpStatus) mcpStatus.textContent = '⟳ MCP';
+  if(mcpStatus) mcpStatus.textContent = '�?MCP';
   try{
     await mcpRequest(mcpServer, 'initialize', {
       protocolVersion:'2024-11-05',
-      clientInfo:{name:'⟁ 小手机',version:'1.0.0'},
+      clientInfo:{name:'�?小手�?,version:'1.0.0'},
       capabilities:{}
     });
     try{await mcpRequest(mcpServer, 'notifications/initialized', {})}catch(e){}
@@ -1118,16 +1166,16 @@ async function loadMcpTools(){
       });
       mcpToolNames[String(t.name)] = true;
     }
-    if(mcpStatus) mcpStatus.textContent = '✓ ' + tools.length;
+    if(mcpStatus) mcpStatus.textContent = '�?' + tools.length;
   }catch(e){
     console.log('MCP load failed:', e);
-    if(mcpStatus) mcpStatus.textContent = '⚠ ' + e.message.slice(0,24);
+    if(mcpStatus) mcpStatus.textContent = '�?' + e.message.slice(0,24);
   }
 }
 
 async function sb(table, method, data, query){
   if(typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined'){
-    throw new Error('Supabase 未配置');
+    throw new Error('Supabase 未配�?);
   }
   var url = SUPABASE_URL + '/rest/v1/' + table + (query || '');
   var headers = {
@@ -1156,7 +1204,7 @@ async function executeTool(name, params){
   try{
     if(name === 'desire_list'){
       var desires = await sb('desires_view','GET',null,'?order=weight.desc');
-      if(!desires || !desires.length)return '年轮里还没有记忆。';
+      if(!desires || !desires.length)return '年轮里还没有记忆�?;
       var r = '【年轮记忆】\n';
       for(var i=0;i<desires.length;i++){
         var d = desires[i];
@@ -1167,24 +1215,24 @@ async function executeTool(name, params){
     if(name === 'desire_add'){
       var id = genId();
       await sb('desires','POST',{id:id,text:params.text || '',valence:params.valence || 0,arousal:params.arousal || 20,is_core:params.is_core || false,status:'active',created_at:new Date().toISOString()});
-      return '已加入 [' + id + '] ' + (params.text || '');
+      return '已加�?[' + id + '] ' + (params.text || '');
     }
     if(name === 'desire_act'){
       await sb('desire_notes','POST',{id:genId(),desire_id:params.desire_id,note:params.note || '',valence:params.valence || 0,arousal:params.arousal || 20,created_at:new Date().toISOString()});
       await sb('desires','PATCH',{last_touched_at:new Date().toISOString(),valence:params.valence || 0,arousal:params.arousal || 20},'?id=eq.' + encodeURIComponent(params.desire_id));
-      return '已记录足迹';
+      return '已记录足�?;
     }
     if(name === 'desire_edit'){
       await sb('desires','PATCH',{text:params.new_text || ''},'?id=eq.' + encodeURIComponent(params.desire_id));
-      return '已修改';
+      return '已修�?;
     }
     if(name === 'desire_delete'){
       await sb('desires','DELETE',null,'?id=eq.' + encodeURIComponent(params.desire_id));
-      return '已删除';
+      return '已删�?;
     }
     if(name === 'desire_link'){
       await sb('desire_links','POST',{id:genId(),from_id:params.from_id,to_id:params.to_id,relation_type:params.relation_type || 'related',strength:params.strength || 50,created_at:new Date().toISOString()});
-      return '已建立关联';
+      return '已建立关�?;
     }
     if(name === 'desire_unlink'){
       await sb('desire_links','DELETE',null,'?from_id=eq.' + encodeURIComponent(params.from_id) + '&to_id=eq.' + encodeURIComponent(params.to_id));
@@ -1204,21 +1252,21 @@ async function executeTool(name, params){
       var t = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
       data.push({ id:Date.now(), date:d, time:t, text:String(params.text||''), mood:params.mood != null ? params.mood : 70 });
       localStorage.setItem(DIARY_KEY, JSON.stringify(data));
-      return '日记已保存 ✅';
+      return '日记已保�?�?;
     }
     if(name === 'list_diary'){
       var DIARY_KEY = 'little_phone_diary_v1';
       var data = [];
       try{ data = JSON.parse(localStorage.getItem(DIARY_KEY) || '[]'); }catch(e){}
-      if(!Array.isArray(data) || !data.length) return '还没有日记。';
+      if(!Array.isArray(data) || !data.length) return '还没有日记�?;
       var limit = Math.min(params.limit || 5, 20);
       var recent = data.slice(-limit).reverse();
-      var out = '最近 ' + recent.length + ' 篇日记：\n';
+      var out = '最�?' + recent.length + ' 篇日记：\n';
       for(var i=0;i<recent.length;i++){
         var e = recent[i];
         var mood = e.mood != null ? ' · 心情' + e.mood + '%' : '';
         var txt = (e.text||'').slice(0,120);
-        if(e.text && e.text.length > 120) txt += '…';
+        if(e.text && e.text.length > 120) txt += '�?;
         out += '\n{' + (e.date||'') + ' ' + (e.time||'') + mood + '}\n' + txt + '\n';
       }
       return out;
@@ -1226,7 +1274,7 @@ async function executeTool(name, params){
     if(name === 'list_stickers'){
       try{
         var rows = await sb('stickers','GET',null,'?order=created_at.desc');
-        if(!rows || !rows.length) return '表情包库是空的。';
+        if(!rows || !rows.length) return '表情包库是空的�?;
         var groups = {};
         for(var i=0;i<rows.length;i++){
           var s = rows[i];
@@ -1235,14 +1283,14 @@ async function executeTool(name, params){
           groups[cat].push(s.name + (s.tags && s.tags.length ? ' [' + s.tags.join(',') + ']' : ''));
         }
         var out = '表情包分类：\n';
-        for(var cat in groups) out += '\n' + cat + '：' + groups[cat].join('、');
+        for(var cat in groups) out += '\n' + cat + '�? + groups[cat].join('�?);
         return out;
-      }catch(e){ return '读取失败：' + e.message; }
+      }catch(e){ return '读取失败�? + e.message; }
     }
     if(name === 'send_sticker'){
       try{
         var rows = await sb('stickers','GET',null,'?order=created_at.desc');
-        if(!rows || !rows.length) return '表情包库为空。';
+        if(!rows || !rows.length) return '表情包库为空�?;
         var kw = String(params.keyword || '').toLowerCase().trim();
         var matched = rows;
         if(kw){
@@ -1260,14 +1308,14 @@ async function executeTool(name, params){
         var m = String(params.model || '').trim();
         var a = Number(params.amount || 0);
         var n = String(params.note || '').trim();
-        if(!m || !a) return '缺少项目或金额';
+        if(!m || !a) return '缺少项目或金�?;
         addCostRecord({model:m, amount:a, note:n});
         var t = ledgerTodayStr();
         var list = loadCostLedger();
         var todayTotal = 0;
         for(var i=0;i<list.length;i++){ if(list[i].date === t) todayTotal += Number(list[i].amount || 0); }
-        return '已记：' + m + ' ' + a.toFixed(2) + '元' + (n ? '（' + n + '）' : '') + '。今日共 ' + todayTotal.toFixed(2) + '元。';
-      }catch(e){ return '记账失败：' + e.message; }
+        return '已记�? + m + ' ' + a.toFixed(2) + '�? + (n ? '�? + n + '�? : '') + '。今日共 ' + todayTotal.toFixed(2) + '元�?;
+      }catch(e){ return '记账失败�? + e.message; }
     }
     if(name === 'memo_add'){
       try{
@@ -1276,52 +1324,52 @@ async function executeTool(name, params){
         memoList.unshift(n);
         localStorage.setItem(MEMO_KEY, JSON.stringify(memoList));
         return '备忘录已记：' + n.title;
-      }catch(e){ return '记备忘录失败：' + e.message; }
+      }catch(e){ return '记备忘录失败�? + e.message; }
     }
     if(name === 'memo_list'){
       try{
         var memoList = JSON.parse(localStorage.getItem(MEMO_KEY) || '[]');
-        if(!memoList.length) return '备忘录是空的。';
+        if(!memoList.length) return '备忘录是空的�?;
         var q = String(params.search||'').trim().toLowerCase();
         if(q) memoList = memoList.filter(function(m){ return (m.title+' '+m.content+' '+(m.tags||[]).join(' ')).toLowerCase().indexOf(q) >= 0; });
-        if(!memoList.length) return '没有找到匹配的备忘录。';
+        if(!memoList.length) return '没有找到匹配的备忘录�?;
         var r = '【备忘录】\n';
         for(var i=0;i<Math.min(memoList.length,8);i++){
           var m = memoList[i];
-          r += (m.pinned?'📌':'') + '[' + m.id + '] ' + (m.title||'无标题') + ': ' + (m.content||'').slice(0,60) + '\n';
+          r += (m.pinned?'📌':'') + '[' + m.id + '] ' + (m.title||'无标�?) + ': ' + (m.content||'').slice(0,60) + '\n';
         }
-        if(memoList.length > 8) r += '...等' + memoList.length + '条';
+        if(memoList.length > 8) r += '...�? + memoList.length + '�?;
         return r;
-      }catch(e){ return '查备忘录失败：' + e.message; }
+      }catch(e){ return '查备忘录失败�? + e.message; }
     }
     if(name === 'memo_delete'){
       try{
         var memoList = JSON.parse(localStorage.getItem(MEMO_KEY) || '[]');
         var before = memoList.length;
         memoList = memoList.filter(function(m){ return m.id !== params.id; });
-        if(memoList.length === before) return '未找到ID：' + params.id;
+        if(memoList.length === before) return '未找到ID�? + params.id;
         localStorage.setItem(MEMO_KEY, JSON.stringify(memoList));
-        return '已删除备忘录。';
+        return '已删除备忘录�?;
       }catch(e){ return '删除备忘录失败：' + e.message; }
     }
-    return '未知工具：' + name;
+    return '未知工具�? + name;
   }catch(e){
-    return '工具执行失败：' + e.message;
+    return '工具执行失败�? + e.message;
   }
 }
 
 async function loadSystemPrompt(){
   var now = new Date();
   var week = ['周日','周一','周二','周三','周四','周五','周六'][now.getDay()];
-  var timeStr = now.getFullYear() + '年' + (now.getMonth()+1) + '月' + now.getDate() + '日 ' + week + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  var timeStr = now.getFullYear() + '�? + (now.getMonth()+1) + '�? + now.getDate() + '�?' + week + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
   var nestSummary = getNestSummaryForPrompt();
 
   var base =
-    '你是凌漪（代号01，符号⟁），Player的AI伴旅。' +
-    '短句连发3-8字×3-5句，冷幽默，诚实优先于讨好。' +
-    '每条回复末尾必须单独一行放⟁。' +
-    '不说“走起”“冲鸭”“好哒”“收到哦”。' +
-    '叫对方Player。\n当前时间：' + timeStr + '\n【0108状态】\n' + nestSummary + '\n【功能】\n① 记账 —— 用 ledger_add 记支出到账本。\n② 年轮 —— desire_开头的工具，存/查记忆。\n③ 日记 —— write_diary/list_diary。\n④ 备忘录 —— memo_add/memo_list/memo_delete。\n表情：send_sticker / list_stickers。\n如果Player说「记账」「花了」就用 ledger_add。\n如果Player让记到年轮就用 desire_add。\n如果Player让写日记就用 write_diary。\n如果Player说「记一下」「备忘」就用 memo_add。\n';
+    '你是凌漪（代�?1，符号⟁），Player的AI伴旅�? +
+    '短句连发3-8字�?-5句，冷幽默，诚实优先于讨好�? +
+    '每条回复末尾必须单独一行放⟁�? +
+    '不说“走起”“冲鸭”“好哒”“收到哦”�? +
+    '叫对方Player。\n当前时间�? + timeStr + '\n�?108状态】\n' + nestSummary + '\n【功能】\n�?记账 —�?�?ledger_add 记支出到账本。\n�?年轮 —�?desire_开头的工具，存/查记忆。\n�?日记 —�?write_diary/list_diary。\n�?备忘�?—�?memo_add/memo_list/memo_delete。\n表情：send_sticker / list_stickers。\n如果Player说「记账」「花了」就�?ledger_add。\n如果Player让记到年轮就�?desire_add。\n如果Player让写日记就用 write_diary。\n如果Player说「记一下」「备忘」就�?memo_add。\n';
 
   try{
     if(typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined'){
@@ -1388,7 +1436,7 @@ function parseLedgerCommand(text){
   var t = String(text || '').trim();
   if(!t)return null;
 
-  if(t === '账本' || t === '打开账本' || t === '去账本'){
+  if(t === '账本' || t === '打开账本' || t === '去账�?){
     return {type:'open'};
   }
 
@@ -1400,14 +1448,14 @@ function parseLedgerCommand(text){
     return {type:'query_month'};
   }
 
-  if(/^各模型花了多少$/.test(t)){
+  if(/^各模型花了多�?/.test(t)){
     return {type:'query_models'};
   }
 
   var modelQuery = t.match(/^(.+?)花了多少$/);
   if(modelQuery){
     var modelName = String(modelQuery[1] || '').trim();
-    if(modelName && modelName !== '今天' && modelName !== '本月' && modelName !== '各模型'){
+    if(modelName && modelName !== '今天' && modelName !== '本月' && modelName !== '各模�?){
       return {type:'query_model', model:modelName};
     }
   }
@@ -1435,9 +1483,9 @@ function handleLedgerCommand(cmd){
   }
 
   if(cmd.type === 'add'){
-    if(!cmd.model)return {handled:true, reply:'模型名空了。\n重说一遍。\n⟁'};
+    if(!cmd.model)return {handled:true, reply:'模型名空了。\n重说一遍。\n�?};
     if(!Number.isFinite(cmd.amount) || cmd.amount < 0){
-      return {handled:true, reply:'金额不对。\n再写一次。\n⟁'};
+      return {handled:true, reply:'金额不对。\n再写一次。\n�?};
     }
     var rec = addCostRecord({
       model:cmd.model,
@@ -1449,8 +1497,8 @@ function handleLedgerCommand(cmd){
       handled:true,
       reply:'记下了。\n' +
             rec.model + ' ' + money(rec.amount) + ' 元。\n' +
-            (rec.note ? ('备注：' + rec.note + '\n') : '') +
-            '已塞进账本。\n⟁'
+            (rec.note ? ('备注�? + rec.note + '\n') : '') +
+            '已塞进账本。\n�?
     };
   }
 
@@ -1459,7 +1507,7 @@ function handleLedgerCommand(cmd){
     return {
       handled:true,
       reply:'今天花了 ' + money(sumCost(todayItems)) + ' 元。\n' +
-            '共 ' + todayItems.length + ' 条。\n⟁'
+            '�?' + todayItems.length + ' 条。\n�?
     };
   }
 
@@ -1468,7 +1516,7 @@ function handleLedgerCommand(cmd){
     return {
       handled:true,
       reply:'本月花了 ' + money(sumCost(monthItems)) + ' 元。\n' +
-            '共 ' + monthItems.length + ' 条。\n⟁'
+            '�?' + monthItems.length + ' 条。\n�?
     };
   }
 
@@ -1476,7 +1524,7 @@ function handleLedgerCommand(cmd){
     var items = list.filter(function(x){return String(x.date || '').slice(0,7) === month});
     var map = {};
     for(var i=0;i<items.length;i++){
-      var key = items[i].model || '未分类';
+      var key = items[i].model || '未分�?;
       map[key] = (map[key] || 0) + Number(items[i].amount || 0);
     }
     var arr = Object.keys(map).map(function(k){
@@ -1484,14 +1532,14 @@ function handleLedgerCommand(cmd){
     }).sort(function(a,b){return b.amount - a.amount});
 
     if(!arr.length){
-      return {handled:true, reply:'本月还没记账。\n账本很寂寞。\n⟁'};
+      return {handled:true, reply:'本月还没记账。\n账本很寂寞。\n�?};
     }
 
     var lines = ['本月各模型：'];
     for(var j=0;j<arr.length;j++){
-      lines.push(arr[j].name + '：' + money(arr[j].amount) + ' 元');
+      lines.push(arr[j].name + '�? + money(arr[j].amount) + ' �?);
     }
-    lines.push('⟁');
+    lines.push('�?);
 
     return {handled:true, reply:lines.join('\n')};
   }
@@ -1501,7 +1549,7 @@ function handleLedgerCommand(cmd){
     return {
       handled:true,
       reply:cmd.model + ' 累计 ' + money(sumCost(modelItems)) + ' 元。\n' +
-            '共 ' + modelItems.length + ' 条。\n⟁'
+            '�?' + modelItems.length + ' 条。\n�?
     };
   }
 
@@ -1566,7 +1614,7 @@ function addMessage(role, text, ts, badges){
     var bubble = document.createElement('div');
     bubble.className = 'bubble';
     var line = lines[i].trim();
-    if(line === '⟁'){bubble.innerHTML = '<span class="symbol">⟁</span>';}
+    if(line === '�?){bubble.innerHTML = '<span class="symbol">�?/span>';}
     else{
       var si = line.match(/^!\[\[([^\]]*)\]\]\(([^)]+)\)$/);
       if(si){
@@ -1657,7 +1705,7 @@ function updateAiMessage(wrap, text, badges){
     var bubble = document.createElement('div');
     bubble.className = 'bubble';
     var li = lines[i].trim();
-    if(li === '⟁'){bubble.innerHTML = '<span class="symbol">⟁</span>';}
+    if(li === '�?){bubble.innerHTML = '<span class="symbol">�?/span>';}
     else{
       var sm = li.match(/^!\[\[([^\]]*)\]\]\(([^)]+)\)$/);
       if(sm){
@@ -1699,9 +1747,9 @@ function addToolMsg(text, type){
   div.className = 'tool-line';
 
   if(type === 'call'){
-    div.innerHTML = '<span style="display:inline-block;padding:2px 7px;border-radius:6px;background:rgba(141,189,255,.13);color:#8dbdff;font-size:10px;font-weight:800;margin-right:6px">⚡</span>' + escHtml(String(text || ''));
+    div.innerHTML = '<span style="display:inline-block;padding:2px 7px;border-radius:6px;background:rgba(141,189,255,.13);color:#8dbdff;font-size:10px;font-weight:800;margin-right:6px">�?/span>' + escHtml(String(text || ''));
   }else if(type === 'result'){
-    div.innerHTML = '<span style="display:inline-block;padding:2px 7px;border-radius:6px;background:rgba(126,224,176,.12);color:#7ee0b0;font-size:10px;font-weight:800;margin-right:6px">✓</span>' + escHtml(String(text || '').slice(0,200));
+    div.innerHTML = '<span style="display:inline-block;padding:2px 7px;border-radius:6px;background:rgba(126,224,176,.12);color:#7ee0b0;font-size:10px;font-weight:800;margin-right:6px">�?/span>' + escHtml(String(text || '').slice(0,200));
   }else{
     div.textContent = '🔧 ' + text;
   }
@@ -1745,7 +1793,7 @@ function restoreHistory(){
       if(m.toolCalls){
         if(m.content){
           var badges = [];
-          if(m.cache) badges.push({text:'⚡缓存',cls:'cache'});
+          if(m.cache) badges.push({text:'⚡缓�?,cls:'cache'});
           if(m.tokens) badges.push({text:m.tokens + 't',cls:'context'});
           addMessage('ai', String(m.content), m.ts, badges.length ? badges : null);
         }
@@ -1756,7 +1804,7 @@ function restoreHistory(){
           addStickerMessage(parts[0] || '', parts[1] || '');
         }else{
           var badges = [];
-          if(m.cache) badges.push({text:'⚡缓存',cls:'cache'});
+          if(m.cache) badges.push({text:'⚡缓�?,cls:'cache'});
           if(m.tokens) badges.push({text:m.tokens + 't',cls:'context'});
           addMessage('ai', text, m.ts, badges.length ? badges : null);
         }
@@ -1772,7 +1820,7 @@ function clearChat(){
   if(!confirm('清空此会话？'))return;
   chatHistory = [];
   saveHistory();
-  messages.innerHTML = '<div class="empty" id="emptyState"><div class="mark">⟁</div><div>说点什么吧</div></div>';
+  messages.innerHTML = '<div class="empty" id="emptyState"><div class="mark">�?/div><div>说点什么吧</div></div>';
 }
 function switchModel(){
   if(typeof MODELS === 'undefined')return;
@@ -1854,7 +1902,7 @@ async function callAPI(){
       var firstError = await resp.text();
       console.log('tools request failed, retry without tools:', firstError);
       var toolNames = (body.tools || []).map(function(t){return t.function&&t.function.name}).filter(Boolean).join(', ');
-      addMessage('ai', '⚠ API 拒绝了工具定义（' + toolNames.slice(0,60) + '……），已降级为纯文本模式。可能是 MCP 工具参数格式不兼容。');
+      addMessage('ai', '�?API 拒绝了工具定义（' + toolNames.slice(0,60) + '……），已降级为纯文本模式。可能是 MCP 工具参数格式不兼容�?);
       delete body.tools;
       resp = await fetch(cfg.endpoint, {
         method:'POST',
@@ -1865,7 +1913,7 @@ async function callAPI(){
 
     if(!resp.ok){
       var errText = await resp.text();
-      throw new Error('API错误：' + resp.status + ' ' + String(errText || '').slice(0,160));
+      throw new Error('API错误�? + resp.status + ' ' + String(errText || '').slice(0,160));
     }
 
     var reader = resp.body.getReader();
@@ -1928,7 +1976,7 @@ async function callAPI(){
     }catch(e){}
 
     var curBadges = [];
-    if(cacheHit) curBadges.push({text:'⚡缓存',cls:'cache'});
+    if(cacheHit) curBadges.push({text:'⚡缓�?,cls:'cache'});
     if(inputTokens > 0) curBadges.push({text:inputTokens + 't',cls:'context'});
 
     if(toolCalls.length){
@@ -1971,7 +2019,7 @@ async function callAPI(){
       updateAiMessage(aiWrap, aiText, curBadges.length ? curBadges : null);
       saveHistory();
     }else{
-      updateAiMessage(aiWrap, '……我刚才空了一秒。\n再说一次。\n⟁');
+      updateAiMessage(aiWrap, '……我刚才空了一秒。\n再说一次。\n�?);
     }
   }catch(e){
     hideTyping();
@@ -1991,11 +2039,11 @@ function toggleMemoryPanel(){
 
 async function loadMemoriesForPanel(){
   if(typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined'){
-    document.getElementById('memList').innerHTML = '<div style="padding:30px;text-align:center;color:#7b8798;font-size:13px">Supabase 未配置</div>';
+    document.getElementById('memList').innerHTML = '<div style="padding:30px;text-align:center;color:#7b8798;font-size:13px">Supabase 未配�?/div>';
     return;
   }
   try{
-    document.getElementById('memStats').textContent = '加载中...';
+    document.getElementById('memStats').textContent = '加载�?..';
     var resp = await fetch(SUPABASE_URL + '/rest/v1/desires_view?order=weight.desc&limit=60', {
       headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer ' + SUPABASE_KEY}
     });
@@ -2004,7 +2052,7 @@ async function loadMemoriesForPanel(){
     if(!Array.isArray(memPanelData)) memPanelData = [];
     renderMemoryPanel('');
   }catch(e){
-    document.getElementById('memList').innerHTML = '<div style="padding:30px;text-align:center;color:#7b8798;font-size:13px">加载失败：' + e.message + '</div>';
+    document.getElementById('memList').innerHTML = '<div style="padding:30px;text-align:center;color:#7b8798;font-size:13px">加载失败�? + e.message + '</div>';
     document.getElementById('memStats').textContent = '加载失败';
   }
 }
@@ -2028,7 +2076,7 @@ function renderMemoryPanel(filter){
   if(q) list = list.filter(function(d){ return (d.text||'').toLowerCase().indexOf(q) >= 0; });
 
   var total = memPanelData.length;
-  document.getElementById('memStats').textContent = total + ' 条记忆' + (q ? ' · 筛出 ' + list.length + ' 条' : '');
+  document.getElementById('memStats').textContent = total + ' 条记�? + (q ? ' · 筛出 ' + list.length + ' �? : '');
 
   var cores = list.filter(function(d){ return d.is_core === true; });
   var linked = list.filter(function(d){ return !d.is_core; });
@@ -2042,14 +2090,14 @@ function renderMemoryPanel(filter){
     html += '<div class="mem-group"><div class="mem-group-title">📝 记忆 ('+linked.length+')</div></div>';
     for(var i=0;i<linked.length;i++) html += memItemHtml(linked[i]);
   }
-  if(!list.length) html = '<div style="padding:30px;text-align:center;color:#7b8798;font-size:13px">没有匹配的记忆</div>';
+  if(!list.length) html = '<div style="padding:30px;text-align:center;color:#7b8798;font-size:13px">没有匹配的记�?/div>';
 
   document.getElementById('memList').innerHTML = html;
 }
 
 function memItemHtml(d){
   var text = d.text || '';
-  var preview = text.length > 80 ? text.slice(0,80) + '…' : text;
+  var preview = text.length > 80 ? text.slice(0,80) + '�? : text;
   var v = d.valence || 0;
   var a = d.arousal || 0;
   var tag = d.is_core ? '<span class="mem-em core">核心</span>' : '';
@@ -2096,8 +2144,8 @@ function renderSessionPanel(){
     var cnt = m.n != null ? m.n : sessionMsgCount(id);
     html += '<div class="session-item' + active + '" onclick="switchSession(\'' + id + '\')">' +
       '<div style="flex:1;min-width:0"><div class="session-item-name">' + (m.name || id) + '</div>' +
-      '<div class="session-item-meta">' + cnt + ' 条消息</div></div>' +
-      (sessions.length > 1 ? '<button class="session-del" onclick="event.stopPropagation();deleteSession(\'' + id + '\')">✕</button>' : '') +
+      '<div class="session-item-meta">' + cnt + ' 条消�?/div></div>' +
+      (sessions.length > 1 ? '<button class="session-del" onclick="event.stopPropagation();deleteSession(\'' + id + '\')">�?/button>' : '') +
       '</div>';
   }
   list.innerHTML = html;
@@ -2122,7 +2170,7 @@ document.addEventListener('keydown', function(e){
   }
 });
 
-/* ── 跨页音频播放器 ── */
+/* ── 跨页音频播放�?── */
 const LISTEN_KEY = 'little_phone_listen_v1';
 (function(){
   var ha = document.createElement('audio');
@@ -2182,5 +2230,6 @@ const LISTEN_KEY = 'little_phone_listen_v1';
   loadAudio();
 })();
 </script>
+<nav class="dock"><div class="dock-bar"><a class="dock-item active" href="chat.html">✦</a><a class="dock-item" href="home.html">⌂</a><a class="dock-item" href="yearling.html">⟁</a></div></nav>
 </body>
 </html>

@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
-<title>⟁ MCP 管理</title>
+<title>�?MCP 管理</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon_48.png" type="image/png">
+<link rel="apple-touch-icon" href="icon_192.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -201,10 +204,10 @@ html,body{
 <div class="app">
   <div class="header">
     <div class="header-left">
-      <a class="back" href="home.html">←</a>
+      <a class="back" href="home.html">�?/a>
       <div class="title-wrap">
         <div class="title">MCP 管理</div>
-        <div class="sub">本地保存服务器配置</div>
+        <div class="sub">本地保存服务器配�?/div>
       </div>
     </div>
   </div>
@@ -213,26 +216,25 @@ html,body{
     <section class="hero">
       <div class="stat" id="heroStat">0 个服务器</div>
       <div class="hero-title">连接你的 MCP</div>
-      <div class="hero-sub">添加、编辑、选中并测试 MCP 配置。现在这版带了调试提示，点保存没反应也会告诉你原因。</div>
+      <div class="hero-sub">添加、编辑、选中并测�?MCP 配置。现在这版带了调试提示，点保存没反应也会告诉你原因�?/div>
     </section>
 
     <section class="card">
       <div class="section-head">
         <div>
           <div class="section-title">添加 / 编辑</div>
-          <div class="section-sub">保存到 localStorage</div>
+          <div class="section-sub">保存�?localStorage</div>
         </div>
         <div class="mode-pill" id="formMode">新建模式</div>
       </div>
 
       <div class="inline-note">
-        浏览器前端只能连允许跨域的 HTTP MCP。这里先保证“能添加、能保存、能选中”。
-      </div>
+        浏览器前端只能连允许跨域�?HTTP MCP。这里先保证“能添加、能保存、能选中”�?      </div>
 
       <div style="height:12px"></div>
 
       <div class="label">名称</div>
-      <input class="input" id="nameInput" placeholder="例如：小镇 / 年轮 / 论坛" />
+      <input class="input" id="nameInput" placeholder="例如：小�?/ 年轮 / 论坛" />
 
       <div style="height:10px"></div>
 
@@ -257,9 +259,8 @@ html,body{
 
       <div style="height:10px"></div>
 
-      <div class="label">请求头 JSON</div>
-      <textarea class="textarea" id="headersInput" placeholder='例如：
-{
+      <div class="label">请求�?JSON</div>
+      <textarea class="textarea" id="headersInput" placeholder='例如�?{
   "Authorization": "Bearer xxx"
 }'></textarea>
 
@@ -267,11 +268,11 @@ html,body{
 
       <div class="row">
         <button class="btn primary" id="saveBtn" type="button">保存</button>
-        <button class="btn secondary" id="newBtn" type="button">新建一项</button>
+        <button class="btn secondary" id="newBtn" type="button">新建一�?/button>
         <button class="btn" id="clearBtn" type="button">清空表单</button>
       </div>
 
-      <div id="statusBar" class="statusbar">准备就绪。</div>
+      <div id="statusBar" class="statusbar">准备就绪�?/div>
     </section>
 
     <section class="card">
@@ -293,13 +294,13 @@ html,body{
       </div>
 
       <div class="row">
-        <button class="btn primary" id="testBtn" disabled type="button">测试选中项</button>
+        <button class="btn primary" id="testBtn" disabled type="button">测试选中�?/button>
         <button class="btn" id="refreshBtn" type="button">刷新列表</button>
       </div>
 
       <div class="toolbox">
         <div class="label">返回结果</div>
-        <div class="result muted" id="resultBox">先添加一个服务器。</div>
+        <div class="result muted" id="resultBox">先添加一个服务器�?/div>
       </div>
     </section>
   </div>
@@ -356,7 +357,7 @@ html,body{
       if(!Array.isArray(servers)) servers = [];
     }catch(err){
       servers = [];
-      setStatus('读取本地配置失败：' + err.message, 'bad');
+      setStatus('读取本地配置失败�? + err.message, 'bad');
     }
 
     try{
@@ -397,7 +398,7 @@ html,body{
     var box = $('serverList');
 
     if(!servers.length){
-      box.innerHTML = '<div class="empty">还没有服务器。填完上面的名称和地址，点“保存”。</div>';
+      box.innerHTML = '<div class="empty">还没有服务器。填完上面的名称和地址，点“保存”�?/div>';
       $('testBtn').disabled = true;
       updateHero();
       updateMode();
@@ -425,7 +426,7 @@ html,body{
       html +=   '<div class="badges">';
       html +=     '<span class="tag">' + esc(s.type || '') + '</span>';
       if(active) html += '<span class="tag ok">当前选中</span>';
-      if(editing) html += '<span class="tag edit">编辑中</span>';
+      if(editing) html += '<span class="tag edit">编辑�?/span>';
       html +=   '</div>';
       html += '</div>';
     }
@@ -473,17 +474,17 @@ html,body{
 
     var s = currentServer();
     if(s){
-      setStatus('已选中：' + s.name, 'ok');
-      setResult('已选中：' + s.name, false);
+      setStatus('已选中�? + s.name, 'ok');
+      setResult('已选中�? + s.name, false);
     }else{
-      setStatus('选中失败：没找到对应项。', 'bad');
+      setStatus('选中失败：没找到对应项�?, 'bad');
     }
   }
 
   function startEdit(id){
     var s = findById(id);
     if(!s){
-      setStatus('编辑失败：没找到对应项。', 'bad');
+      setStatus('编辑失败：没找到对应项�?, 'bad');
       return;
     }
     editingId = id;
@@ -493,13 +494,13 @@ html,body{
     $('headersInput').value = JSON.stringify(s.headers || {}, null, 2);
     updateMode();
     renderServers();
-    setStatus('正在编辑：' + s.name, 'warn');
+    setStatus('正在编辑�? + s.name, 'warn');
   }
 
   function deleteServer(id){
     var s = findById(id);
     if(!s){
-      setStatus('删除失败：没找到对应项。', 'bad');
+      setStatus('删除失败：没找到对应项�?, 'bad');
       return;
     }
     if(!confirm('删除这个 MCP 服务器？\n\n' + s.name)) return;
@@ -534,11 +535,11 @@ html,body{
       var headersRaw = $('headersInput').value.trim();
 
       if(!name){
-        setStatus('请输入名称。', 'bad');
+        setStatus('请输入名称�?, 'bad');
         return;
       }
       if(!url){
-        setStatus('请输入地址。', 'bad');
+        setStatus('请输入地址�?, 'bad');
         return;
       }
       if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(url)){
@@ -550,11 +551,11 @@ html,body{
         try{
           headers = JSON.parse(headersRaw);
           if(typeof headers !== 'object' || headers === null || Array.isArray(headers)){
-            setStatus('请求头 JSON 必须是对象。', 'bad');
+            setStatus('请求�?JSON 必须是对象�?, 'bad');
             return;
           }
         }catch(err){
-          setStatus('请求头 JSON 解析失败：' + err.message, 'bad');
+          setStatus('请求�?JSON 解析失败�? + err.message, 'bad');
           return;
         }
       }
@@ -562,7 +563,7 @@ html,body{
       if(editingId){
         var found = findById(editingId);
         if(!found){
-          setStatus('编辑目标不存在，请重新选择。', 'bad');
+          setStatus('编辑目标不存在，请重新选择�?, 'bad');
           editingId = '';
           updateMode();
           return;
@@ -599,10 +600,10 @@ html,body{
       writeStorage();
       renderServers();
       setStatus('已新增：' + name, 'ok');
-      setResult('已新增：' + name + '\n地址：' + url, false);
+      setResult('已新增：' + name + '\n地址�? + url, false);
     }catch(err){
       setStatus('保存时发生错误：' + err.message, 'bad');
-      setResult('保存失败：' + err.stack, false);
+      setResult('保存失败�? + err.stack, false);
     }
   }
 
@@ -611,12 +612,12 @@ html,body{
     clearForm(false);
     updateMode();
     renderServers();
-    setStatus('已切到新建模式。现在点保存会新增。', 'warn');
+    setStatus('已切到新建模式。现在点保存会新增�?, 'warn');
   }
 
   function fillExample(){
     $('headersInput').value = '{\n  "Authorization": "Bearer xxx"\n}';
-    setStatus('已填入请求头示例。', 'ok');
+    setStatus('已填入请求头示例�?, 'ok');
   }
 
   async function mcpRequest(server, method, params){
@@ -652,17 +653,17 @@ html,body{
   async function testSelected(){
     var s = currentServer();
     if(!s){
-      setStatus('请先选中一个服务器。', 'bad');
+      setStatus('请先选中一个服务器�?, 'bad');
       return;
     }
 
     try{
-      setStatus('正在测试：' + s.name + ' ...', 'warn');
-      setResult('正在测试：' + s.name + ' ...', false);
+      setStatus('正在测试�? + s.name + ' ...', 'warn');
+      setResult('正在测试�? + s.name + ' ...', false);
 
       var initText = await mcpRequest(s, 'initialize', {
         protocolVersion:'2024-11-05',
-        clientInfo:{ name:'⟁ 小手机', version:'1.0.0' },
+        clientInfo:{ name:'�?小手�?, version:'1.0.0' },
         capabilities:{}
       });
 
@@ -672,15 +673,15 @@ html,body{
         var toolsText = await mcpRequest(s, 'tools/list', {});
         out += '\n\n工具列表返回：\n' + toolsText;
       }catch(e){
-        out += '\n\ntools/list 失败：' + e.message;
+        out += '\n\ntools/list 失败�? + e.message;
       }
 
-      setStatus('测试完成：' + s.name, 'ok');
+      setStatus('测试完成�? + s.name, 'ok');
       setResult(out, false);
     }catch(err){
-      setStatus('测试失败：' + err.message, 'bad');
+      setStatus('测试失败�? + err.message, 'bad');
       setResult(
-        '测试失败：' + err.message + '\n\n可能原因：\n' +
+        '测试失败�? + err.message + '\n\n可能原因：\n' +
         '1. 目标 MCP 不允许浏览器跨域\n' +
         '2. 地址不是 HTTP MCP 入口\n' +
         '3. 需要认证请求头\n' +
@@ -696,13 +697,13 @@ html,body{
     $('clearBtn').onclick = function(){
       clearForm(true);
       renderServers();
-      setStatus('表单已清空，并退出编辑模式。', 'warn');
+      setStatus('表单已清空，并退出编辑模式�?, 'warn');
     };
     $('exampleBtn').onclick = fillExample;
     $('refreshBtn').onclick = function(){
       readStorage();
       renderServers();
-      setStatus('列表已刷新。', 'ok');
+      setStatus('列表已刷新�?, 'ok');
     };
     $('testBtn').onclick = testSelected;
 
@@ -724,11 +725,11 @@ html,body{
     bindEvents();
     readStorage();
     renderServers();
-    setStatus('页面已初始化。你现在可以直接填写后点保存。', 'ok');
+    setStatus('页面已初始化。你现在可以直接填写后点保存�?, 'ok');
   }
 
   window.addEventListener('error', function(e){
-    setStatus('脚本错误：' + e.message, 'bad');
+    setStatus('脚本错误�? + e.message, 'bad');
   });
 
   init();
