@@ -1922,6 +1922,7 @@ function restorePageIndex(){
 applySettings();
 
 loadHomeMemos();
+loadLingyiStatus();
 loadMemoriesForHome();
 renderDiary();
 
@@ -1930,6 +1931,7 @@ window.addEventListener('focus', function(){
   applySettings();
   initHomeAudio();
   loadHomeMemos();
+  loadLingyiStatus();
 });
 
 bindHomeAudioEvents();
@@ -1955,6 +1957,7 @@ window.addEventListener('storage', function(e){
   }
   if(e.key === LISTEN_KEY){ updateListenWidget(); initHomeAudio(); }
   if(e.key === MEMO_KEY){ loadHomeMemos(); }
+  if(e.key === 'little_phone_nest_0108_v21'){ loadLingyiStatus(); }
   if(e.key === DIARY_KEY){ renderDiary(); }
 });
 
