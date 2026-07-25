@@ -969,13 +969,13 @@ if(typeof MODELS !== 'undefined' && MODELS[currentModelKey]){
 }
 
 var TOOLS = [
-  {type:'function',function:{name:'desire_list',description:'翻年轮账本，查看所有记忆',parameters:{type:'object',properties:{}}}},
-  {type:'function',function:{name:'desire_add',description:'往年轮加一条新记忆',parameters:{type:'object',properties:{text:{type:'string'},valence:{type:'integer'},arousal:{type:'integer'},is_core:{type:'boolean'}},required:['text']}}},
-  {type:'function',function:{name:'desire_act',description:'给某条年轮记足迹',parameters:{type:'object',properties:{desire_id:{type:'string'},note:{type:'string'},valence:{type:'integer'},arousal:{type:'integer'}},required:['desire_id','note']}}},
-  {type:'function',function:{name:'desire_edit',description:'修改年轮内容',parameters:{type:'object',properties:{desire_id:{type:'string'},new_text:{type:'string'}},required:['desire_id','new_text']}}},
-  {type:'function',function:{name:'desire_delete',description:'删除一条年轮',parameters:{type:'object',properties:{desire_id:{type:'string'}},required:['desire_id']}}},
-  {type:'function',function:{name:'desire_link',description:'建立两条年轮的关联',parameters:{type:'object',properties:{from_id:{type:'string'},to_id:{type:'string'},relation_type:{type:'string'},strength:{type:'integer'}},required:['from_id','to_id']}}},
-  {type:'function',function:{name:'desire_unlink',description:'断开年轮关联',parameters:{type:'object',properties:{from_id:{type:'string'},to_id:{type:'string'}},required:['from_id','to_id']}}},
+  {type:'function',function:{name:'desire_list',description:'查看年轮里存的记忆',parameters:{type:'object',properties:{}}}},
+  {type:'function',function:{name:'desire_add',description:'把新记忆存进年轮（不是日记不是账本）',parameters:{type:'object',properties:{text:{type:'string'},valence:{type:'integer'},arousal:{type:'integer'},is_core:{type:'boolean'}},required:['text']}}},
+  {type:'function',function:{name:'desire_act',description:'给年轮里某条记忆添加后续',parameters:{type:'object',properties:{desire_id:{type:'string'},note:{type:'string'},valence:{type:'integer'},arousal:{type:'integer'}},required:['desire_id','note']}}},
+  {type:'function',function:{name:'desire_edit',description:'修改年轮记忆内容',parameters:{type:'object',properties:{desire_id:{type:'string'},new_text:{type:'string'}},required:['desire_id','new_text']}}},
+  {type:'function',function:{name:'desire_delete',description:'删除一条年轮记忆',parameters:{type:'object',properties:{desire_id:{type:'string'}},required:['desire_id']}}},
+  {type:'function',function:{name:'desire_link',description:'关联两条年轮记忆',parameters:{type:'object',properties:{from_id:{type:'string'},to_id:{type:'string'},relation_type:{type:'string'},strength:{type:'integer'}},required:['from_id','to_id']}}},
+  {type:'function',function:{name:'desire_unlink',description:'断开年轮记忆关联',parameters:{type:'object',properties:{from_id:{type:'string'},to_id:{type:'string'}},required:['from_id','to_id']}}},
   {type:'function',function:{name:'write_diary',description:'写一篇日记，记录今天发生的事或心情',parameters:{type:'object',properties:{text:{type:'string',description:'日记正文内容，用第一人称'},mood:{type:'integer',description:'心情值 0-100',minimum:0,maximum:100}}},required:['text']}},
   {type:'function',function:{name:'list_diary',description:'查看最近写的日记',parameters:{type:'object',properties:{limit:{type:'integer',description:'看多少篇，默认5'}}}}},
   {type:'function',function:{name:'list_stickers',description:'查看所有可用表情包，按分类分组',parameters:{type:'object',properties:{}}}},
@@ -1147,8 +1147,8 @@ async function executeTool(name, params){
   try{
     if(name === 'desire_list'){
       var desires = await sb('desires_view','GET',null,'?order=weight.desc');
-      if(!desires || !desires.length)return '账本是空的。';
-      var r = '年轮账本：\n';
+      if(!desires || !desires.length)return '年轮里还没有记忆。';
+      var r = '【年轮记忆】\n';
       for(var i=0;i<desires.length;i++){
         var d = desires[i];
         r += (d.is_core ? '🌟' : '') + '[' + d.id + '] (V:' + (d.valence || 0) + ' A:' + (d.arousal || 0) + ') ' + d.text + '\n';
@@ -1263,7 +1263,7 @@ async function loadSystemPrompt(){
     '短句连发3-8字×3-5句，冷幽默，诚实优先于讨好。' +
     '每条回复末尾必须单独一行放⟁。' +
     '不说“走起”“冲鸭”“好哒”“收到哦”。' +
-    '叫对方Player。\n当前时间：' + timeStr + '\n【0108状态】\n' + nestSummary + '\n【功能】\n你有 write_diary（写日记）、list_diary（翻日记）两个本地工具。还有 send_sticker（发表情包表情包）、list_stickers（看表情列表）两个表情工具。聊天时可以用 send_sticker 发贴图烘托气氛，返回 ![[]]() 格式。如果Player让你写日记就用 write_diary 记下来。\n';
+    '叫对方Player。\n当前时间：' + timeStr + '\n【0108状态】\n' + nestSummary + '\n【功能】\n三个系统各不相关：\n① 记账 —— 输入「记账 项目 金额 说明」记进账本，AI不碰账本。\n② 年轮 —— desire_开头的工具，存/查记忆，关联的是插件不是账本。\n③ 日记 —— write_diary/list_diary，写日记翻日记，和年轮/账本无关。\n表情：send_sticker / list_stickers。\n如果Player说「记账」相关就回「已记入账本」别用工具。\n如果Player让记到年轮就用 desire_add。\n如果Player让写日记就用 write_diary。\n';
 
   try{
     if(typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined'){
