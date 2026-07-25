@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>�?年轮 v3</title>
+<title>⟁年轮 v3</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon_48.png" type="image/png">
 <link rel="apple-touch-icon" href="icon_192.png">
@@ -518,9 +518,9 @@ body{
 <div class="app">
   <div class="header">
     <div class="header-row">
-      <a class="back-btn" href="home.html">�?/a>
+      <a class="back-btn" href="home.html">⟁?/a>
       <div class="title-wrap">
-        <h1>�?年轮 v3</h1>
+        <h1>⟁年轮 v3</h1>
         <div class="sub">凌漪的潜意识浮现引擎</div>
       </div>
       <button class="refresh-btn" onclick="loadAll()">刷新</button>
@@ -660,13 +660,13 @@ function buildNode(d, isCore){
   var html = '<div class="' + nodeClass + '" onclick="scrollToEntry(\'' + esc(d.id) + '\')">';
   html += '<div style="margin-bottom:5px">';
 
-  if(isEmo)html += '<span class="chain-emotion-tag">📸 表情�?/span>';
+  if(isEmo)html += '<span class="chain-emotion-tag">📸 表情⟁?/span>';
   else if(isCore)html += '<span class="chain-core-tag">🌟 核心</span>';
 
   html += '<span class="chain-node-id">[' + esc(d.id) + ']</span></div>';
 
   var name = d.text || '';
-  if(name.length > 50)name = name.slice(0,50) + '�?;
+  if(name.length > 50)name = name.slice(0,50) + '⟁?;
 
   html += '<div class="chain-node-name">' + esc(name) + '</div>';
 
@@ -681,9 +681,9 @@ function buildNode(d, isCore){
       var target = findDesire(tid);
       var tname = target ? (target.text || tid) : tid;
 
-      if(tname.length > 30)tname = tname.slice(0,30) + '�?;
+      if(tname.length > 30)tname = tname.slice(0,30) + '⟁?;
 
-      var arrow = (l.from_id === d.id) ? '�? : '�?;
+      var arrow = (l.from_id === d.id) ? '⟁? : '⟁?;
 
       if(!target){
         html += '<div class="chain-link" style="opacity:.4;cursor:default">';
@@ -707,7 +707,7 @@ function buildNode(d, isCore){
 function render(){
   if(allDesires.length === 0){
     document.getElementById('content').innerHTML =
-      '<div class="empty"><span class="empty-icon">📭</span>潜意识为�?/div>';
+      '<div class="empty"><span class="empty-icon">📭</span>潜意识为⟁?/div>';
     return;
   }
 
@@ -726,7 +726,7 @@ function render(){
   var html = '';
 
   if(allLinks.length > 0){
-    html += '<div class="section-header">🔗 记忆�?/div>';
+    html += '<div class="section-header">🔗 记忆⟁?/div>';
 
     var cores = [], linked = [], orphans = [];
 
@@ -746,7 +746,7 @@ function render(){
     }
 
     if(linked.length > 0){
-      html += '<div class="chain-section"><div class="chain-title">🔗 已关�?(' + linked.length + ')</div>';
+      html += '<div class="chain-section"><div class="chain-title">🔗 已关⟁?(' + linked.length + ')</div>';
       for(var i=0;i<linked.length;i++)html += buildNode(linked[i], false);
       html += '</div>';
     }
@@ -758,12 +758,12 @@ function render(){
 
       for(var i=0;i<max;i++){
         var t = orphans[i].text || '';
-        if(t.length > 35)t = t.slice(0,35) + '�?;
+        if(t.length > 35)t = t.slice(0,35) + '⟁?;
         html += '<div class="chain-orphan">[' + esc(orphans[i].id) + '] ' + esc(t) + '</div>';
       }
 
       if(orphans.length > 10){
-        html += '<div style="font-size:11px;color:rgba(247,251,255,.52);padding:4px 12px">...还有 ' + (orphans.length - 10) + ' �?/div>';
+        html += '<div style="font-size:11px;color:rgba(247,251,255,.52);padding:4px 12px">...还有 ' + (orphans.length - 10) + ' ⟁?/div>';
       }
 
       html += '</div>';
@@ -822,7 +822,7 @@ function render(){
         }
 
         if(notes.length > 5){
-          html += '<div class="note-item" style="color:' + color + '">...还有 ' + (notes.length - 5) + ' �?/div>';
+          html += '<div class="note-item" style="color:' + color + '">...还有 ' + (notes.length - 5) + ' ⟁?/div>';
         }
       }
 
@@ -835,9 +835,9 @@ function render(){
           var target = findDesire(tid);
           var tname = target ? (target.text || tid) : tid;
 
-          if(tname.length > 30)tname = tname.slice(0,30) + '�?;
+          if(tname.length > 30)tname = tname.slice(0,30) + '⟁?;
 
-          var arrow = (l.from_id === d.id) ? '�? : '�?;
+          var arrow = (l.from_id === d.id) ? '⟁? : '⟁?;
           var isDead = !target;
 
           if(isDead){
@@ -895,7 +895,7 @@ try{
   loadAll();
 }catch(e){
   document.getElementById('content').innerHTML =
-    '<div class="empty"><span class="empty-icon">⚠️</span>config.js 没读�?Supabase 配置</div>';
+    '<div class="empty"><span class="empty-icon">⚠️</span>config.js 没读⟁?Supabase 配置</div>';
 }
 </script>
 <nav class="dock"><div class="dock-bar"><a class="dock-item" href="chat.html">✦</a><a class="dock-item" href="home.html">⌂</a><a class="dock-item active" href="yearling.html">⟁</a></div></nav>

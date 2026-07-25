@@ -887,44 +887,21 @@ html,body{
   background:rgba(255,255,255,.82);
 }
 .dots span:hover{background:rgba(255,255,255,.56)}
-.memo-grid{
+.memo-full{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:6px}
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:6px;
-}
-.memo-tile{
+
+.memo-tile{width:100%;
   border-radius:16px;
   padding:14px 12px 10px;
   position:relative;
   overflow:hidden;
-  transform:rotate(var(--rot,0deg));
-  transition:transform .2s ease;
   cursor:default;
-  min-height:90px;
+  min-height:auto;
   display:flex;
   flex-direction:column;
 }
-.memo-tile:before{
-  content:"";
-  position:absolute;
-  top:6px;
-  left:50%;
-  margin-left:-5px;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:rgba(255,255,255,.5);
-  box-shadow:0 1px 3px rgba(0,0,0,.08);
-}
-.memo-tile:after{
-  content:"";
-  position:absolute;
-  top:0;left:0;right:0;bottom:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 22px,rgba(255,255,255,.25) 22px,rgba(255,255,255,.25) 23px);
-  pointer-events:none;
-  opacity:.3;
-}
+
+
 .memo-tile-title{
   font-size:13px;
   font-weight:900;
@@ -961,13 +938,7 @@ html,body{
   color:#2a5270;
   font-weight:700;
 }
-.memo-empty{
-  grid-column:1/-1;
-  text-align:center;
-  padding:40px 20px;
-  color:rgba(255,255,255,.4);
-  font-size:13px;
-}
+.memo-empty{text-align:center;padding:24px 20px;color:rgba(255,255,255,.4);font-size:13px}
 @media(max-width:380px){
   .memo-tile{min-height:76px;padding:12px 10px 8px}
   .memo-tile-title{font-size:12px}
@@ -1111,7 +1082,7 @@ html,body{
 <script>
 var MEMO_KEY = 'local_memos_v1';
 function loadHomeMemos(){
-  var grid = document.getElementById('memoGrid');
+  var grid = document.getElementById('memoFull');
   if(!grid) return;
   try {
     var list = JSON.parse(localStorage.getItem(MEMO_KEY) || '[]');
@@ -1254,14 +1225,11 @@ function loadHomeMemos(){
         <span id="todayLunar" style="opacity:.5"></span>
       </div>
 
-      <div class="card glass" id="nestLogCard">
-        <div class="card-title">0108 最近</div>
-        <div id="nestLogList" style="font-size:12px;line-height:1.6;color:var(--soft);opacity:.85">加载中...</div>
-      </div>
+
     
       <div style="margin-top:16px">
         <div style="font-size:13px;font-weight:900;color:var(--soft);padding:2px 0 0;letter-spacing:.5px">MEMOS</div>
-        <div class="memo-grid" id="memoGrid"></div>
+        <div class="memo-full" id="memoFull"></div>
       </div>
     </section>
 
@@ -2144,3 +2112,10 @@ function loadNestLogs(){
 </script>
 </body>
 </html>
+.memo-full{width:100%;display:flex;flex-direction:column;gap:8px}
+.memo-full .memo-tile{width:100%;min-height:auto;padding:12px 14px;transform:none}
+.memo-full .memo-tile:before{display:none}
+.memo-full .memo-tile:after{display:none}
+.memo-full .memo-tile-title{font-size:14px;margin-top:0}
+.memo-full .memo-tile-content{font-size:12px}
+

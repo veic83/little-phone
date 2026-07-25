@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>�?一起听</title>
+<title>⟁一起听</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon_48.png" type="image/png">
 <link rel="apple-touch-icon" href="icon_192.png">
@@ -333,21 +333,21 @@ html,body{
 <div class="app">
   <div class="header">
     <div class="header-left">
-      <a class="back" href="home.html">�?/a>
+      <a class="back" href="home.html">⟁?/a>
       <div class="title-wrap">
         <div class="title">一起听</div>
         <div class="sub">首页播放器会同步这里</div>
       </div>
     </div>
-    <div class="state-pill" id="stateText">未播�?/div>
+    <div class="state-pill" id="stateText">未播⟁?/div>
   </div>
 
   <div class="main">
     <div class="card glass player">
       <div class="now-label">NOW PLAYING</div>
       <div class="cover" id="coverView"></div>
-      <div class="song-title" id="songTitleView">还没有设置歌�?/div>
-      <div class="song-sub" id="songSubView">去下面填一首你们想循环的歌�?/div>
+      <div class="song-title" id="songTitleView">还没有设置歌⟁?/div>
+      <div class="song-sub" id="songSubView">去下面填一首你们想循环的歌⟁?/div>
 
       <div class="progress-wrap">
         <div class="progress-top">
@@ -362,14 +362,14 @@ html,body{
       </div>
 
       <div class="control-row">
-        <button class="ctrl sm" type="button" id="restartBtn">�?/button>
-        <button class="ctrl lg" type="button" id="playBtn">�?/button>
-        <button class="ctrl sm" type="button" id="stopBtn">�?/button>
+        <button class="ctrl sm" type="button" id="restartBtn">⟁?/button>
+        <button class="ctrl lg" type="button" id="playBtn">⟁?/button>
+        <button class="ctrl sm" type="button" id="stopBtn">⟁?/button>
       </div>
     </div>
 
     <div class="card softglass">
-      <div class="section-title">编辑播放�?/div>
+      <div class="section-title">编辑播放⟁?/div>
 
       <div class="label">歌名</div>
       <input class="input" id="songTitleInput" placeholder="比如：Merry-Go-Round of Life">
@@ -382,7 +382,7 @@ html,body{
       <div style="height:10px"></div>
 
       <div class="label">备注</div>
-      <textarea class="textarea" id="songNoteInput" placeholder="比如：这首适合晚上散步、下雨天、或者想你的时候�?></textarea>
+      <textarea class="textarea" id="songNoteInput" placeholder="比如：这首适合晚上散步、下雨天、或者想你的时候⟁?></textarea>
 
       <div style="height:10px"></div>
 
@@ -398,8 +398,8 @@ html,body{
       </div>
 
       <div class="audio-status" id="audioStatus">
-        还没有载入本地音频�?br>
-        上传后可在当前页面直接播放；刷新后需要重新选择�?      </div>
+        还没有载入本地音频⟁?br>
+        上传后可在当前页面直接播放；刷新后需要重新选择⟁?      </div>
 
       <div style="height:12px"></div>
 
@@ -409,14 +409,14 @@ html,body{
       </div>
 
       <div class="mini-note">
-        封面、歌名、备注、进度会同步到首页�?br>
-        音频文件会存入本地数据库，刷新后不会丢失�?      </div>
+        封面、歌名、备注、进度会同步到首页⟁?br>
+        音频文件会存入本地数据库，刷新后不会丢失⟁?      </div>
 
       <div style="height:12px"></div>
 
       <div class="row">
         <button class="btn" type="button" id="uploadCoverBtn">上传封面</button>
-        <button class="btn primary" type="button" id="saveBtn">保存到首�?/button>
+        <button class="btn primary" type="button" id="saveBtn">保存到首⟁?/button>
         <button class="btn danger" type="button" id="resetBtn">重置</button>
       </div>
 
@@ -426,7 +426,7 @@ html,body{
 
     <div class="card glass">
       <div class="section-title">当前备注</div>
-      <div class="song-sub" id="noteView">还没有写备注�?/div>
+      <div class="song-sub" id="noteView">还没有写备注⟁?/div>
     </div>
   </div>
 </div>
@@ -482,7 +482,7 @@ function removeAudioFromDB(){
 
 const defaults = {
   title:'一起听',
-  sub:'点进来放一首正在循环的�?,
+  sub:'点进来放一首正在循环的⟁?,
   note:'',
   coverUrl:'',
   coverData:'',
@@ -539,8 +539,8 @@ function formatTime(sec){
   return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
 }
 function updateStateByPlaying(playing){
-  document.getElementById('stateText').textContent = playing ? '播放�? : '未播�?;
-  document.getElementById('playBtn').textContent = playing ? '❚❚' : '�?;
+  document.getElementById('stateText').textContent = playing ? '播放⟁? : '未播⟁?;
+  document.getElementById('playBtn').textContent = playing ? '❚❚' : '⟁?;
   data.isPlaying = !!playing;
 }
 function updateProgressUI(percent){
@@ -555,18 +555,18 @@ function updateAudioStatus(){
   const box = document.getElementById('audioStatus');
   if(audioUrl){
     box.innerHTML =
-      '已载入本地音频：' + (data.audioName || '未命名音�?) + '<br>' +
-      '音频已持久保存，刷新页面后会自动恢复�?;
+      '已载入本地音频：' + (data.audioName || '未命名音⟁?) + '<br>' +
+      '音频已持久保存，刷新页面后会自动恢复⟁?;
   }else{
     box.innerHTML =
-      '还没有载入本地音频�?br>' +
-      '上传后可持久保存，刷新不会丢失�?;
+      '还没有载入本地音频⟁?br>' +
+      '上传后可持久保存，刷新不会丢失⟁?;
   }
 }
 function applyView(){
   document.getElementById('songTitleView').textContent = data.title || defaults.title;
   document.getElementById('songSubView').textContent = data.sub || defaults.sub;
-  document.getElementById('noteView').textContent = data.note || '还没有写备注�?;
+  document.getElementById('noteView').textContent = data.note || '还没有写备注⟁?;
 
   const percent = clamp(Number(data.progress || 0), 0, 100);
   updateProgressUI(percent);
@@ -591,8 +591,8 @@ function applyView(){
   }
 
   document.getElementById('playHint').textContent = audioUrl
-    ? '已载入音频，可直接播�?
-    : '先上传音频，再点播放（刷新不丢失�?;
+    ? '已载入音频，可直接播⟁?
+    : '先上传音频，再点播放（刷新不丢失⟁?;
 
   document.getElementById('isPlayingInput').checked = !!data.isPlaying;
   updateAudioStatus();
@@ -624,7 +624,7 @@ function saveAll(showAlert){
   syncProgressFromAudio();
   saveData();
   applyView();
-  if(showAlert !== false) alert('已同步到首页播放器�?);
+  if(showAlert !== false) alert('已同步到首页播放器⟁?);
 }
 function resetAll(){
   if(!confirm('重置播放器内容？')) return;
@@ -646,7 +646,7 @@ function resetAll(){
 }
 async function togglePlay(){
   if(!audioUrl){
-    alert('先上传音频文件�?);
+    alert('先上传音频文件⟁?);
     return;
   }
   try{
@@ -656,7 +656,7 @@ async function togglePlay(){
       audio.pause();
     }
   }catch(e){
-    alert('播放失败�? + e.message);
+    alert('播放失败⟁? + e.message);
   }
 }
 function stopAudio(){
@@ -824,7 +824,7 @@ document.getElementById('audioFileInput').addEventListener('change', function(){
     saveAudioToDB(file).then(function(){
       audioUrl = URL.createObjectURL(file);
       audio.src = audioUrl;
-      data.audioName = file.name || '未命名音�?;
+      data.audioName = file.name || '未命名音⟁?;
       data.updatedAt = new Date().toISOString();
 
       if(!document.getElementById('songTitleInput').value.trim()){
@@ -835,10 +835,10 @@ document.getElementById('audioFileInput').addEventListener('change', function(){
       }
 
       updateAudioStatus();
-      document.getElementById('playHint').textContent = '音频已载入，可以播放�?;
+      document.getElementById('playHint').textContent = '音频已载入，可以播放⟁?;
       saveAll(false);
     }).catch(function(err){
-      alert('保存音频失败�? + err.message);
+      alert('保存音频失败⟁? + err.message);
     });
   });
 });
