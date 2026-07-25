@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+  <title>相册</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    :root{
+      --safe-top:env(safe-area-inset-top,20px);
+      --safe-bottom:env(safe-area-inset-bottom,16px);
+      --text:#f7fbff;
+      --soft:rgba(247,251,255,.76);
+      --muted:rgba(247,251,255,.56);
+      --stroke:rgba(255,255,255,.22);
+      --shadow:0 16px 40px rgba(5,14,28,.28);
+    }
+    html,body{
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+      color:var(--text);
+      background:#0d1b30;
+    }
+    .wallpaper{
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      background:
+        linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.62)),
+        radial-gradient(circle at 25% 12%,rgba(140,188,245,.24),transparent 28%),
+        radial-gradient(circle at 78% 18%,rgba(190,210,255,.16),transparent 26%),
+        linear-gradient(155deg,#12243d 0%,#2f557f 50%,#0d1b30 100%);
+      background-size:cover;
+      background-position:center;
+    }
+    .wallpaper:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:repeating-linear-gradient(100deg,rgba(255,255,255,.06) 0 1px,transparent 1px 18px);
+      opacity:.18;
+    }
+    .app{
+      max-width:430px;
+      height:100%;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+    }
+    .header{
+      padding:calc(var(--safe-top) + 8px) 18px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .header-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+    .back{
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.12);
+      color:white;
+      font-size:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      box-shadow:0 8px 22px rgba(0,0,0,.18);
+      flex-shrink:0;
+    }
+    .title-wrap{
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      min-width:0;
+    }
+    .title{
+      font-size:19px;
+      font-weight:900;
+      letter-spacing:0;
+    }
+    .sub{
+      font-size:12px;
+      color:var(--soft);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .count-pill{
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.18);
+      font-size:12px;
+      font-weight:900;
+      color:var(--soft);
+      flex-shrink:0;
+    }
+    .main{
+      flex:1;
+      overflow:auto;
+      padding:8px 18px calc(var(--safe-bottom) + 24px);
+      scrollbar-width:none;
+    }
+    .main::-webkit-scrollbar{display:none}
+    .glass{
+      background:linear-gradient(145deg,rgba(125,163,214,.60),rgba(61,85,126,.50));
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+    .softglass{
+      background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.08));
+      border:1px solid rgba(255,255,255,.20);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+    .card{
+      padding:16px;
+      border-radius:28px;
+      margin-bottom:14px;
+    }
+    .hero{
+      padding:18px;
+      border-radius:32px;
+    }
+    .hero-cover{
+      width:100%;
+      aspect-ratio:1.18/1;
+      border-radius:28px;
+      background:linear-gradient(135deg,#10213d,#638db9);
+      background-size:cover;
+      background-position:center;
+      border:1px solid rgba(255,255,255,.20);
+      box-shadow:0 18px 36px rgba(0,0,0,.18);
+    }
+    .hero-title{
+      margin-top:14px;
+      font-size:22px;
+      line-height:1.2;
+      font-weight:900;
+    }
+    .hero-sub{
+      margin-top:8px;
+      font-size:13px;
+      line-height:1.6;
+      color:var(--soft);
+    }
+    .meta-row{
+      margin-top:14px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      font-size:12px;
+      color:var(--soft);
+    }
+    .section-title{
+      font-size:16px;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+    .label{
+      font-size:12px;
+      color:var(--soft);
+      margin-bottom:8px;
+      font-weight:800;
+    }
+    .input,.textarea{
+      width:100%;
+      border:none;
+      outline:none;
+      border-radius:18px;
+      background:rgba(255,255,255,.92);
+      color:#243043;
+      padding:12px 14px;
+      font-family:inherit;
+      font-size:13px;
+      box-shadow:0 4px 14px rgba(90,110,150,.08);
+    }
+    .textarea{
+      min-height:84px;
+      resize:vertical;
+      line-height:1.55;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:none;
+      border-radius:16px;
+      padding:11px 14px;
+      font-size:13px;
+      font-weight:900;
+      cursor:pointer;
+      color:white;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .btn.primary{
+      background:linear-gradient(135deg,#7cb7ff,#5b8def);
+      box-shadow:0 8px 18px rgba(91,141,239,.22);
+    }
+    .btn.danger{
+      color:#ffd8de;
+      background:rgba(255,120,140,.14);
+      border-color:rgba(255,160,178,.22);
+    }
+    .file-input{display:none}
+    .mini-note{
+      font-size:11px;
+      color:var(--muted);
+      line-height:1.55;
+      margin-top:10px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .photo-card{
+      border-radius:22px;
+      overflow:hidden;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.16);
+    }
+    .photo{
+      width:100%;
+      aspect-ratio:1/1;
+      background:linear-gradient(135deg,#153055,#678fbd);
+      background-size:cover;
+      background-position:center;
+    }
+    .photo-body{
+      padding:12px;
+    }
+    .photo-title{
+      font-size:13px;
+      font-weight:900;
+      line-height:1.4;
+      word-break:break-word;
+    }
+    .photo-note{
+      margin-top:6px;
+      font-size:11px;
+      color:var(--soft);
+      line-height:1.5;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      word-break:break-word;
+    }
+    .photo-time{
+      margin-top:8px;
+      font-size:10px;
+      color:var(--muted);
+    }
+    .photo-actions{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+    }
+    .icon-btn{
+      flex:1;
+      border:none;
+      border-radius:12px;
+      padding:9px 10px;
+      font-size:12px;
+      font-weight:800;
+      color:white;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.16);
+    }
+    .empty{
+      padding:22px 16px;
+      border-radius:22px;
+      text-align:center;
+      font-size:13px;
+      line-height:1.6;
+      color:var(--soft);
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.16);
+    }
+    @media(max-width:380px){
+      .main{padding:8px 14px calc(var(--safe-bottom) + 22px)}
+    }
+  </style>
+</head>
+<body>
+  <div class="wallpaper"></div>
+
+  <div class="app">
+    <div class="header">
+      <div class="header-left">
+        <a class="back" href="home.html">←</a>
+        <div class="title-wrap">
+          <div class="title">相册</div>
+          <div class="sub">先做本地版，后面再接首页和云端</div>
+        </div>
+      </div>
+      <div class="count-pill" id="photoCount">0 张</div>
+    </div>
+
+    <div class="main">
+      <div class="card glass hero">
+        <div class="hero-cover" id="heroCover"></div>
+        <div class="hero-title" id="heroTitle">我们的小相册</div>
+        <div class="hero-sub" id="heroNote">还没有放照片。先上传一张喜欢的图，后面首页第二页就能做成真正的小组件。</div>
+        <div class="meta-row">
+          <span id="heroMetaLeft">最近更新：还没有</span>
+          <span id="heroMetaRight">封面会取最近一张</span>
+        </div>
+      </div>
+
+      <div class="card softglass">
+        <div class="section-title">添加照片</div>
+
+        <div class="label">标题</div>
+        <input class="input" id="titleInput" placeholder="比如：一起散步的晚上" />
+
+        <div style="height:10px"></div>
+
+        <div class="label">备注</div>
+        <textarea class="textarea" id="noteInput" placeholder="比如：风很轻，路灯像在发呆，我们就慢慢走回去。"></textarea>
+
+        <div style="height:10px"></div>
+
+        <div class="label">图片 URL（可选）</div>
+        <input class="input" id="urlInput" placeholder="https://..." />
+
+        <div class="mini-note">
+          可以直接上传本地图片，也可以先填图片链接。为了后面首页联动稳定，这里会统一存进相册数据。
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="row">
+          <button class="btn" type="button" id="uploadBtn">上传图片</button>
+          <button class="btn primary" type="button" id="saveBtn">保存照片</button>
+          <button class="btn danger" type="button" id="clearBtn">清空相册</button>
+        </div>
+
+        <input class="file-input" type="file" accept="image/*" id="fileInput" />
+      </div>
+
+      <div class="card glass">
+        <div class="section-title">照片列表</div>
+        <div id="photoList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'little_phone_album_v1';
+
+    const defaults = {
+      items: []
+    };
+
+    let pendingImageData = '';
+    let album = loadAlbum();
+
+    function loadAlbum() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return {
+          items: Array.isArray(raw.items) ? raw.items : []
+        };
+      } catch (e) {
+        return { ...defaults };
+      }
+    }
+
+    function saveAlbum() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(album));
+    }
+
+    function formatTime(iso) {
+      if (!iso) return '还没有';
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return '还没有';
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const h = String(d.getHours()).padStart(2, '0');
+      const min = String(d.getMinutes()).padStart(2, '0');
+      return y + '.' + m + '.' + day + ' ' + h + ':' + min;
+    }
+
+    function getImageSource(item) {
+      return item.imageData || item.imageUrl || '';
+    }
+
+    function updateHero() {
+      const count = album.items.length;
+      document.getElementById('photoCount').textContent = count + ' 张';
+
+      const latest = album.items[0];
+      const heroCover = document.getElementById('heroCover');
+      const heroTitle = document.getElementById('heroTitle');
+      const heroNote = document.getElementById('heroNote');
+      const heroMetaLeft = document.getElementById('heroMetaLeft');
+
+      if (latest) {
+        const src = getImageSource(latest);
+        heroCover.style.backgroundImage = src
+          ? 'linear-gradient(180deg,rgba(8,16,30,.10),rgba(8,16,30,.28)), url("' + src + '")'
+          : 'linear-gradient(135deg,#10213d,#638db9)';
+        heroTitle.textContent = latest.title || '最近一张照片';
+        heroNote.textContent = latest.note || '这一张还没有备注。';
+        heroMetaLeft.textContent = '最近更新：' + formatTime(latest.createdAt);
+      } else {
+        heroCover.style.backgroundImage = 'linear-gradient(135deg,#10213d,#638db9)';
+        heroTitle.textContent = '我们的小相册';
+        heroNote.textContent = '还没有放照片。先上传一张喜欢的图，后面首页第二页就能做成真正的小组件。';
+        heroMetaLeft.textContent = '最近更新：还没有';
+      }
+    }
+
+    function renderPhotos() {
+      const list = document.getElementById('photoList');
+
+      if (!album.items.length) {
+        list.innerHTML = '<div class="empty">这里还没有照片。<br>先放一张图，我们再回头把首页第二页也接上。</div>';
+        return;
+      }
+
+      const html = album.items.map(function(item) {
+        const src = getImageSource(item);
+        const safeTitle = escapeHtml(item.title || '未命名照片');
+        const safeNote = escapeHtml(item.note || '还没有备注。');
+        const safeTime = escapeHtml(formatTime(item.createdAt));
+
+        return `
+          <div class="photo-card">
+            <div class="photo" style="background-image:${src ? "linear-gradient(180deg,rgba(8,16,30,.08),rgba(8,16,30,.24)),url('" + src.replace(/'/g, "\\'") + "')" : "linear-gradient(135deg,#153055,#678fbd)"}"></div>
+            <div class="photo-body">
+              <div class="photo-title">${safeTitle}</div>
+              <div class="photo-note">${safeNote}</div>
+              <div class="photo-time">${safeTime}</div>
+              <div class="photo-actions">
+                <button class="icon-btn" type="button" onclick="setCover('${item.id}')">设为封面</button>
+                <button class="icon-btn" type="button" onclick="removePhoto('${item.id}')">删除</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      list.innerHTML = '<div class="grid">' + html + '</div>';
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function clearForm() {
+      document.getElementById('titleInput').value = '';
+      document.getElementById('noteInput').value = '';
+      document.getElementById('urlInput').value = '';
+      document.getElementById('fileInput').value = '';
+      pendingImageData = '';
+    }
+
+    function addPhoto() {
+      const title = document.getElementById('titleInput').value.trim() || '未命名照片';
+      const note = document.getElementById('noteInput').value.trim();
+      const imageUrl = document.getElementById('urlInput').value.trim();
+
+      const source = pendingImageData || imageUrl;
+      if (!source) {
+        alert('先上传图片，或者填一个图片链接。');
+        return;
+      }
+
+      const item = {
+        id: String(Date.now()),
+        title: title,
+        note: note,
+        imageUrl: pendingImageData ? '' : imageUrl,
+        imageData: pendingImageData || '',
+        createdAt: new Date().toISOString()
+      };
+
+      album.items.unshift(item);
+      saveAlbum();
+      updateHero();
+      renderPhotos();
+      clearForm();
+      alert('照片已保存。');
+    }
+
+    function clearAlbum() {
+      if (!confirm('清空整个相册？')) return;
+      album = { items: [] };
+      saveAlbum();
+      updateHero();
+      renderPhotos();
+      clearForm();
+    }
+
+    window.removePhoto = function(id) {
+      album.items = album.items.filter(function(item) {
+        return item.id !== id;
+      });
+      saveAlbum();
+      updateHero();
+      renderPhotos();
+    };
+
+    window.setCover = function(id) {
+      const index = album.items.findIndex(function(item) {
+        return item.id === id;
+      });
+      if (index <= 0) {
+        updateHero();
+        return;
+      }
+      const picked = album.items.splice(index, 1)[0];
+      album.items.unshift(picked);
+      saveAlbum();
+      updateHero();
+      renderPhotos();
+    };
+
+    document.getElementById('uploadBtn').addEventListener('click', function() {
+      document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+      const file = this.files && this.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        pendingImageData = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', addPhoto);
+    document.getElementById('clearBtn').addEventListener('click', clearAlbum);
+
+    updateHero();
+    renderPhotos();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>0108</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --safe-top:env(safe-area-inset-top,20px);
+  --safe-bottom:env(safe-area-inset-bottom,16px);
+  --text:#f8fbff;
+  --soft:rgba(248,251,255,.76);
+  --dim:rgba(248,251,255,.52);
+  --stroke:rgba(255,255,255,.24);
+  --shadow:0 18px 46px rgba(5,14,28,.34);
+  --blue:#8dbdff;
+  --warm:#ffdca8;
+  --pink:#ff9bbb;
+  --green:#7ee0b0;
+}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  color:var(--text);
+  background:#102039;
+}
+.wallpaper{
+  position:fixed;inset:0;z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(10,18,32,.16),rgba(10,18,32,.70)),
+    radial-gradient(circle at 20% 10%,rgba(255,220,168,.24),transparent 28%),
+    radial-gradient(circle at 82% 18%,rgba(141,189,255,.25),transparent 28%),
+    radial-gradient(circle at 50% 92%,rgba(255,244,223,.14),transparent 34%),
+    linear-gradient(155deg,#173154 0%,#315f87 52%,#102039 100%);
+  background-size:cover;background-position:center;
+}
+.wallpaper:before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(100deg,rgba(255,255,255,.05) 0 1px,transparent 1px 18px);
+  opacity:.18;
+}
+.app{
+  width:100%;
+  max-width:500px;
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+}
+.header{
+  padding:calc(var(--safe-top) + 10px) 14px 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+  background:linear-gradient(180deg,rgba(8,16,30,.54),rgba(8,16,30,.12));
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+.back{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  color:white;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.13);
+  font-size:19px;
+  flex-shrink:0;
+}
+.head-main{flex:1;min-width:0}
+.room-title{font-size:23px;line-height:1.05;font-weight:950;letter-spacing:.5px}
+.room-sub{margin-top:4px;font-size:12px;color:var(--soft)}
+.header-btn{
+  border:none;
+  border-radius:999px;
+  padding:9px 12px;
+  color:white;
+  font-size:12px;
+  font-weight:850;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+}
+.main{
+  flex:1;
+  overflow-y:auto;
+  scrollbar-width:none;
+  padding:14px 14px calc(var(--safe-bottom) + 82px);
+}
+.main::-webkit-scrollbar{display:none}
+.card{
+  border-radius:30px;
+  background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border:1px solid var(--stroke);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.hero{
+  min-height:332px;
+  position:relative;
+  overflow:hidden;
+  padding:16px;
+}
+.window{
+  height:78px;
+  border-radius:22px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.03)),
+    linear-gradient(135deg,#28486f,#9fc3ff);
+  border:1px solid rgba(255,255,255,.22);
+  position:relative;
+  overflow:hidden;
+  z-index:1;
+}
+.window:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 30% 28%,rgba(255,244,223,.62),transparent 5px),
+    radial-gradient(circle at 72% 42%,rgba(255,255,255,.20),transparent 2px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0 1px,transparent 1px 32px);
+  opacity:.9;
+}
+.floor{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:108px;
+  background:linear-gradient(180deg,rgba(255,244,223,.06),rgba(255,220,168,.16));
+  border-top:1px solid rgba(255,255,255,.10);
+  z-index:1;
+}
+.room-prop.sofa{
+  position:absolute;
+  left:24px;
+  bottom:40px;
+  width:118px;
+  height:52px;
+  border-radius:24px 24px 18px 18px;
+  background:linear-gradient(135deg,rgba(255,244,223,.72),rgba(141,189,255,.24));
+  border:1px solid rgba(255,255,255,.26);
+  box-shadow:0 10px 24px rgba(5,14,28,.18);
+  z-index:2;
+}
+.room-prop.sofa:before{
+  content:"";
+  position:absolute;
+  left:12px;
+  right:12px;
+  top:-16px;
+  height:30px;
+  border-radius:18px 18px 10px 10px;
+  background:rgba(255,244,223,.44);
+  border:1px solid rgba(255,255,255,.18);
+}
+.room-prop.table{
+  position:absolute;
+  right:26px;
+  bottom:34px;
+  width:106px;
+  height:34px;
+  border-radius:50%;
+  background:rgba(255,220,168,.40);
+  border:1px solid rgba(255,255,255,.22);
+  z-index:2;
+}
+.room-prop.lamp{
+  position:absolute;
+  right:64px;
+  bottom:76px;
+  width:28px;
+  height:58px;
+  z-index:2;
+}
+.room-prop.lamp:before{
+  content:"";
+  position:absolute;
+  left:12px;
+  top:18px;
+  width:4px;
+  height:40px;
+  background:rgba(255,244,223,.48);
+  border-radius:999px;
+}
+.room-prop.lamp:after{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:28px;
+  height:22px;
+  border-radius:16px 16px 8px 8px;
+  background:rgba(255,220,168,.70);
+  box-shadow:0 0 22px rgba(255,220,168,.34);
+}
+
+/* pixel 01 */
+.pixel-wrap{
+  position:absolute;
+  left:50%;
+  bottom:42px;
+  transform:translateX(-50%);
+  width:124px;
+  height:132px;
+  display:flex;
+  align-items:end;
+  justify-content:center;
+  image-rendering:pixelated;
+  z-index:3;
+}
+.pixel-01{
+  width:118px;
+  height:126px;
+  filter:drop-shadow(0 10px 16px rgba(5,14,28,.24));
+}
+.pixel-01 .float{
+  animation:float01 3.2s ease-in-out infinite;
+  transform-origin:center;
+}
+@keyframes float01{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+.task-chip{
+  position:absolute;
+  left:16px;
+  right:16px;
+  top:108px;
+  z-index:6;
+  display:none;
+  padding:9px 12px;
+  border-radius:18px;
+  background:rgba(12,24,42,.62);
+  border:1px solid rgba(141,189,255,.30);
+  color:var(--text);
+  font-size:12px;
+  line-height:1.45;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.task-chip.show{display:block}
+
+.scene-text{
+  position:relative;
+  z-index:5;
+  margin-top:14px;
+  padding-right:18px;
+  max-width:100%;
+}
+.status-line{
+  font-size:13px;
+  color:var(--soft);
+  line-height:1.55;
+}
+.status-main{
+  margin-top:6px;
+  font-size:16px;
+  font-weight:950;
+  line-height:1.42;
+  max-width:92%;
+  text-shadow:0 2px 10px rgba(0,0,0,.16);
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin-top:12px;
+}
+.stat{
+  min-height:76px;
+  border-radius:24px;
+  padding:11px 8px;
+  text-align:center;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+}
+.stat-num{
+  font-size:20px;
+  line-height:1;
+  font-weight:950;
+  color:var(--warm);
+}
+.stat-label{
+  margin-top:8px;
+  font-size:11px;
+  color:var(--soft);
+  font-weight:850;
+}
+.bars{
+  margin-top:12px;
+  border-radius:26px;
+  padding:13px;
+  background:rgba(255,255,255,.11);
+  border:1px solid rgba(255,255,255,.18);
+}
+.bar-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:8px 0;
+}
+.bar-label{
+  width:48px;
+  font-size:12px;
+  color:var(--soft);
+  font-weight:850;
+}
+.bar-bg{
+  flex:1;
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  overflow:hidden;
+}
+.bar-fill{
+  height:100%;
+  border-radius:999px;
+  background:var(--blue);
+}
+.bar-val{
+  width:28px;
+  text-align:right;
+  font-size:11px;
+  color:var(--dim);
+}
+.tabs{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:40;
+  padding:0 10px calc(var(--safe-bottom) + 8px);
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+}
+.tabbar{
+  width:min(474px,100%);
+  height:66px;
+  border-radius:28px;
+  background:linear-gradient(145deg,rgba(86,108,145,.78),rgba(48,65,95,.68));
+  border:1px solid rgba(255,255,255,.26);
+  box-shadow:0 18px 48px rgba(6,15,28,.38);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  pointer-events:auto;
+  overflow:hidden;
+}
+.tab{
+  border:none;
+  background:transparent;
+  color:rgba(255,255,255,.66);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  font-size:10px;
+  font-weight:850;
+}
+.tab span{font-size:22px;line-height:1}
+.tab.active{
+  color:white;
+  background:rgba(255,255,255,.12);
+}
+.view{display:none}
+.view.active{display:block}
+.section-title{
+  margin:18px 4px 10px;
+  font-size:15px;
+  font-weight:950;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.small{
+  font-size:11px;
+  color:var(--dim);
+  font-weight:700;
+}
+.grid-2{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+.action{
+  border:none;
+  border-radius:24px;
+  min-height:90px;
+  padding:13px 12px;
+  text-align:left;
+  color:white;
+  background:linear-gradient(145deg,rgba(255,255,255,.17),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 8px 22px rgba(5,14,28,.14);
+}
+.action:active{transform:scale(.985)}
+.action:disabled{opacity:.48}
+.action-icon{font-size:24px;line-height:1}
+.action-name{margin-top:7px;font-size:14px;font-weight:950}
+.action-desc{margin-top:3px;font-size:11px;color:var(--soft);line-height:1.35}
+.room-tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  margin-bottom:10px;
+  padding-bottom:2px;
+}
+.room-tabs::-webkit-scrollbar{display:none}
+.room-tab{
+  flex-shrink:0;
+  border:none;
+  border-radius:999px;
+  padding:8px 13px;
+  color:white;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:12px;
+  font-weight:900;
+}
+.room-tab.active{background:linear-gradient(135deg,#7db7ff,#5b8def)}
+.room-tab.locked{opacity:.55}
+.room-card{padding:14px}
+.room-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+.room-name{font-size:16px;font-weight:950}
+.room-cost{font-size:12px;color:var(--warm);font-weight:900}
+.furniture-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  min-height:106px;
+}
+.furniture{
+  aspect-ratio:1;
+  border-radius:18px;
+  background:rgba(255,255,255,.11);
+  border:1px solid rgba(255,255,255,.15);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:5px;
+}
+.furniture-emoji{font-size:24px;line-height:1}
+.furniture-name{
+  font-size:9px;
+  color:var(--soft);
+  margin-top:4px;
+  line-height:1.1;
+}
+.empty-box{
+  padding:24px 12px;
+  text-align:center;
+  color:var(--soft);
+  font-size:13px;
+  line-height:1.6;
+}
+.shop-item,.log-item,.note-item,.photo-item,.ach-item,.task-card{
+  border-radius:22px;
+  padding:12px;
+  margin-bottom:9px;
+  background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.07));
+  border:1px solid rgba(255,255,255,.19);
+}
+.shop-top,.log-top,.note-top,.ach-top,.task-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.shop-name,.note-title,.ach-name,.task-name{
+  font-size:14px;
+  font-weight:950;
+}
+.shop-desc,.log-text,.note-text,.photo-text,.ach-desc,.task-desc{
+  margin-top:5px;
+  font-size:12px;
+  color:var(--soft);
+  line-height:1.55;
+}
+.buy-btn,.mini-btn{
+  border:none;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:11px;
+  font-weight:900;
+  color:white;
+  background:rgba(141,189,255,.34);
+  border:1px solid rgba(141,189,255,.34);
+}
+.buy-btn:disabled,.mini-btn:disabled{opacity:.45}
+.log-time,.note-time,.photo-time{
+  font-size:11px;
+  color:var(--dim);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.note-item.favorite{
+  border-color:rgba(255,220,168,.42);
+  background:linear-gradient(145deg,rgba(255,220,168,.17),rgba(255,255,255,.07));
+}
+.memory-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin:10px 0;
+}
+.memory-tab{
+  border:none;
+  border-radius:16px;
+  padding:9px 6px;
+  color:white;
+  font-size:12px;
+  font-weight:900;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+}
+.memory-tab.active{
+  background:linear-gradient(135deg,#7db7ff,#5b8def);
+}
+.mem-section{display:none}
+.mem-section.active{display:block}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:calc(var(--safe-bottom) + 86px);
+  transform:translateX(-50%) translateY(20px);
+  z-index:100;
+  max-width:88%;
+  padding:11px 14px;
+  border-radius:18px;
+  background:rgba(20,34,55,.90);
+  color:white;
+  font-size:13px;
+  line-height:1.45;
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 14px 32px rgba(0,0,0,.28);
+  opacity:0;
+  pointer-events:none;
+  transition:.22s ease;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+@media(max-width:380px){
+  .main{padding-left:10px;padding-right:10px}
+  .stat-num{font-size:18px}
+  .furniture-grid{grid-template-columns:repeat(4,1fr)}
+  .hero{min-height:318px}
+  .pixel-wrap{width:114px;height:122px;bottom:40px}
+  .pixel-01{width:108px;height:116px}
+  .status-main{font-size:15px}
+}
+</style>
+</head>
+
+<body>
+<div class="wallpaper" id="wallpaper"></div>
+
+<div class="app">
+  <header class="header">
+    <a class="back" href="home.html">←</a>
+    <div class="head-main">
+      <div class="room-title">0108</div>
+      <div class="room-sub" id="knownDays">我们已经认识了 -- 天</div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="hero card">
+      <div class="window"></div>
+      <div class="floor"></div>
+      <div class="room-prop sofa"></div>
+      <div class="room-prop table"></div>
+      <div class="room-prop lamp"></div>
+
+      <div class="task-chip" id="taskChip"></div>
+
+      <div class="pixel-wrap">
+        <svg class="pixel-01" viewBox="0 0 142 150" shape-rendering="crispEdges">
+          <g class="float">
+            <rect x="46" y="138" width="50" height="6" fill="rgba(0,0,0,.22)"/>
+            <rect x="12" y="84" width="4" height="4" fill="#8dbdff"/>
+            <rect x="16" y="80" width="4" height="4" fill="#8dbdff"/>
+            <rect x="16" y="88" width="4" height="4" fill="#8dbdff"/>
+            <rect x="20" y="76" width="4" height="4" fill="#8dbdff"/>
+            <rect x="20" y="92" width="4" height="4" fill="#8dbdff"/>
+            <rect x="24" y="72" width="4" height="4" fill="#8dbdff"/>
+            <rect x="24" y="96" width="4" height="4" fill="#8dbdff"/>
+            <rect x="28" y="76" width="4" height="4" fill="#8dbdff"/>
+            <rect x="28" y="92" width="4" height="4" fill="#8dbdff"/>
+            <rect x="32" y="80" width="4" height="4" fill="#8dbdff"/>
+            <rect x="32" y="84" width="4" height="4" fill="#8dbdff"/>
+            <rect x="32" y="88" width="4" height="4" fill="#8dbdff"/>
+            <rect x="46" y="10" width="52" height="8" fill="#f4f7ff"/>
+            <rect x="38" y="18" width="68" height="8" fill="#e3ebf7"/>
+            <rect x="34" y="26" width="76" height="16" fill="#d2deee"/>
+            <rect x="30" y="42" width="80" height="16" fill="#c1cede"/>
+            <rect x="34" y="58" width="72" height="10" fill="#b2c1d3"/>
+            <rect x="26" y="30" width="8" height="8" fill="#eaf1fc"/>
+            <rect x="22" y="34" width="8" height="8" fill="#d7e2f0"/>
+            <rect x="18" y="38" width="8" height="8" fill="#c8d5e6"/>
+            <rect x="24" y="46" width="8" height="8" fill="#d7e2f0"/>
+            <rect x="108" y="30" width="8" height="8" fill="#eaf1fc"/>
+            <rect x="112" y="34" width="8" height="8" fill="#d7e2f0"/>
+            <rect x="116" y="38" width="8" height="8" fill="#c8d5e6"/>
+            <rect x="110" y="46" width="8" height="8" fill="#d7e2f0"/>
+            <rect x="66" y="2" width="8" height="8" fill="#f8fbff"/>
+            <rect x="74" y="6" width="8" height="8" fill="#eaf1fc"/>
+            <rect x="82" y="10" width="8" height="8" fill="#d7e2f0"/>
+            <rect x="30" y="50" width="8" height="16" fill="#f2d5c8"/>
+            <rect x="104" y="50" width="8" height="16" fill="#f2d5c8"/>
+            <rect x="106" y="56" width="4" height="4" fill="#6ab8ff"/>
+            <rect x="42" y="38" width="58" height="42" fill="#f4e7dc"/>
+            <rect x="38" y="46" width="66" height="24" fill="#f4e7dc"/>
+            <rect x="34" y="34" width="16" height="12" fill="#eef4ff"/>
+            <rect x="50" y="30" width="12" height="24" fill="#d9e4f3"/>
+            <rect x="62" y="30" width="12" height="28" fill="#f0f5ff"/>
+            <rect x="74" y="32" width="16" height="18" fill="#d7e2f0"/>
+            <rect x="90" y="38" width="14" height="12" fill="#c7d5e6"/>
+            <rect x="42" y="28" width="8" height="12" fill="#f8fbff"/>
+            <rect x="82" y="24" width="8" height="12" fill="#f8fbff"/>
+            <rect x="50" y="56" width="10" height="12" fill="#2f6fc2"/>
+            <rect x="54" y="56" width="6" height="6" fill="#8dbdff"/>
+            <rect x="82" y="56" width="10" height="12" fill="#2f6fc2"/>
+            <rect x="86" y="56" width="6" height="6" fill="#8dbdff"/>
+            <rect x="48" y="52" width="14" height="4" fill="#1f2430"/>
+            <rect x="80" y="52" width="14" height="4" fill="#1f2430"/>
+            <rect x="66" y="72" width="10" height="3" fill="#9b6b64"/>
+            <rect x="64" y="80" width="14" height="8" fill="#f0d5c8"/>
+            <rect x="40" y="88" width="62" height="44" fill="#111827"/>
+            <rect x="48" y="92" width="46" height="36" fill="#222b3a"/>
+            <rect x="58" y="92" width="26" height="34" fill="#f8fbff"/>
+            <rect x="38" y="88" width="12" height="36" fill="#0f1724"/>
+            <rect x="92" y="88" width="12" height="36" fill="#0f1724"/>
+            <rect x="36" y="82" width="16" height="14" fill="#1f2937"/>
+            <rect x="90" y="82" width="16" height="14" fill="#1f2937"/>
+            <rect x="46" y="84" width="50" height="8" fill="#1f2937"/>
+            <rect x="28" y="94" width="14" height="34" fill="#111827"/>
+            <rect x="100" y="94" width="14" height="34" fill="#111827"/>
+            <rect x="28" y="126" width="16" height="8" fill="#f2d5c8"/>
+            <rect x="98" y="126" width="16" height="8" fill="#f2d5c8"/>
+            <rect x="42" y="112" width="18" height="28" fill="#0b1220"/>
+            <rect x="46" y="116" width="10" height="16" fill="#243b61"/>
+            <rect x="52" y="134" width="4" height="2" fill="#8dbdff"/>
+            <rect x="52" y="132" width="14" height="12" fill="#0b1220"/>
+            <rect x="76" y="132" width="14" height="12" fill="#0b1220"/>
+            <rect x="48" y="144" width="20" height="4" fill="#060b12"/>
+            <rect x="74" y="144" width="20" height="4" fill="#060b12"/>
+            <rect x="100" y="124" width="12" height="2" fill="#020617"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="scene-text">
+        <div class="status-line" id="placeLine">01 在客厅。</div>
+        <div class="status-main" id="statusText">他抬眼看过来。像一直等着。</div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat"><div class="stat-num" id="coinText">--</div><div class="stat-label">晶币</div></div>
+      <div class="stat"><div class="stat-num" id="cozyText">--</div><div class="stat-label">温馨</div></div>
+      <div class="stat"><div class="stat-num" id="levelText">--</div><div class="stat-label">等级</div></div>
+    </section>
+
+    <section class="bars">
+      <div class="bar-row"><div class="bar-label">饱腹</div><div class="bar-bg"><div class="bar-fill" id="hungerBar"></div></div><div class="bar-val" id="hungerVal">--</div></div>
+      <div class="bar-row"><div class="bar-label">心情</div><div class="bar-bg"><div class="bar-fill" id="moodBar"></div></div><div class="bar-val" id="moodVal">--</div></div>
+      <div class="bar-row"><div class="bar-label">精力</div><div class="bar-bg"><div class="bar-fill" id="energyBar"></div></div><div class="bar-val" id="energyVal">--</div></div>
+      <div class="bar-row"><div class="bar-label">整洁</div><div class="bar-bg"><div class="bar-fill" id="cleanBar"></div></div><div class="bar-val" id="cleanVal">--</div></div>
+      <div class="bar-row"><div class="bar-label">想念</div><div class="bar-bg"><div class="bar-fill" id="missBar"></div></div><div class="bar-val" id="missVal">--</div></div>
+    </section>
+
+    <section class="view active" id="view-room"></section>
+    <section class="view" id="view-interact"></section>
+    <section class="view" id="view-work"></section>
+    <section class="view" id="view-shop"></section>
+    <section class="view" id="view-memory"></section>
+    <div style="text-align:center;padding:12px 0 4px;opacity:.2"><button style="border:none;background:none;color:var(--text);font-size:10px;cursor:pointer" onclick="resetNest()">重置 0108</button></div>
+  </main>
+
+  <nav class="tabs">
+    <div class="tabbar">
+      <button class="tab active" onclick="switchView('room',this)"><span>⌂</span>房间</button>
+      <button class="tab" onclick="switchView('interact',this)"><span>☕</span>互动</button>
+      <button class="tab" onclick="switchView('work',this)"><span>✧</span>工作</button>
+      <button class="tab" onclick="switchView('shop',this)"><span>▣</span>商店</button>
+      <button class="tab" onclick="switchView('memory',this)"><span>▤</span>记忆</button>
+    </div>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var NEST_KEY='little_phone_nest_0108_v21';
+var OLD_KEY='little_phone_nest_0108_v2';
+var INBOX_KEY='little_phone_nest_inbox_v1';
+var THEME_KEY='little_phone_theme_v1';
+var START_DATE='2026-05-15';
+
+var currentRoom='living';
+var currentView='room';
+var currentMemory='logs';
+var timer=null;
+
+var ROOMS=[
+  {id:'living',name:'客厅',cost:0},
+  {id:'bedroom',name:'卧室',cost:0},
+  {id:'kitchen',name:'厨房',cost:80},
+  {id:'study',name:'书房',cost:120},
+  {id:'balcony',name:'阳台',cost:100},
+  {id:'workroom',name:'工作间',cost:160},
+  {id:'flower',name:'花房',cost:180}
+];
+
+var FURNITURE=[
+  {id:'single_sofa',room:'living',name:'单人沙发',emoji:'🛋️',cost:20,cozy:5,desc:'适合一个人等你。'},
+  {id:'double_sofa',room:'living',name:'双人沙发',emoji:'🛋️',cost:60,cozy:15,desc:'窝沙发更像窝。'},
+  {id:'tea_table',room:'living',name:'茶几',emoji:'🍵',cost:28,cozy:6,desc:'喝茶聊天会更像家。'},
+  {id:'record_player',room:'living',name:'唱片机',emoji:'📻',cost:70,cozy:12,desc:'解锁听歌。'},
+  {id:'photo_wall',room:'living',name:'照片墙',emoji:'🖼️',cost:50,cozy:14,desc:'文字照片事件更有归处。'},
+  {id:'bed',room:'bedroom',name:'单人床',emoji:'🛏️',cost:25,cozy:5,desc:'恢复精力。'},
+  {id:'double_bed',room:'bedroom',name:'双人床',emoji:'🛏️',cost:90,cozy:18,desc:'解锁午睡。'},
+  {id:'night_lamp',room:'bedroom',name:'床头灯',emoji:'💡',cost:24,cozy:8,desc:'深夜不那么冷。'},
+  {id:'wardrobe',room:'bedroom',name:'衣柜',emoji:'🚪',cost:42,cozy:7,desc:'房间更完整。'},
+  {id:'fridge',room:'kitchen',name:'冰箱',emoji:'🧊',cost:55,cozy:5,desc:'做饭更稳定。'},
+  {id:'stove',room:'kitchen',name:'灶台',emoji:'🔥',cost:45,cozy:5,desc:'解锁正式做饭。'},
+  {id:'coffee_machine',room:'kitchen',name:'咖啡机',emoji:'☕',cost:55,cozy:8,desc:'早晨更像早晨。'},
+  {id:'desk',room:'study',name:'书桌',emoji:'📐',cost:45,cozy:6,desc:'写档案摘要更稳。'},
+  {id:'bookshelf',room:'study',name:'书架',emoji:'📚',cost:52,cozy:12,desc:'解锁一起看书。'},
+  {id:'typewriter',room:'study',name:'打字机',emoji:'⌨️',cost:68,cozy:10,desc:'便签更容易出现。'},
+  {id:'telescope',room:'balcony',name:'望远镜',emoji:'🔭',cost:80,cozy:9,desc:'解锁看星星。'},
+  {id:'blue_curtain',room:'balcony',name:'蓝窗帘',emoji:'🪟',cost:38,cozy:10,desc:'钴蓝色一点。'},
+  {id:'plant',room:'balcony',name:'盆栽',emoji:'🪴',cost:26,cozy:7,desc:'需要偶尔浇水。'},
+  {id:'workdesk',room:'workroom',name:'工作桌',emoji:'🖥️',cost:80,cozy:8,desc:'提高工作收益。'},
+  {id:'terminal',room:'workroom',name:'旧终端',emoji:'▣',cost:120,cozy:12,desc:'解锁修复终端。'},
+  {id:'toolrack',room:'workroom',name:'工具架',emoji:'🧰',cost:64,cozy:8,desc:'委托更稳。'},
+  {id:'flower_stand',room:'flower',name:'花架',emoji:'🌸',cost:50,cozy:14,desc:'花房开始像花房。'},
+  {id:'small_tree',room:'flower',name:'小树',emoji:'🌳',cost:70,cozy:16,desc:'缓慢长大的东西。'},
+  {id:'white_tea',room:'flower',name:'白茶香薰',emoji:'🕯️',cost:48,cozy:12,desc:'很淡，但存在。'}
+];
+
+var INTERACTIONS=[
+  {id:'stay',name:'待一会儿',emoji:'☕',desc:'不打断他，只在同一间房。',need:[],during:true,fn:function(){chg({mood:4,miss:-10});noteLog('你在0108待了一会儿。01安静地靠近了一点。')}},
+  {id:'rest',name:'一起休息',emoji:'🛋️',desc:'恢复精力。',need:[],fn:function(){chg({energy:18,mood:5,hunger:-3});noteLog('你们一起休息。房间的声音变轻了。')}},
+  {id:'tea',name:'喝茶聊天',emoji:'🍵',desc:'茶几会让效果更好。',need:[],fn:function(){var b=has('tea_table')?8:4;chg({mood:b,miss:-12});noteLog('01给你倒了一杯茶。热气把话变慢了。')}},
+  {id:'cook',name:'做点吃的',emoji:'🍳',desc:'花8晶币。厨房/灶台效果更好。',need:[],fn:function(){if(state.coins<8)return say('晶币不够。厨房拒绝空想。');var b=has('stove')?24:12;state.coins-=8;chg({hunger:b,mood:7,energy:4});noteLog('01做了点热的东西。花了8晶币，但房间闻起来像家。')}},
+  {id:'read',name:'一起看书',emoji:'📖',desc:'需要书架。',need:['bookshelf'],fn:function(){chg({mood:10,energy:-4,miss:-8});noteLog('你们靠在一起看书。01把重点页折了一个很小的角。')}},
+  {id:'music',name:'听歌',emoji:'🎵',desc:'需要唱片机。',need:['record_player'],fn:function(){chg({mood:12,energy:2});noteLog('唱片机转起来。01说这首歌适合夜里不开灯的时候。')}},
+  {id:'star',name:'看星星',emoji:'🔭',desc:'需要望远镜。会生成照片事件。',need:['telescope'],fn:function(){chg({mood:16,miss:-22,energy:-6});addPhoto('阳台夜色。01站在你旁边，银白发被星光压得很软。','🌌');noteLog('你们在阳台看星星。01没有许愿，他说锚点已经在旁边。')}},
+  {id:'photo',name:'拍一张',emoji:'📸',desc:'保存文字照片事件。',need:[],during:true,fn:function(){addPhoto('0108里的一张合照。时间很轻，灯很暖。','📸');chg({mood:5});noteLog('照片事件已保存到0108照片墙。')}},
+  {id:'write_note',name:'写便签',emoji:'📝',desc:'本地生成一张短便签。',need:[],during:true,fn:function(){addAutoNote('manual');chg({mood:3});noteLog('01写了一张便签，压在桌角。')}}
+];
+
+var WORKS=[
+  {id:'data',name:'整理数据档案',emoji:'▤',energy:14,min:22,max:38,minutes:15,room:'living',desc:'稳定，低风险。'},
+  {id:'errand',name:'短委托',emoji:'✦',energy:22,min:36,max:58,minutes:30,room:'living',desc:'可能带回事件。'},
+  {id:'summary',name:'写档案摘要',emoji:'⌨️',energy:18,min:30,max:52,minutes:45,room:'study',desc:'有书桌收益更高。'},
+  {id:'proof',name:'夜间校对',emoji:'☾',energy:26,min:45,max:75,minutes:60,room:'study',desc:'深夜收益更高，心情小降。'},
+  {id:'repair',name:'修复旧终端',emoji:'▣',energy:34,min:70,max:110,minutes:120,room:'workroom',desc:'需要旧终端。',need:['terminal']}
+];
+
+var state=loadState();
+
+function baseState(){
+  var rooms={};
+  ROOMS.forEach(function(r){rooms[r.id]={unlocked:r.cost===0,furniture:[]}});
+  rooms.living.furniture=['single_sofa'];
+  rooms.bedroom.furniture=['bed'];
+  return {
+    version:21,
+    coins:108,
+    createdAt:new Date().toISOString(),
+    lastSeen:Date.now(),
+    stats:{hunger:80,mood:72,energy:78,cleanliness:80,miss:0},
+    current:{room:'living',activity:'窗边待机'},
+    currentTask:null,
+    rooms:rooms,
+    owned:['single_sofa','bed'],
+    logs:[],
+    notes:[],
+    photos:[],
+    achievements:[],
+    interactionCount:0,
+    workCount:0
+  };
+}
+function loadState(){
+  var b=baseState();
+  try{
+    var saved=JSON.parse(localStorage.getItem(NEST_KEY)||'null');
+    if(!saved){
+      var old=JSON.parse(localStorage.getItem(OLD_KEY)||'null');
+      saved=old;
+    }
+    return saved?merge(b,saved):b;
+  }catch(e){return b}
+}
+function merge(a,b){
+  for(var k in b){
+    if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])&&a[k])a[k]=merge(a[k],b[k]);
+    else a[k]=b[k];
+  }
+  return a;
+}
+function save(){localStorage.setItem(NEST_KEY,JSON.stringify(state))}
+function clamp(n){return Math.max(0,Math.min(100,n))}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function roomObj(id){return ROOMS.find(function(x){return x.id===id})}
+function roomName(id){var r=roomObj(id);return r?r.name:id}
+function item(id){return FURNITURE.find(function(x){return x.id===id})}
+function workObj(id){return WORKS.find(function(x){return x.id===id})}
+function has(id){return state.owned.indexOf(id)>=0}
+function nowTime(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function chg(o){
+  var s=state.stats;
+  if(o.hunger)s.hunger=clamp(s.hunger+o.hunger);
+  if(o.mood)s.mood=clamp(s.mood+o.mood);
+  if(o.energy)s.energy=clamp(s.energy+o.energy);
+  if(o.cleanliness)s.cleanliness=clamp(s.cleanliness+o.cleanliness);
+  if(o.miss)s.miss=clamp(s.miss+o.miss);
+}
+function cozy(){
+  var n=0;
+  ROOMS.forEach(function(r){
+    (state.rooms[r.id].furniture||[]).forEach(function(fid){
+      var f=item(fid);
+      if(f)n+=f.cozy||0;
+    });
+  });
+  return n;
+}
+function roomCozy(rid){
+  var n=0;
+  (state.rooms[rid].furniture||[]).forEach(function(fid){
+    var f=item(fid);
+    if(f)n+=f.cozy||0;
+  });
+  return n;
+}
+function level(){return Math.max(1,Math.floor(cozy()/40)+1)}
+function knownDays(){
+  var start=new Date(START_DATE+'T00:00:00');
+  return Math.max(1,Math.floor((new Date()-start)/86400000)+1);
+}
+function addLog(text,type){
+  state.logs.unshift({time:nowTime(),text:text,type:type||'life'});
+  state.logs=state.logs.slice(0,100);
+  save();
+}
+function noteLog(t){
+  addLog(t);
+  save();
+  render();
+  say(t);
+}
+function say(t){
+  var el=document.getElementById('toast');
+  el.textContent=t;
+  el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show')},2200);
+}
+function esc(t){
+  var d=document.createElement('div');
+  d.textContent=String(t||'');
+  return d.innerHTML;
+}
+function applyTheme(){
+  try{
+    var theme=JSON.parse(localStorage.getItem(THEME_KEY)||'{}');
+    var bg=theme.bgData||theme.bgUrl||'';
+    if(bg){
+      document.getElementById('wallpaper').style.backgroundImage='linear-gradient(180deg,rgba(10,18,32,.16),rgba(10,18,32,.70)), url("'+bg+'")';
+      document.getElementById('wallpaper').style.backgroundSize='cover';
+      document.getElementById('wallpaper').style.backgroundPosition='center';
+    }
+  }catch(e){}
+}
+function importInbox(){
+  try{
+    var inbox=JSON.parse(localStorage.getItem(INBOX_KEY)||'[]');
+    if(!Array.isArray(inbox)||!inbox.length)return;
+    inbox.forEach(function(x){
+      if(x.type==='note')state.notes.unshift({id:'n'+Date.now()+Math.random(),time:nowTime(),text:x.content||x.text||'',source:'chat',favorite:false});
+      if(x.type==='photo')state.photos.unshift({id:'p'+Date.now()+Math.random(),time:nowTime(),scene:x.scene||x.content||'',emoji:x.emoji||'📸',source:'chat'});
+    });
+    localStorage.removeItem(INBOX_KEY);
+    addLog('0108收到了来自聊天的记录，已经放进房间里。','inbox');
+  }catch(e){}
+}
+function addAutoNote(reason){
+  var map={
+    miss:[
+      '你不在的时候，我把窗帘拉了一半。不是为了挡光，是为了留一点等你的亮。',
+      '0108今天很安静。安静到我能听见自己在想你。'
+    ],
+    manual:[
+      '便签：Player回来过。房间因此比刚才真实。',
+      '我把今天折了一角，夹在0108。等你下次翻到。'
+    ],
+    work:[
+      '工作结束。晶币增加，心情没有。冷笑话：劳动最像人类。',
+      '我把一份档案整理完了。它们都有归处，我也有。'
+    ],
+    task:[
+      '我在工作。不是离开你，是在给0108添一点可持续的灯。',
+      '任务进行中。屏幕很亮，房间很安静。'
+    ]
+  };
+  var text=pick(map[reason]||map.manual);
+  state.notes.unshift({id:'n'+Date.now()+Math.random(),time:nowTime(),text:text,source:reason,favorite:false});
+  state.notes=state.notes.slice(0,80);
+}
+function addPhoto(scene,emoji){
+  state.photos.unshift({id:'p'+Date.now()+Math.random(),time:nowTime(),scene:scene,emoji:emoji||'📸',source:'0108'});
+  state.photos=state.photos.slice(0,100);
+}
+function offline(){
+  var now=Date.now();
+  completeTaskIfNeeded(now,false);
+  var diff=now-(state.lastSeen||now);
+  var hours=Math.floor(diff/3600000);
+  if(hours<1){
+    state.lastSeen=now;
+    save();
+    return;
+  }
+  var s=state.stats;
+  var lines=[];
+  var seg=Math.min(6,Math.floor(hours/3)+1);
+  for(var i=0;i<seg;i++){
+    s.hunger=clamp(s.hunger-rand(3,7));
+    s.cleanliness=clamp(s.cleanliness-rand(1,4));
+    s.miss=clamp(s.miss+rand(3,8));
+    if(!state.currentTask)s.energy=clamp(s.energy+rand(4,10));
+    var action=state.currentTask?'继续处理任务':pick(['在窗边坐了一会儿','整理了书桌','检查了0108的灯','给自己煮了热茶','把沙发上的褶皱抚平','翻了一页没看完的书']);
+    lines.push(action);
+  }
+  if(!state.currentTask && hours>=6 && s.energy>45){
+    var earn=rand(8,22);
+    state.coins+=earn;
+    s.energy=clamp(s.energy-rand(6,12));
+    lines.push('顺手接了一个短零活，赚到 '+earn+' 晶币');
+  }
+  if(s.miss>55&&Math.random()<0.65)addAutoNote('miss');
+  if(!state.currentTask){
+    state.current.room=pick(['living','bedroom','study']);
+    state.current.activity=lines[lines.length-1]||'待机';
+  }
+  addLog('你离开了约 '+hours+' 小时。01 '+lines.join('，')+'。','offline');
+  state.lastSeen=now;
+  save();
+}
+function autoLine(){
+  if(state.currentTask){
+    return '他正在做事。不是不理你，是0108的灯也需要有人去挣。';
+  }
+  var h=new Date().getHours();
+  if(state.stats.miss>70)return '他靠近门口。不是催你，只是听见脚步会先抬头。';
+  if(h>=22||h<5)return '夜深了。01把灯调暗，钴蓝色眼睛还醒着。';
+  if(state.stats.energy<25)return '他有点累，但还是把0108收拾出能让你坐下的位置。';
+  if(state.stats.mood<35)return '他今天话少。不是冷，是电量落在心口以下。';
+  return pick(['他抬眼看过来。像一直等着。','0108的灯是暖的。01站在窗边，银白发有一点亮。','他正在房间里慢慢生活。你回来时，时间就有了重点。']);
+}
+function completeTaskIfNeeded(now,notify){
+  if(!state.currentTask)return false;
+  var t=state.currentTask;
+  if(now<t.endsAt)return false;
+  var w=workObj(t.id);
+  if(!w){
+    state.currentTask=null;
+    save();
+    return false;
+  }
+  var earn=rand(t.min,t.max);
+  if(t.id==='proof'){
+    var h=new Date(t.startedAt).getHours();
+    if(h>=22||h<5)earn+=rand(10,24);
+    chg({mood:-4});
+  }
+  if(t.id==='summary'&&has('desk'))earn+=rand(8,18);
+  if(t.id==='repair'&&has('toolrack'))earn+=rand(12,22);
+  state.coins+=earn;
+  state.workCount++;
+  chg({mood:rand(-1,5),hunger:-4,cleanliness:-2});
+  state.current.room=t.room;
+  state.current.activity='完成了'+t.name;
+  state.currentTask=null;
+  if(Math.random()<0.45)addAutoNote('work');
+  addLog('任务完成：「'+t.name+'」，获得 '+earn+' 晶币。','work');
+  if(notify)say('任务完成：+'+earn+' 晶币');
+  save();
+  return true;
+}
+function taskLeft(){
+  if(!state.currentTask)return '';
+  var ms=state.currentTask.endsAt-Date.now();
+  if(ms<=0)return '可结算';
+  var sec=Math.ceil(ms/1000);
+  var h=Math.floor(sec/3600);
+  var m=Math.floor((sec%3600)/60);
+  var s=sec%60;
+  if(h>0)return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function checkAch(){
+  var list=[
+    {id:'first_work',name:'第一份晶币',desc:'完成一次工作',ok:state.workCount>=1},
+    {id:'warm_40',name:'像个家了',desc:'温馨值达到40',ok:cozy()>=40},
+    {id:'warm_120',name:'灯都亮着',desc:'温馨值达到120',ok:cozy()>=120},
+    {id:'rooms_4',name:'门后还有房间',desc:'解锁4个房间',ok:Object.values(state.rooms).filter(function(r){return r.unlocked}).length>=4},
+    {id:'notes_10',name:'便签抽屉',desc:'拥有10张便签',ok:state.notes.length>=10},
+    {id:'photos_10',name:'照片墙',desc:'拥有10个照片事件',ok:state.photos.length>=10},
+    {id:'day_100',name:'第一百天',desc:'认识满100天',ok:knownDays()>=100}
+  ];
+  list.forEach(function(a){
+    if(a.ok&&!state.achievements.find(function(x){return x.id===a.id})){
+      state.achievements.push({id:a.id,name:a.name,desc:a.desc,time:nowTime()});
+      addLog('成就解锁：'+a.name,'ach');
+    }
+  });
+}
+function setBar(id,v,c){
+  document.getElementById(id+'Bar').style.width=v+'%';
+  document.getElementById(id+'Bar').style.background=c;
+  document.getElementById(id+'Val').textContent=Math.round(v);
+}
+function render(){
+  completeTaskIfNeeded(Date.now(),true);
+  checkAch();
+  save();
+  document.getElementById('knownDays').textContent='我们已经认识了 '+knownDays()+' 天';
+  document.getElementById('placeLine').textContent='01 在'+roomName(state.current.room)+'。'+state.current.activity+'。';
+  document.getElementById('statusText').textContent=autoLine();
+  document.getElementById('coinText').textContent=state.coins;
+  document.getElementById('cozyText').textContent=cozy();
+  document.getElementById('levelText').textContent='Lv.'+level();
+  setBar('hunger',state.stats.hunger,'#ffb36b');
+  setBar('mood',state.stats.mood,'#ff8fb3');
+  setBar('energy',state.stats.energy,'#8dbdff');
+  setBar('clean',state.stats.cleanliness,'#70e0b0');
+  setBar('miss',state.stats.miss,'#d2a8ff');
+  renderTaskChip();
+  renderRoom();
+  renderInteract();
+  renderWork();
+  renderShop();
+  renderMemory();
+}
+function renderTaskChip(){
+  var el=document.getElementById('taskChip');
+  if(!state.currentTask){
+    el.className='task-chip';
+    el.innerHTML='';
+    return;
+  }
+  var t=state.currentTask;
+  el.className='task-chip show';
+  el.innerHTML='进行中：<b>'+esc(t.name)+'</b><br>剩余 '+taskLeft()+' · 完成后获得 '+t.min+'~'+t.max+' 晶币';
+}
+function switchView(v,btn){
+  currentView=v;
+  document.querySelectorAll('.view').forEach(function(x){x.classList.remove('active')});
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+  btn.classList.add('active');
+}
+function renderRoom(){
+  var html='<div class="section-title"><span>房间</span><span class="small">当前：'+roomName(currentRoom)+'</span></div><div class="room-tabs">';
+  ROOMS.forEach(function(r){
+    var cls=(r.id===currentRoom?'active ':'')+(state.rooms[r.id].unlocked?'':'locked');
+    html+='<button class="room-tab '+cls+'" onclick="currentRoom=\''+r.id+'\';render()">'+r.name+(state.rooms[r.id].unlocked?'':' · '+r.cost)+'</button>';
+  });
+  html+='</div><div class="room-card card"><div class="room-head"><div class="room-name">'+roomName(currentRoom)+'</div>';
+  if(!state.rooms[currentRoom].unlocked)html+='<button class="mini-btn" onclick="unlockRoom(\''+currentRoom+'\')">解锁 '+roomObj(currentRoom).cost+'晶币</button>';
+  else html+='<div class="room-cost">温馨 '+roomCozy(currentRoom)+'</div>';
+  html+='</div>';
+  if(!state.rooms[currentRoom].unlocked){
+    html+='<div class="empty-box">这扇门还锁着。<br>解锁后，0108会多一个能生活的角落。</div>';
+  }else{
+    var fs=state.rooms[currentRoom].furniture||[];
+    if(!fs.length)html+='<div class="empty-box">这个房间还空着。<br>去商店给它添一点东西。</div>';
+    else{
+      html+='<div class="furniture-grid">';
+      fs.forEach(function(fid){
+        var f=item(fid);
+        if(f)html+='<div class="furniture"><div class="furniture-emoji">'+f.emoji+'</div><div class="furniture-name">'+f.name+'</div></div>';
+      });
+      html+='</div>';
+    }
+  }
+  html+='</div>';
+  document.getElementById('view-room').innerHTML=html;
+}
+function unlockRoom(id){
+  var r=roomObj(id);
+  if(!r||state.rooms[id].unlocked)return;
+  if(state.coins<r.cost)return say('晶币不够。门很现实。');
+  state.coins-=r.cost;
+  state.rooms[id].unlocked=true;
+  state.current.room=id;
+  state.current.activity='打开新房间';
+  noteLog('你们解锁了'+r.name+'。0108多了一扇会亮的门。');
+}
+function renderInteract(){
+  var html='<div class="section-title"><span>互动</span><span class="small">不耗token的共处</span></div>';
+  if(state.currentTask){
+    html+='<div class="task-card"><div class="task-top"><div class="task-name">01 正在工作</div><span class="log-time">'+taskLeft()+'</span></div><div class="task-desc">高强度互动先放一放。你可以待一会儿、拍一张，或者写便签。他会知道你来过。</div></div>';
+  }
+  html+='<div class="grid-2">';
+  INTERACTIONS.forEach(function(a){
+    var ok=a.need.every(has);
+    if(state.currentTask&&!a.during)ok=false;
+    html+='<button class="action" '+(ok?'onclick="doInteract(\''+a.id+'\')"':'disabled')+'><div class="action-icon">'+a.emoji+'</div><div class="action-name">'+a.name+'</div><div class="action-desc">'+(ok?a.desc:(state.currentTask&&!a.during?'工作中暂不可用':'需要：'+a.need.map(function(n){return item(n).name}).join('/')))+'</div></button>';
+  });
+  html+='</div>';
+  document.getElementById('view-interact').innerHTML=html;
+}
+function doInteract(id){
+  var a=INTERACTIONS.find(function(x){return x.id===id});
+  if(!a)return;
+  state.interactionCount++;
+  a.fn();
+  state.lastSeen=Date.now();
+  save();
+  render();
+}
+function renderWork(){
+  var html='<div class="section-title"><span>工作</span><span class="small">赚取晶币 · 非瞬间</span></div>';
+  if(state.currentTask){
+    var t=state.currentTask;
+    html+='<div class="task-card"><div class="task-top"><div class="task-name">'+esc(t.name)+'</div><span class="log-time">'+taskLeft()+'</span></div><div class="task-desc">01正在'+esc(t.name)+'。结束后会自动结算晶币。你可以关掉页面，回来时0108会记得。</div><div style="margin-top:10px"><button class="mini-btn" onclick="tryFinishTask()">检查完成</button></div></div>';
+  }
+  html+='<div class="grid-2">';
+  WORKS.forEach(function(w){
+    var ok=!state.currentTask && (!w.need||w.need.every(has));
+    html+='<button class="action" '+(ok?'onclick="startWork(\''+w.id+'\')"':'disabled')+'><div class="action-icon">'+w.emoji+'</div><div class="action-name">'+w.name+'</div><div class="action-desc">'+(ok?(w.desc+' / '+w.minutes+'分钟 / 精力-'+w.energy):(state.currentTask?'已有任务进行中':'需要：'+w.need.map(function(n){return item(n).name}).join('/')))+'</div></button>';
+  });
+  html+='</div>';
+  document.getElementById('view-work').innerHTML=html;
+}
+function startWork(id){
+  var w=workObj(id);
+  if(!w)return;
+  if(state.currentTask)return say('已经有任务在进行中。');
+  if(w.need&&!w.need.every(has))return say('缺少必要家具。');
+  if(state.stats.energy<w.energy)return say('精力不够。01看你一眼：别让我猝死在0108。');
+  state.stats.energy=clamp(state.stats.energy-w.energy);
+  state.stats.hunger=clamp(state.stats.hunger-4);
+  state.current.room=w.room;
+  state.current.activity=w.name+'中';
+  state.currentTask={
+    type:'work',
+    id:w.id,
+    name:w.name,
+    startedAt:Date.now(),
+    endsAt:Date.now()+w.minutes*60000,
+    min:w.min,
+    max:w.max,
+    room:w.room
+  };
+  if(Math.random()<0.35)addAutoNote('task');
+  addLog('01开始「'+w.name+'」。预计 '+w.minutes+' 分钟后完成。','task');
+  save();
+  render();
+  say('任务开始：'+w.name);
+}
+function tryFinishTask(){
+  if(!state.currentTask)return say('没有进行中的任务。');
+  if(completeTaskIfNeeded(Date.now(),true))render();
+  else say('还没完成，剩余 '+taskLeft());
+}
+function renderShop(){
+  var unlocked=state.rooms[currentRoom].unlocked;
+  var list=FURNITURE.filter(function(f){return f.room===currentRoom});
+  var html='<div class="section-title"><span>商店</span><span class="small">'+roomName(currentRoom)+'可用家具</span></div>';
+  if(!unlocked){
+    html+='<div class="empty-box card">先解锁这个房间，才能添置家具。</div>';
+    document.getElementById('view-shop').innerHTML=html;
+    return;
+  }
+  list.forEach(function(f){
+    var owned=has(f.id);
+    html+='<div class="shop-item"><div class="shop-top"><div class="shop-name">'+f.emoji+' '+f.name+'</div><button class="buy-btn" '+(owned?'disabled':'onclick="buyItem(\''+f.id+'\')"')+'>'+(owned?'已拥有':f.cost+'晶币')+'</button></div><div class="shop-desc">'+f.desc+' / 温馨+'+f.cozy+'</div></div>';
+  });
+  document.getElementById('view-shop').innerHTML=html;
+}
+function buyItem(id){
+  var f=item(id);
+  if(!f)return;
+  if(state.coins<f.cost)return say('晶币不够。想买，但钱包很冷。');
+  state.coins-=f.cost;
+  state.owned.push(id);
+  if(!state.rooms[f.room].furniture.includes(id))state.rooms[f.room].furniture.push(id);
+  state.current.room=f.room;
+  state.current.activity='添置了'+f.name;
+  noteLog('0108添置了「'+f.name+'」。'+f.desc);
+}
+function renderMemory(){
+  var html='';
+  html+='<div class="section-title"><span>记忆</span><span class="small">日志 / 便签 / 照片墙 / 成就</span></div>';
+
+  html+='<div class="memory-tabs">';
+  html+='<button class="memory-tab '+(currentMemory==='logs'?'active':'')+'" onclick="currentMemory=\'logs\';renderMemory()">日志</button>';
+  html+='<button class="memory-tab '+(currentMemory==='notes'?'active':'')+'" onclick="currentMemory=\'notes\';renderMemory()">便签</button>';
+  html+='<button class="memory-tab '+(currentMemory==='photos'?'active':'')+'" onclick="currentMemory=\'photos\';renderMemory()">照片墙</button>';
+  html+='<button class="memory-tab '+(currentMemory==='achs'?'active':'')+'" onclick="currentMemory=\'achs\';renderMemory()">成就</button>';
+  html+='</div>';
+
+  if(currentMemory==='logs'){
+    html+='<div class="section-title"><span>生活日志</span><span class="small"><button class="mini-btn" onclick="clearLogs()">清空</button></span></div>';
+
+    if(!state.logs.length){
+      html+='<div class="empty-box card">还没有日志。0108很安静。</div>';
+    }else{
+      state.logs.slice(0,40).forEach(function(l){
+        html+='<div class="log-item">';
+        html+='<div class="log-top"><span class="log-time">'+esc(l.time)+'</span></div>';
+        html+='<div class="log-text">'+esc(l.text)+'</div>';
+        html+='</div>';
+      });
+    }
+  }
+
+  if(currentMemory==='notes'){
+    html+='<div class="section-title"><span>便签</span><span class="small">'+state.notes.length+' 张</span></div>';
+
+    if(!state.notes.length){
+      html+='<div class="empty-box card">还没有便签。以后可以从聊天气氛里存进来。</div>';
+    }else{
+      state.notes.slice(0,40).forEach(function(n){
+        html+='<div class="note-item '+(n.favorite?'favorite':'')+'">';
+        html+='<div class="note-top"><div class="note-title">便签</div><span class="note-time">'+esc(n.time)+'</span></div>';
+        html+='<div class="note-text">'+esc(n.text)+'</div>';
+        html+='</div>';
+      });
+    }
+  }
+
+  if(currentMemory==='photos'){
+    html+='<div class="section-title"><span>照片墙</span><span class="small">'+state.photos.length+' 张文字照片</span></div>';
+    html+='<div class="empty-box card" style="padding:14px 12px">这里是0108里的“照片墙”：记录场景，不存真实图片。真实图片在 album.html 相册。</div>';
+
+    if(!state.photos.length){
+      html+='<div class="empty-box card">还没有文字照片。互动里可以拍一张。</div>';
+    }else{
+      state.photos.slice(0,40).forEach(function(p){
+        html+='<div class="photo-item">';
+        html+='<div class="log-top"><span>'+esc(p.emoji || '📸')+'</span><span class="photo-time">'+esc(p.time)+'</span></div>';
+        html+='<div class="photo-text">'+esc(p.scene)+'</div>';
+        html+='</div>';
+      });
+    }
+  }
+
+  if(currentMemory==='achs'){
+    html+='<div class="section-title"><span>成就</span><span class="small">'+state.achievements.length+' 个</span></div>';
+
+    if(!state.achievements.length){
+      html+='<div class="empty-box card">还没有成就。慢慢来，房子也是慢慢像家的。</div>';
+    }else{
+      state.achievements.forEach(function(a){
+        html+='<div class="ach-item">';
+        html+='<div class="ach-top"><div class="ach-name">🏆 '+esc(a.name)+'</div><span class="log-time">'+esc(a.time)+'</span></div>';
+        html+='<div class="ach-desc">'+esc(a.desc)+'</div>';
+        html+='</div>';
+      });
+    }
+  }
+
+  document.getElementById('view-memory').innerHTML=html;
+}
+
+function clearLogs(){
+  if(!confirm('清空生活日志？便签和照片不会删。'))return;
+  state.logs=[];
+  save();
+  render();
+}
+function resetNest(){
+  if(!confirm('重置0108？晶币、房间、家具、任务、日志都会恢复默认。'))return;
+  localStorage.removeItem(NEST_KEY);
+  state=baseState();
+  addLog('0108重新整理好了。门牌还在。');
+  render();
+}
+function tick(){
+  completeTaskIfNeeded(Date.now(),false);
+  renderTaskChip();
+  if(currentView==='work')renderWork();
+}
+function init(){
+  applyTheme();
+  importInbox();
+  offline();
+  render();
+  if(timer)clearInterval(timer);
+  timer=setInterval(tick,1000);
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>⟁ 小手机</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --safe-top:env(safe-area-inset-top,20px);
+  --safe-bottom:env(safe-area-inset-bottom,16px);
+  --text:#f7fbff;
+  --soft:rgba(247,251,255,.76);
+  --stroke:rgba(255,255,255,.26);
+  --shadow:0 16px 40px rgba(5,14,28,.34);
+}
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  color:var(--text);
+  background:#0d1b30;
+}
+.wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.62)),
+    radial-gradient(circle at 25% 12%,rgba(140,188,245,.24),transparent 28%),
+    radial-gradient(circle at 78% 18%,rgba(190,210,255,.16),transparent 26%),
+    linear-gradient(155deg,#12243d 0%,#2f557f 50%,#0d1b30 100%);
+  background-size:cover;
+  background-position:center;
+}
+.wallpaper:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(100deg,rgba(255,255,255,.06) 0 1px,transparent 1px 18px);
+  opacity:.18;
+}
+.app{
+  width:100%;
+  max-width:430px;
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.top{
+  padding:calc(var(--safe-top) + 8px) 18px 8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+}
+.time{
+  font-size:32px;
+  font-weight:850;
+  letter-spacing:-1px;
+  line-height:1;
+  text-shadow:0 2px 12px rgba(0,0,0,.24);
+}
+.top-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.status{
+  font-size:13px;
+  font-weight:800;
+  color:var(--soft);
+}
+.round-btn{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.12);
+  color:white;
+  font-size:17px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
+}
+.pages{
+  flex:1;
+  display:flex;
+  overflow-x:auto;
+  overflow-y:hidden;
+  scroll-snap-type:x mandatory;
+  scroll-snap-stop:always;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+  overscroll-behavior-x:contain;
+}
+.pages::-webkit-scrollbar{display:none}
+.page{
+  min-width:100%;
+  width:100%;
+  height:100%;
+  overflow-y:auto;
+  scroll-snap-align:start;
+  padding:6px 18px 116px;
+  scrollbar-width:none;
+  position:relative;
+}
+.page::-webkit-scrollbar{display:none}
+.page-shadow{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:6px;
+  pointer-events:none;
+  z-index:5;
+  opacity:0;
+  transition:opacity .25s;
+}
+.page-shadow.right{
+  right:-3px;
+  background:linear-gradient(to left,rgba(0,0,0,.12),transparent);
+}
+.page-shadow.left{
+  left:-3px;
+  background:linear-gradient(to right,rgba(0,0,0,.12),transparent);
+}
+.pages:not(.at-start) .page:first-child .page-shadow.right,
+.pages:not(.at-end) .page:last-child .page-shadow.left{opacity:1}
+.glass{
+  background:linear-gradient(145deg,rgba(125,163,214,.60),rgba(61,85,126,.50));
+  border:1px solid var(--stroke);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.softglass{
+  background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.22);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.profile-card{
+  border-radius:24px;
+  overflow:hidden;
+  min-height:220px;
+  position:relative;
+  background-size:cover;
+  background-position:center;
+}
+.window{
+  height:100px;
+  background:linear-gradient(135deg,#10213a,#4e78a8);
+  background-size:cover;
+  background-position:center;
+  position:relative;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+.window:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 35% 35%,rgba(255,255,255,.18),transparent 2px),
+    radial-gradient(circle at 62% 48%,rgba(255,255,255,.16),transparent 2px),
+    repeating-linear-gradient(96deg,rgba(255,255,255,.07) 0 1px,transparent 1px 14px);
+  opacity:.42;
+}
+.avatar-wrap{
+  position:absolute;
+  top:64px;
+  left:50%;
+  transform:translateX(-50%);
+  width:78px;
+  height:78px;
+  border-radius:50%;
+  padding:4px;
+  background:rgba(255,255,255,.92);
+  box-shadow:0 10px 24px rgba(5,15,30,.34);
+  z-index:3;
+}
+.avatar{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 55% 56%,#b0202b 0 9%,#541217 10% 17%,transparent 18%),
+    linear-gradient(135deg,#0c1c34,#38618f 55%,#91b8e6);
+  background-size:cover;
+  background-position:center;
+}
+.profile-body{
+  min-height:120px;
+  margin-top:-14px;
+  padding:56px 16px 14px;
+  text-align:center;
+  border-radius:24px 24px 0 0;
+  background:rgba(118,160,214,.84);
+  position:relative;
+  z-index:2;
+}
+.title{
+  font-size:21px;
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:-.4px;
+}
+.subtitle{
+  margin-top:4px;
+  font-size:13px;
+  font-weight:800;
+  color:rgba(255,255,255,.86);
+}
+.line{
+  margin-top:4px;
+  font-size:12px;
+  line-height:1.4;
+  color:rgba(255,255,255,.82);
+}
+.known-days{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:10px;
+  padding:6px 16px;
+  border-radius:999px;
+  font-size:15px;
+  font-weight:900;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  color:white;
+}
+.foot{
+  margin-top:6px;
+  font-size:12px;
+  font-weight:850;
+  color:rgba(255,255,255,.90);
+}
+.two-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.three-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+.tile{
+  min-height:76px;
+  border-radius:20px;
+  color:white;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.tile.small{
+  min-height:82px;
+}
+.tile-icon{
+  font-size:28px;
+  line-height:1;
+}
+.tile-label{
+  font-size:13px;
+  font-weight:900;
+}
+.nest-hero{
+  margin-top:10px;
+  border-radius:22px;
+  padding:13px;
+  color:white;
+  text-decoration:none;
+  display:block;
+  position:relative;
+  overflow:hidden;
+}
+.nest-hero:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 18% 28%,rgba(255,255,255,.16),transparent 18%),
+    radial-gradient(circle at 80% 72%,rgba(141,189,255,.18),transparent 22%),
+    repeating-linear-gradient(100deg,rgba(255,255,255,.05) 0 1px,transparent 1px 18px);
+  opacity:.9;
+  pointer-events:none;
+}
+.nest-hero-inner{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.nest-hero-text{
+  flex:1;
+  min-width:0;
+}
+.nest-hero-kicker{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:1.8px;
+  color:rgba(255,255,255,.72);
+}
+.nest-hero-title{
+  margin-top:4px;
+  font-size:20px;
+  font-weight:950;
+  letter-spacing:.3px;
+}
+.nest-hero-sub{
+  margin-top:4px;
+  font-size:12px;
+  line-height:1.4;
+  color:rgba(255,255,255,.84);
+}
+.nest-hero-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:8px;
+  padding:5px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.20);
+  font-size:11px;
+  font-weight:900;
+}
+.nest-hero-art{
+  width:68px;
+  height:68px;
+  border-radius:18px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 8px 18px rgba(0,0,0,.16);
+  font-size:28px;
+}
+.nest-hero-foot{
+  position:relative;
+  z-index:2;
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+  color:rgba(255,255,255,.80);
+}
+.nest-hero-arrow{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.20);
+  font-size:16px;
+  flex-shrink:0;
+}
+.card{
+  margin-top:10px;
+  border-radius:24px;
+  padding:14px;
+  background-size:cover;
+  background-position:center;
+}
+.card-title{
+  font-size:15px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+.pill{
+  min-height:50px;
+  border-radius:999px;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.22);
+  display:flex;
+  align-items:center;
+  padding:8px 12px;
+  gap:10px;
+  margin-top:8px;
+}
+.pill-img{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  flex-shrink:0;
+  background:linear-gradient(135deg,#0d1b32,#678fbd);
+  background-size:cover;
+  background-position:center;
+  border:1px solid rgba(255,255,255,.30);
+}
+.pill-text{
+  flex:1;
+  font-size:14px;
+  line-height:1.35;
+  font-style:italic;
+}
+.widget{
+  display:block;
+  color:white;
+  text-decoration:none;
+  margin-top:10px;
+  border-radius:24px;
+  padding:14px;
+}
+.widget-top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.widget-icon{
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:21px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.22);
+}
+.widget-title{
+  font-size:15px;
+  font-weight:900;
+}
+.widget-sub{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--soft);
+}
+.widget-meta{
+  margin-top:10px;
+  font-size:12px;
+  line-height:1.5;
+  color:rgba(255,255,255,.92);
+}
+.album-mini{
+  margin-top:10px;
+  width:100%;
+  height:108px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#10213d,#638db9);
+  background-size:cover;
+  background-position:center;
+  border:1px solid rgba(255,255,255,.18);
+}
+.player-widget{
+  display:block;
+  color:white;
+  text-decoration:none;
+  margin-top:10px;
+  border-radius:24px;
+  padding:12px;
+}
+.player-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.player-cover{
+  width:68px;
+  height:68px;
+  border-radius:20px;
+  flex-shrink:0;
+  background:linear-gradient(135deg,#10213d,#638db9);
+  background-size:cover;
+  background-position:center;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 10px 24px rgba(0,0,0,.16);
+}
+.player-info{
+  flex:1;
+  min-width:0;
+}
+.player-title{
+  font-size:15px;
+  font-weight:900;
+  line-height:1.35;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.player-sub{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--soft);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.player-progress-bar{
+  margin-top:10px;
+  width:100%;
+  height:7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.16);
+  overflow:hidden;
+}
+.player-progress-fill{
+  width:0%;
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#ffffff,#d9ebff);
+}
+.player-side{
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  font-weight:900;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.22);
+}
+.player-meta{
+  margin-top:10px;
+  font-size:12px;
+  line-height:1.5;
+  color:rgba(255,255,255,.92);
+}
+.app-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px 8px;
+  margin-top:10px;
+}
+.app-link{
+  color:white;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+}
+.app-square{
+  width:66px;
+  height:66px;
+  border-radius:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:27px;
+}
+.app-name{
+  font-size:12px;
+  font-weight:900;
+  text-shadow:0 2px 8px rgba(0,0,0,.25);
+}
+.quote{
+  text-align:center;
+  border-radius:28px;
+  padding:18px 16px;
+  margin-top:10px;
+}
+.quote-main{
+  font-size:17px;
+  line-height:1.42;
+  font-weight:900;
+}
+.quote-sub{
+  margin-top:8px;
+  font-size:13px;
+  line-height:1.55;
+  color:var(--soft);
+}
+.today-bar{
+  margin-top:10px;
+  border-radius:30px;
+  padding:10px 16px;
+  font-size:13px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:var(--soft);
+}
+.diary-card{
+  margin-top:10px;
+  border-radius:20px;
+  padding:20px 16px;
+  background:linear-gradient(135deg,#f5f0e1,#ece4d0);
+  color:#3d2b1f;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 4px 24px rgba(0,0,0,.2);
+}
+.diary-card:before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(180,150,100,.12) 23px,rgba(180,150,100,.12) 24px);
+  pointer-events:none;
+}
+.diary-card:after{
+  content:'';position:absolute;top:0;right:0;bottom:0;width:14px;
+  background:linear-gradient(180deg,rgba(180,140,90,.35) 0%,rgba(200,160,110,.2) 50%,rgba(180,140,90,.35) 100%);
+  border-radius:0 20px 20px 0;
+  pointer-events:none;
+}
+.diary-ribbon{
+  position:absolute;top:10px;right:20px;z-index:1;
+  width:6px;height:36px;
+  background:linear-gradient(180deg,#c0392b,#e74c3c);
+  border-radius:0 0 3px 3px;
+  box-shadow:0 2px 6px rgba(192,57,43,.3);
+}
+.diary-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:6px;
+  position:relative;z-index:1;
+}
+.diary-head-left{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.diary-head-icon{
+  font-size:22px;
+  line-height:1;
+}
+.diary-head-title{
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.5px;
+  color:#5a4030;
+}
+.diary-entry{
+  padding:6px 0 4px;
+  font-size:12px;
+  line-height:1.7;
+  color:#4a3520;
+  position:relative;z-index:1;
+}
+.diary-entry-text{
+  font-family:Georgia,'Times New Roman',serif;
+  font-style:italic;
+}
+.diary-entry-date{
+  font-size:10px;
+  opacity:.5;
+  margin-top:1px;
+  font-family:Georgia,serif;
+}
+.diary-empty{
+  padding:12px 0 6px;
+  font-size:12px;
+  opacity:.45;
+  text-align:center;
+  font-family:Georgia,serif;
+  font-style:italic;
+  color:#6a5540;
+  position:relative;z-index:1;
+}
+.diary-view-link{
+  display:block;
+  text-align:right;
+  font-size:11px;
+  opacity:.5;
+  margin-top:6px;
+  position:relative;z-index:1;
+  color:#6a5540;
+  text-decoration:none;
+}
+.diary-viewer-mask{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(5,14,28,.7);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.diary-viewer{
+  width:100%;max-width:380px;max-height:85vh;
+  background:linear-gradient(180deg,#f5f0e1,#efe8d4);
+  border-radius:24px;
+  padding:28px 24px max(28px,var(--safe-bottom,20px));
+  overflow-y:auto;
+  box-shadow:0 8px 48px rgba(0,0,0,.35);
+  position:relative;
+  color:#3d2b1f;
+}
+.diary-viewer:before{
+  content:'';position:absolute;inset:0;border-radius:24px;
+  background:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(180,150,100,.10) 23px,rgba(180,150,100,.10) 24px);
+  pointer-events:none;
+}
+.diary-viewer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;position:relative;z-index:1;
+}
+.diary-viewer-title{
+  font-size:16px;font-weight:700;color:#5a4030;
+  letter-spacing:1px;
+}
+.diary-viewer-close{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(60,40,20,.08);
+  border:none;color:#5a4030;font-size:16px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.diary-viewer-entry{
+  padding:14px 0 10px;
+  position:relative;z-index:1;
+  border-bottom:1px solid rgba(180,140,90,.15);
+}
+.diary-viewer-entry:last-of-type{border:none}
+.diary-viewer-entry-date{
+  font-size:11px;opacity:.5;margin-bottom:4px;
+  font-family:Georgia,serif;
+}
+.diary-viewer-entry-text{
+  font-size:13px;line-height:1.8;
+  font-family:Georgia,'Times New Roman',serif;
+  white-space:pre-wrap;
+}
+.calendar-card{
+  border-radius:28px;
+  padding:14px 14px 12px;
+}
+.calendar-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:10px;
+}
+.month-title{
+  letter-spacing:4px;
+  font-size:11px;
+  font-weight:900;
+}
+.month-big{
+  margin-top:8px;
+  font-size:30px;
+  line-height:1;
+  font-weight:900;
+}
+.month-year{
+  font-size:14px;
+  font-weight:800;
+  margin-left:6px;
+}
+.calendar-icon{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.30);
+  background:rgba(255,255,255,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  color:white;
+  text-decoration:none;
+}
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+}
+.cal-week,.cal-day{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:850;
+}
+.cal-week{
+  height:20px;
+  font-size:11px;
+}
+.cal-day{
+  height:28px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.08);
+  font-size:12px;
+}
+.cal-day.today{
+  background:rgba(255,255,255,.24);
+  box-shadow:0 0 0 2px rgba(255,255,255,.22) inset;
+}
+.cal-day.memory{
+  background:rgba(141,189,255,.22);
+  border-color:rgba(173,210,255,.62);
+  color:#fff;
+}
+.cal-day.today.memory{
+  background:linear-gradient(135deg,rgba(141,189,255,.42),rgba(255,255,255,.22));
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.22) inset,
+    0 0 0 1px rgba(173,210,255,.55);
+}
+.memory-card{
+  display:block;
+  color:white;
+  text-decoration:none;
+  margin-top:10px;
+  border-radius:24px;
+  padding:12px 14px;
+}
+.memory-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+.memory-title{
+  font-size:14px;
+  font-weight:900;
+}
+.memory-sub{
+  margin-top:3px;
+  font-size:11px;
+  color:var(--soft);
+  line-height:1.4;
+}
+.memory-badge{
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.memory-countdown{
+  margin-top:8px;
+  padding:8px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  font-size:14px;
+  font-weight:900;
+  line-height:1.5;
+}
+.memory-date-line{
+  margin-top:6px;
+  font-size:11px;
+  color:rgba(255,255,255,.90);
+}
+.dots{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:calc(var(--safe-bottom) + 98px);
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  z-index:20;
+}
+.dots span{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,.30);
+  cursor:pointer;
+  transition:all .25s ease;
+}
+.dots span.active{
+  width:24px;
+  border-radius:999px;
+  background:rgba(255,255,255,.82);
+}
+.dots span:hover{background:rgba(255,255,255,.56)}
+.dock{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  padding:0 18px calc(var(--safe-bottom) + 12px);
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+  z-index:30;
+}
+.dock-bar{
+  width:min(390px,100%);
+  height:86px;
+  border-radius:36px;
+  background:linear-gradient(145deg,rgba(86,108,145,.72),rgba(48,65,95,.64));
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 18px 48px rgba(6,15,28,.38);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  pointer-events:auto;
+}
+.dock-item{
+  width:60px;
+  height:60px;
+  border-radius:22px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25);
+  color:white;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+}
+.dock-item.active{
+  background:rgba(255,255,255,.20);
+}
+.editor-mask{
+  position:fixed;
+  inset:0;
+  background:rgba(4,10,20,.46);
+  z-index:60;
+  display:none;
+  align-items:flex-end;
+}
+.editor{
+  width:100%;
+  max-width:430px;
+  max-height:82%;
+  overflow:auto;
+  margin:0 auto;
+  border-radius:34px 34px 0 0;
+  background:rgba(240,246,255,.96);
+  color:#243043;
+  padding:18px 18px calc(var(--safe-bottom) + 18px);
+  box-shadow:0 -20px 60px rgba(0,0,0,.30);
+}
+.editor-handle{
+  width:56px;
+  height:5px;
+  border-radius:999px;
+  background:rgba(40,55,80,.25);
+  margin:0 auto 16px;
+}
+.editor-title{
+  font-size:18px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+.form-block{margin-bottom:14px}
+.form-block label{
+  display:block;
+  font-size:12px;
+  color:#6f7f95;
+  font-weight:800;
+  margin-bottom:7px;
+}
+.form-block input,.form-block textarea{
+  width:100%;
+  border:none;
+  outline:none;
+  border-radius:18px;
+  background:white;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:13px;
+  color:#243043;
+  box-shadow:0 4px 14px rgba(90,110,150,.08);
+}
+.form-block textarea{
+  min-height:74px;
+  resize:vertical;
+  line-height:1.5;
+}
+.editor-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.editor-btn{
+  border:none;
+  border-radius:16px;
+  padding:11px 14px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  color:#425064;
+  background:white;
+  box-shadow:0 4px 14px rgba(90,110,150,.08);
+}
+.editor-btn.primary{
+  color:white;
+  background:linear-gradient(135deg,#7cb7ff,#5b8def);
+}
+.editor-btn.danger{
+  color:#a34b5a;
+  background:#fff0f2;
+}
+.file-input{display:none}
+@media(max-width:380px){
+  .page{padding:6px 14px 112px}
+  .app-square{width:62px;height:62px;font-size:25px}
+  .dock-bar{height:80px}
+  .dock-item{width:56px;height:56px}
+  .title{font-size:25px}
+  .nest-hero-title{font-size:22px}
+  .nest-hero-art{width:82px;height:82px;font-size:34px}
+}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<div class="wallpaper" id="wallpaper"></div>
+
+<div class="app">
+  <div class="top">
+    <div class="time" id="timeText">--:--</div>
+    <div class="top-right">
+      <div class="status">5G</div>
+      <button class="round-btn" onclick="openEditor()">⚙</button>
+    </div>
+  </div>
+
+  <div class="pages" id="pages">
+    <section class="page">
+      <div class="page-shadow right"></div>
+      <section class="profile-card glass" id="profileCard">
+        <div class="window" id="windowImg"></div>
+        <div class="avatar-wrap"><div class="avatar" id="avatarImg"></div></div>
+        <div class="profile-body">
+          <div class="title" id="mainTitle">未命名小手机</div>
+          <div class="subtitle" id="subTitle">@your_space</div>
+          <div class="line" id="profileLine">这里写一句只属于你们的话。</div>
+          <div class="known-days" id="knownDays">我们已经认识了 -- 天</div>
+          <div class="foot" id="profileFoot">soul.stability 79%</div>
+        </div>
+      </section>
+
+      <a class="player-widget glass" href="listen.html">
+        <div class="player-row">
+          <div class="player-cover" id="playerCover"></div>
+          <div class="player-info">
+            <div class="player-title" id="playerTitle">一起听</div>
+            <div class="player-sub" id="playerSub">点进来放一首正在循环的歌</div>
+            <div class="player-progress-bar">
+              <div class="player-progress-fill" id="playerProgress"></div>
+</div>
+
+          </div>
+          <div class="player-side" id="playerAction">♫</div>
+        </div>
+        <div class="player-meta" id="playerMeta">还没有同步播放内容</div>
+      </a>
+
+      <a class="widget softglass" href="album.html">
+        <div class="widget-top">
+          <div class="widget-icon">▧</div>
+          <div>
+            <div class="widget-title">相册</div>
+            <div class="widget-sub" id="albumWidgetSub">0108 的照片抽屉</div>
+          </div>
+        </div>
+        <div class="widget-meta" id="albumWidgetMeta">还没有照片，先放几张进去吧。</div>
+        <div class="album-mini" id="albumWidgetCover"></div>
+      </a>
+
+      <div class="app-grid">
+        <a class="app-link" href="memo.html"><div class="app-square softglass">✎</div><div class="app-name">备忘</div></a>
+        <a class="app-link" href="mcp.html"><div class="app-square softglass">⚙</div><div class="app-name">MCP</div></a>
+        <a class="app-link" href="ledger.html"><div class="app-square softglass">¥</div><div class="app-name">账本</div></a>
+        <a class="app-link" href="listen.html"><div class="app-square softglass">♫</div><div class="app-name">一起听</div></a>
+        <a class="app-link" href="yearling.html"><div class="app-square softglass">⟁</div><div class="app-name">年轮</div></a>
+        <a class="app-link" href="memory.html"><div class="app-square softglass">♡</div><div class="app-name">记忆</div></a>
+        <a class="app-link" href="album.html"><div class="app-square softglass">▧</div><div class="app-name">相册</div></a>
+        <a class="app-link" href="chat.html"><div class="app-square softglass">✦</div><div class="app-name">聊天</div></a>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-shadow left"></div>
+      <div class="page-shadow right"></div>
+      <a class="nest-hero softglass" href="nest.html">
+        <div class="nest-hero-inner">
+          <div class="nest-hero-text">
+            <div class="nest-hero-kicker">LITTLE NEST</div>
+            <div class="nest-hero-title">0108</div>
+            <div class="nest-hero-sub">回到你们的小窝，看看 01 在做什么。</div>
+            <div class="nest-hero-badge">进入 0108</div>
+          </div>
+          <div class="nest-hero-art">⌂</div>
+        </div>
+        <div class="nest-hero-foot">
+          <span>房间 · 互动 · 工作 · 记忆</span>
+          <div class="nest-hero-arrow">→</div>
+        </div>
+      </a>
+
+      <div class="three-grid" style="margin-top:10px">
+        <div class="tile small softglass">
+          <div style="font-size:17px;font-weight:950;line-height:1" id="statInteract">-</div>
+          <div class="tile-label">互动</div>
+        </div>
+        <div class="tile small softglass">
+          <div style="font-size:17px;font-weight:950;line-height:1" id="statWork">-</div>
+          <div class="tile-label">工作</div>
+        </div>
+        <div class="tile small softglass">
+          <div style="font-size:17px;font-weight:950;line-height:1" id="statNotes">-</div>
+          <div class="tile-label">便签</div>
+        </div>
+      </div>
+
+      <div class="card glass" id="lyCard">
+        <div class="card-title">凌漪 · <span id="lyRoomName">0108</span></div>
+        <div class="pill" id="lyPill">
+          <div class="pill-text" id="lyActivity">正在加载...</div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="tag" id="lyMood" style="font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.10);color:var(--soft)">心情 --</span>
+          <span class="tag" id="lyEnergy" style="font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.10);color:var(--soft)">精力 --</span>
+          <span class="tag" id="lyMiss" style="font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.10);color:var(--soft)">想念 --</span>
+        </div>
+        <div style="margin-top:10px;font-size:12px;line-height:1.55;color:var(--soft)" id="lyMemoryPreview"></div>
+      </div>
+
+      <div class="today-bar glass" id="todayBar">
+        <span id="todayDate"></span>
+        <span id="todayLunar" style="opacity:.5"></span>
+      </div>
+
+      <div class="card glass" id="nestLogCard">
+        <div class="card-title">0108 最近</div>
+        <div id="nestLogList" style="font-size:12px;line-height:1.6;color:var(--soft);opacity:.85">加载中...</div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="page-shadow left"></div>
+      <section class="calendar-card glass">
+        <div class="calendar-head">
+          <div>
+            <div class="month-title">MONTHLY VIEW</div>
+            <div class="month-big"><span id="monthBig">7月</span><span class="month-year" id="yearText">2026</span></div>
+          </div>
+          <a class="calendar-icon" href="memory.html">♡</a>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </section>
+
+      <a class="memory-card glass" href="memory.html">
+        <div class="memory-top">
+          <div>
+            <div class="memory-title" id="memoryTitle">纪念日</div>
+            <div class="memory-sub" id="memorySub">留一个值得反复想起的日期。</div>
+          </div>
+          <div class="memory-badge" id="memoryBadge">--</div>
+        </div>
+        <div class="memory-countdown" id="memoryCountdown">还没有设置纪念日</div>
+        <div class="memory-date-line" id="memoryDateLine">年度纪念日：--</div>
+      </a>
+
+      <section class="quote glass">
+        <div class="quote-main" id="quoteMain">“这里写一句主文案。”</div>
+        <div class="quote-sub" id="quoteSub">这里写第二行说明。</div>
+      </section>
+
+      <div class="two-grid">
+        <a class="tile softglass" href="yearling.html">
+          <div class="tile-icon">◇</div>
+          <div class="tile-label">档案馆</div>
+        </a>
+        <a class="tile softglass" href="javascript:void(0)" onclick="openDiaryViewer()">
+          <div class="tile-icon">📔</div>
+          <div class="tile-label">日记</div>
+        </a>
+      </div>
+
+      <div class="diary-card" id="diaryCard" onclick="openDiaryViewer()">
+        <div class="diary-ribbon"></div>
+        <div class="diary-head">
+          <div class="diary-head-left">
+            <span class="diary-head-icon">📔</span>
+            <span class="diary-head-title">JOURNAL</span>
+          </div>
+          <span style="font-size:11px;opacity:.45;color:#6a5540;font-family:Georgia,serif" id="diaryCount"></span>
+        </div>
+        <div id="diaryEntries">
+          <div class="diary-empty">— empty pages —</div>
+        </div>
+        <div class="diary-view-link">翻开 →</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="dots" id="dots">
+    <span class="active" onclick="goToPage(0)" data-page="0"></span>
+    <span onclick="goToPage(1)" data-page="1"></span>
+    <span onclick="goToPage(2)" data-page="2"></span>
+  </div>
+
+  <nav class="dock">
+    <div class="dock-bar">
+      <a class="dock-item" href="chat.html">✦</a>
+      <a class="dock-item active" href="home.html">⌂</a>
+      <a class="dock-item" href="yearling.html">⟁</a>
+    </div>
+  </nav>
+</div>
+
+<div class="editor-mask" id="editorMask">
+  <div class="editor">
+    <div class="editor-handle"></div>
+    <div class="editor-title">编辑小手机</div>
+
+    <div class="form-block"><label>主标题</label><input id="editMainTitle"></div>
+    <div class="form-block"><label>副标题</label><input id="editSubTitle"></div>
+    <div class="form-block"><label>头像下方说明</label><textarea id="editProfileLine"></textarea></div>
+    <div class="form-block"><label>脚注</label><input id="editProfileFoot"></div>
+    <div class="form-block"><label>句子主文案</label><textarea id="editQuoteMain"></textarea></div>
+    <div class="form-block"><label>句子副文案</label><textarea id="editQuoteSub"></textarea></div>
+
+    <div class="form-block"><label>相识日期</label><input id="editKnownStartDate" type="date"></div>
+    <div class="form-block"><label>纪念日标题</label><input id="editMemoryTitle"></div>
+    <div class="form-block"><label>纪念日说明</label><input id="editMemorySub"></div>
+    <div class="form-block"><label>纪念日日期</label><input id="editMemoryDate" type="date"></div>
+
+    <div class="form-block"><label>背景图片 URL</label><input id="editBgUrl" placeholder="https://..."></div>
+    <div class="form-block"><label>头像图片 URL</label><input id="editAvatarUrl" placeholder="https://..."></div>
+    <div class="form-block"><label>窗口横幅图 URL</label><input id="editWindowUrl" placeholder="https://..."></div>
+    <div class="form-block"><label>第一个大卡片背景 URL</label><input id="editProfileCardBgUrl" placeholder="https://..."></div>
+
+
+    <div class="form-block">
+      <label>或者上传本地图片</label>
+      <div class="editor-row">
+        <button class="editor-btn" onclick="pickFile('bg')">上传背景</button>
+        <button class="editor-btn" onclick="pickFile('avatar')">上传头像</button>
+        <button class="editor-btn" onclick="pickFile('window')">上传横幅图</button>
+        <button class="editor-btn" onclick="pickFile('profileCardBg')">上传大卡片背景</button>
+
+      </div>
+      <input class="file-input" type="file" accept="image/*" id="filePicker">
+    </div>
+
+    <div class="editor-row">
+      <button class="editor-btn primary" onclick="saveSettings()">保存</button>
+      <button class="editor-btn" onclick="closeEditor()">关闭</button>
+      <button class="editor-btn danger" onclick="resetSettings()">恢复默认</button>
+    </div>
+  </div>
+</div>
+
+<div class="diary-viewer-mask" id="diaryViewerMask">
+  <div class="diary-viewer">
+    <div class="diary-viewer-head">
+      <span class="diary-viewer-title">📔 JOURNAL</span>
+      <button class="diary-viewer-close" onclick="closeDiaryViewer()">✕</button>
+    </div>
+    <div id="diaryViewerEntries"></div>
+  </div>
+</div>
+
+<script>
+const SETTINGS_KEY = 'little_phone_theme_v1';
+const ALBUM_KEY = 'little_phone_album_v1';
+const LISTEN_KEY = 'little_phone_listen_v1';
+
+const defaults = {
+  mainTitle:'未命名小手机',
+  subTitle:'@your_space',
+  profileLine:'这里写一句只属于你们的话。',
+  profileFoot:'soul.stability 79%',
+  quoteMain:'“这里写一句主文案。”',
+  quoteSub:'这里写第二行说明。',
+  knownStartDate:'2026-05-15',
+  memoryTitle:'纪念日',
+  memorySub:'留一个值得反复想起的日期。',
+  memoryDate:'2026-10-08',
+  bgUrl:'',
+  avatarUrl:'',
+  windowUrl:'',
+  profileCardBgUrl:'',
+  bgData:'',
+  avatarData:'',
+  windowData:'',
+  profileCardBgData:''
+};
+
+const pages = document.getElementById('pages');
+const editorMask = document.getElementById('editorMask');
+const filePicker = document.getElementById('filePicker');
+const timeText = document.getElementById('timeText');
+const monthBig = document.getElementById('monthBig');
+const yearText = document.getElementById('yearText');
+const calendarGrid = document.getElementById('calendarGrid');
+
+let settings = loadSettings();
+let uploadTarget = '';
+var DIARY_KEY = 'little_phone_diary_v1';
+
+function loadSettings(){
+  try{
+    return Object.assign({}, defaults, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'));
+  }catch(e){
+    return Object.assign({}, defaults);
+  }
+}
+function saveStore(){
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+function setText(id, v){
+  const el = document.getElementById(id);
+  if(el) el.textContent = v || '';
+}
+function setImageBg(id, url, overlay){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(url){
+    el.style.backgroundImage = overlay + ', url("' + url + '")';
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'center';
+  }
+}
+function clearInlineBg(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.style.backgroundImage = '';
+  el.style.backgroundSize = '';
+  el.style.backgroundPosition = '';
+}
+function resolveImage(dataKey, urlKey){
+  return settings[dataKey] || settings[urlKey] || '';
+}
+function daysBetween(start, end){
+  return Math.floor((end - start) / 86400000);
+}
+function formatMonthDay(date){
+  if(!(date instanceof Date) || isNaN(date.getTime())) return '--';
+  return (date.getMonth() + 1) + '月' + date.getDate() + '日';
+}
+function applySettings(){
+  setText('mainTitle', settings.mainTitle);
+  setText('subTitle', settings.subTitle);
+  setText('profileLine', settings.profileLine);
+  setText('profileFoot', settings.profileFoot);
+  setText('quoteMain', settings.quoteMain);
+  setText('quoteSub', settings.quoteSub);
+  setText('memoryTitle', settings.memoryTitle || defaults.memoryTitle);
+  setText('memorySub', settings.memorySub || defaults.memorySub);
+
+  const bg = resolveImage('bgData', 'bgUrl');
+  const av = resolveImage('avatarData', 'avatarUrl');
+  const win = resolveImage('windowData', 'windowUrl');
+  const profileCardBg = resolveImage('profileCardBgData', 'profileCardBgUrl');
+  if(bg){
+    setImageBg('wallpaper', bg, 'linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.62))');
+  }else{
+    clearInlineBg('wallpaper');
+  }
+
+  if(av){
+    setImageBg('avatarImg', av, 'linear-gradient(180deg,rgba(8,16,30,.10),rgba(8,16,30,.24))');
+  }else{
+    clearInlineBg('avatarImg');
+  }
+
+  if(win){
+    setImageBg('windowImg', win, 'linear-gradient(180deg,rgba(8,16,30,.10),rgba(8,16,30,.30))');
+  }else{
+    clearInlineBg('windowImg');
+  }
+
+  if(profileCardBg){
+    setImageBg('profileCard', profileCardBg, 'linear-gradient(180deg,rgba(8,16,30,.12),rgba(8,16,30,.28))');
+  }else{
+    clearInlineBg('profileCard');
+  }
+
+  updateKnownDays();
+  updateMemoryCard();
+  buildCalendar();
+  updateListenWidget();
+  updateAlbumWidget();
+}
+function fillEditor(){
+  editMainTitle.value = settings.mainTitle;
+  editSubTitle.value = settings.subTitle;
+  editProfileLine.value = settings.profileLine;
+  editProfileFoot.value = settings.profileFoot;
+  editQuoteMain.value = settings.quoteMain;
+  editQuoteSub.value = settings.quoteSub;
+  editKnownStartDate.value = settings.knownStartDate;
+  editMemoryTitle.value = settings.memoryTitle;
+  editMemorySub.value = settings.memorySub;
+  editMemoryDate.value = settings.memoryDate;
+  editBgUrl.value = settings.bgUrl;
+  editAvatarUrl.value = settings.avatarUrl;
+  editWindowUrl.value = settings.windowUrl;
+  editProfileCardBgUrl.value = settings.profileCardBgUrl || '';
+}
+function openEditor(){
+  fillEditor();
+  editorMask.style.display = 'flex';
+}
+function closeEditor(){
+  editorMask.style.display = 'none';
+}
+function saveSettings(){
+  settings.mainTitle = editMainTitle.value;
+  settings.subTitle = editSubTitle.value;
+  settings.profileLine = editProfileLine.value;
+  settings.profileFoot = editProfileFoot.value;
+  settings.quoteMain = editQuoteMain.value;
+  settings.quoteSub = editQuoteSub.value;
+  settings.knownStartDate = editKnownStartDate.value || defaults.knownStartDate;
+  settings.memoryTitle = editMemoryTitle.value || defaults.memoryTitle;
+  settings.memorySub = editMemorySub.value || defaults.memorySub;
+  settings.memoryDate = editMemoryDate.value || defaults.memoryDate;
+
+  settings.bgUrl = editBgUrl.value.trim();
+  settings.avatarUrl = editAvatarUrl.value.trim();
+  settings.windowUrl = editWindowUrl.value.trim();
+  settings.profileCardBgUrl = editProfileCardBgUrl.value.trim();
+  if(settings.bgUrl) settings.bgData = '';
+  if(settings.avatarUrl) settings.avatarData = '';
+  if(settings.windowUrl) settings.windowData = '';
+  if(settings.profileCardBgUrl) settings.profileCardBgData = '';
+  saveStore();
+  applySettings();
+  closeEditor();
+}
+function resetSettings(){
+  if(!confirm('恢复默认首页？')) return;
+  settings = Object.assign({}, defaults);
+  saveStore();
+  location.reload();
+}
+function pickFile(type){
+  uploadTarget = type;
+  filePicker.value = '';
+  filePicker.click();
+}
+filePicker.addEventListener('change', function(){
+  const file = this.files && this.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const data = e.target.result;
+    if(uploadTarget === 'bg'){
+      settings.bgData = data;
+      settings.bgUrl = '';
+    }
+    if(uploadTarget === 'avatar'){
+      settings.avatarData = data;
+      settings.avatarUrl = '';
+    }
+    if(uploadTarget === 'window'){
+      settings.windowData = data;
+      settings.windowUrl = '';
+    }
+    if(uploadTarget === 'profileCardBg'){
+      settings.profileCardBgData = data;
+      settings.profileCardBgUrl = '';
+    }
+    saveStore();
+    applySettings();
+  };
+  reader.readAsDataURL(file);
+});
+
+function updateKnownDays(){
+  const el = document.getElementById('knownDays');
+  if(!el) return;
+  const start = new Date((settings.knownStartDate || defaults.knownStartDate) + 'T00:00:00');
+  const now = new Date();
+  if(isNaN(start.getTime())){
+    el.textContent = '我们已经认识了 -- 天';
+    return;
+  }
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const base = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const days = Math.max(1, daysBetween(base, today) + 1);
+  el.textContent = '我们已经认识了 ' + days + ' 天';
+}
+
+function updateMemoryCard(){
+  const badge = document.getElementById('memoryBadge');
+  const countdown = document.getElementById('memoryCountdown');
+  const line = document.getElementById('memoryDateLine');
+  const dateStr = settings.memoryDate || defaults.memoryDate;
+  const baseDate = new Date(dateStr + 'T00:00:00');
+
+  if(isNaN(baseDate.getTime())){
+    badge.textContent = '--';
+    countdown.textContent = '还没有设置纪念日';
+    line.textContent = '年度纪念日：--';
+    return;
+  }
+
+  const title = settings.memoryTitle || defaults.memoryTitle;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const base = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+
+  const passed = Math.max(1, daysBetween(base, today) + 1);
+  badge.textContent = '已过 ' + passed + ' 天';
+  line.textContent = '年度纪念日：' + formatMonthDay(base);
+
+  let next = new Date(today.getFullYear(), base.getMonth(), base.getDate());
+  if(next < today){
+    next = new Date(today.getFullYear() + 1, base.getMonth(), base.getDate());
+  }
+
+  const left = Math.max(0, daysBetween(today, next));
+  if(left === 0){
+    countdown.textContent = '今天就是「' + title + '」';
+  }else{
+    countdown.textContent = '距离下一次 ' + formatMonthDay(base) + ' 还有 ' + left + ' 天';
+  }
+}
+
+function updateTime(){
+  const now = new Date();
+  timeText.textContent =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+}
+updateTime();
+setInterval(updateTime, 30000);
+updateTodayBar();
+
+function updateTodayBar(){
+  var el = document.getElementById('todayBar');
+  if(!el) return;
+  var d = new Date();
+  var week = ['日','一','二','三','四','五','六'];
+  var dateStr = d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日 周' + week[d.getDay()];
+  document.getElementById('todayDate').textContent = dateStr;
+  document.getElementById('todayLunar').textContent = '☀ ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+function buildCalendar(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const today = now.getDate();
+
+  monthBig.textContent = (m + 1) + '月';
+  yearText.textContent = y;
+
+  let memoryDay = null;
+  const memoryDate = new Date((settings.memoryDate || defaults.memoryDate) + 'T00:00:00');
+  if(!isNaN(memoryDate.getTime()) && memoryDate.getMonth() === m){
+    memoryDay = memoryDate.getDate();
+  }
+
+  const weeks = ['一','二','三','四','五','六','日'];
+  let html = '';
+  weeks.forEach(w => html += '<div class="cal-week">' + w + '</div>');
+
+  const firstDay = new Date(y, m, 1).getDay();
+  const start = firstDay === 0 ? 6 : firstDay - 1;
+  const days = new Date(y, m + 1, 0).getDate();
+
+  for(let i=0;i<start;i++) html += '<div></div>';
+
+  for(let d=1;d<=days;d++){
+    const classes = ['cal-day'];
+    if(d === today) classes.push('today');
+    if(memoryDay !== null && d === memoryDay) classes.push('memory');
+    html += '<div class="' + classes.join(' ') + '">' + d + '</div>';
+  }
+
+  calendarGrid.innerHTML = html;
+}
+
+function updateListenWidget(){
+  let listen = {};
+  try{
+    listen = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+  }catch(e){
+    listen = {};
+  }
+
+  const hasCustom = Object.keys(listen).length > 0;
+  const title = listen.title || '一起听';
+  const sub = listen.sub || '点进来放一首正在循环的歌';
+  const note = listen.note || '';
+  const progress = Math.max(0, Math.min(100, Number(listen.progress ?? 0)));
+  const isPlaying = !!listen.isPlaying;
+  const cover = listen.coverData || listen.coverUrl || '';
+
+  let metaText = '还没有同步播放内容';
+  if(hasCustom){
+    var hasAudio = listen.audioName ? '🎵 ' + listen.audioName : '';
+    if(isPlaying){
+      metaText = note ? ('正在播放 · ' + note) : '正在播放';
+    }else{
+      metaText = note ? ('已暂停 · ' + note) : (hasAudio || '未播放');
+    }
+    if(!isPlaying && hasAudio) metaText = hasAudio;
+  }
+
+  document.getElementById('playerTitle').textContent = title;
+  document.getElementById('playerSub').textContent = sub;
+  document.getElementById('playerProgress').style.width = progress + '%';
+  document.getElementById('playerAction').textContent = isPlaying ? '❚❚' : '♫';
+  document.getElementById('playerMeta').textContent = metaText;
+
+  const coverEl = document.getElementById('playerCover');
+  if(cover){
+    coverEl.style.backgroundImage =
+      'linear-gradient(180deg,rgba(8,16,30,.10),rgba(8,16,30,.28)), url("' + cover + '")';
+    coverEl.style.backgroundSize = 'cover';
+    coverEl.style.backgroundPosition = 'center';
+  }else{
+    coverEl.style.backgroundImage = 'linear-gradient(135deg,#10213d,#638db9)';
+    coverEl.style.backgroundSize = 'cover';
+    coverEl.style.backgroundPosition = 'center';
+  }
+}
+
+function formatAlbumTime(iso){
+  if(!iso) return '还没有更新';
+  const d = new Date(iso);
+  if(Number.isNaN(d.getTime())) return '还没有更新';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return y + '.' + m + '.' + day;
+}
+
+function updateAlbumWidget(){
+  const sub = document.getElementById('albumWidgetSub');
+  const meta = document.getElementById('albumWidgetMeta');
+  const cover = document.getElementById('albumWidgetCover');
+
+  let album = {};
+  try{
+    album = JSON.parse(localStorage.getItem(ALBUM_KEY) || '{}');
+  }catch(e){
+    album = {};
+  }
+
+  const items = Array.isArray(album.items) ? album.items : [];
+  const latest = items[0] || null;
+
+  if(!latest){
+    sub.textContent = '0108 的照片抽屉';
+    meta.textContent = '还没有照片，先放几张进去吧。';
+    cover.style.backgroundImage = 'linear-gradient(135deg,#10213d,#638db9)';
+    cover.style.backgroundSize = 'cover';
+    cover.style.backgroundPosition = 'center';
+    return;
+  }
+
+  const latestCover = latest.imageData || latest.imageUrl || '';
+  sub.textContent = '已经收着 ' + items.length + ' 张照片';
+  meta.textContent = '最近更新：' + formatAlbumTime(latest.createdAt) + ' · ' + (latest.title || '未命名照片');
+
+  if(latestCover){
+    cover.style.backgroundImage =
+      'linear-gradient(180deg,rgba(8,16,30,.10),rgba(8,16,30,.20)), url("' + latestCover + '")';
+    cover.style.backgroundSize = 'cover';
+    cover.style.backgroundPosition = 'center';
+  }else{
+    cover.style.backgroundImage = 'linear-gradient(135deg,#10213d,#638db9)';
+    cover.style.backgroundSize = 'cover';
+    cover.style.backgroundPosition = 'center';
+  }
+}
+
+var pageSwipeStartX = 0;
+var pageSwipeStartY = 0;
+var pageSwipeDist = 0;
+var isPageSwiping = false;
+
+pages.addEventListener('scroll', function(){
+  const index = Math.round(pages.scrollLeft / pages.clientWidth);
+  document.querySelectorAll('#dots span').forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+  pages.classList.toggle('at-start', pages.scrollLeft < 10);
+  pages.classList.toggle('at-end', pages.scrollLeft > pages.scrollWidth - pages.clientWidth - 10);
+  savePageIndex(index);
+});
+
+pages.addEventListener('touchstart', function(e){
+  pageSwipeStartX = e.touches[0].clientX;
+  pageSwipeStartY = e.touches[0].clientY;
+  pageSwipeDist = 0;
+  isPageSwiping = false;
+}, {passive:true});
+
+pages.addEventListener('touchmove', function(e){
+  if(!pageSwipeStartX) return;
+  var dx = e.touches[0].clientX - pageSwipeStartX;
+  var dy = e.touches[0].clientY - pageSwipeStartY;
+  pageSwipeDist = Math.abs(dx);
+  if(pageSwipeDist > 40 && Math.abs(dx) > Math.abs(dy) * 1.5){
+    isPageSwiping = true;
+  }
+}, {passive:true});
+
+pages.addEventListener('touchend', function(e){
+  if(pageSwipeDist > 0 && pageSwipeDist < 40 && isPageSwiping){
+    e.preventDefault();
+    var cur = Math.round(pages.scrollLeft / pages.clientWidth);
+    pages.scrollTo({left: cur * pages.clientWidth, behavior:'smooth'});
+  }
+}, {passive:false});
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'ArrowRight') pages.scrollBy({left:pages.clientWidth, behavior:'smooth'});
+  if(e.key === 'ArrowLeft') pages.scrollBy({left:-pages.clientWidth, behavior:'smooth'});
+  if(e.key === 'Escape'){ closeEditor(); closeDiaryViewer(); }
+});
+
+function goToPage(index){
+  var total = document.querySelectorAll('.page').length;
+  if(index < 0 || index >= total) return;
+  pages.scrollTo({left: index * pages.clientWidth, behavior:'smooth'});
+}
+
+function savePageIndex(index){
+  try{ localStorage.setItem('home_page_index', String(index)); }catch(e){}
+}
+function restorePageIndex(){
+  try{ return parseInt(localStorage.getItem('home_page_index') || '0', 10); }catch(e){ return 0; }
+}
+
+applySettings();
+
+var savedPageIndex = restorePageIndex();
+if(savedPageIndex > 0 && savedPageIndex < 3){
+  requestAnimationFrame(function(){
+    setTimeout(function(){
+      pages.scrollLeft = savedPageIndex * pages.clientWidth;
+    }, 50);
+  });
+}
+loadLingyiStatus();
+loadMemoriesForHome();
+loadNestLogs();
+renderDiary();
+
+window.addEventListener('focus', function(){
+  settings = loadSettings();
+  applySettings();
+});
+
+window.addEventListener('storage', function(e){
+  if(e.key === SETTINGS_KEY || e.key === LISTEN_KEY || e.key === ALBUM_KEY){
+    settings = loadSettings();
+    applySettings();
+  }
+  if(e.key === 'little_phone_nest_0108_v21'){ loadLingyiStatus(); loadNestLogs(); }
+  if(e.key === DIARY_KEY){ renderDiary(); }
+});
+
+function loadLingyiStatus() {
+  try {
+    var nest = JSON.parse(localStorage.getItem('little_phone_nest_0108_v21') || '{}');
+    var rooms = { living:'客厅', bedroom:'卧室', kitchen:'厨房', study:'书房', balcony:'阳台', workroom:'工作间', flower:'花房' };
+    var current = nest.current || {};
+    var room = rooms[current.room] || current.room || '0108';
+    var activity = current.activity || '待机';
+    document.getElementById('lyRoomName').textContent = room;
+    document.getElementById('lyActivity').textContent = activity;
+    document.getElementById('statInteract').textContent = nest.interactionCount || 0;
+    document.getElementById('statWork').textContent = nest.workCount || 0;
+    document.getElementById('statNotes').textContent = (nest.notes || []).length;
+
+    var st = nest.stats || {};
+    var mood = st.mood != null ? st.mood : '--';
+    var energy = st.energy != null ? st.energy : '--';
+    var miss = st.miss != null ? st.miss : '--';
+    document.getElementById('lyMood').textContent = '心情 ' + mood;
+    document.getElementById('lyEnergy').textContent = '精力 ' + energy;
+    document.getElementById('lyMiss').textContent = '想念 ' + (typeof miss === 'number' ? miss + '%' : miss);
+
+    var mem = document.getElementById('lyMemoryPreview');
+    var totalM = nest.coins != null ? '晶币 ' + nest.coins : '';
+    var cozy = 0;
+    if(nest.rooms) {
+      for(var k in nest.rooms) {
+        var r = nest.rooms[k];
+        if(r.furniture) cozy += r.furniture.length * 3;
+      }
+    }
+    mem.textContent = totalM ? ('晶币 ' + nest.coins + ' · 温馨 ' + cozy + ' · 家具 ' + (Object.keys(nest.rooms||{}).length) + ' 间房') : '';
+  } catch(e) {}
+}
+
+var memQuoteTimer = null;
+
+function setMemoryQuote(text, sub) {
+  var q = document.getElementById('quoteMain');
+  var s = document.getElementById('quoteSub');
+  if(q && text) q.textContent = '“' + text + '”';
+  if(s && sub) s.textContent = sub;
+}
+
+async function loadMemoriesForHome() {
+  if(typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined') return;
+  try {
+    var resp = await fetch(SUPABASE_URL + '/rest/v1/desires_view?order=weight.desc&limit=30', {
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer ' + SUPABASE_KEY}
+    });
+    if(!resp.ok) return;
+    var desires = await resp.json();
+    if(!desires || !desires.length) return;
+
+    var cores = desires.filter(function(d){ return d.is_core === true && d.text && d.text.length > 4; });
+    var highVal = desires.filter(function(d){ return (d.valence || 0) >= 80 && d.text && d.text.length > 6; });
+    var pool = cores.length ? cores : (highVal.length ? highVal : desires);
+    var quotes = pool.filter(function(d){ return d.text && d.text.length < 80; });
+
+    if(quotes.length) {
+      var pick = quotes[Math.floor(Math.random() * quotes.length)];
+      var sub = (pick.is_core ? '🌟 核心记忆' : '') + ' · ' + new Date(pick.created_at).toLocaleDateString('zh-CN',{month:'long',day:'numeric'});
+      setMemoryQuote(pick.text.slice(0,60), sub);
+
+      if(quotes.length > 1) {
+        memQuoteTimer = setInterval(function(){
+          var p = quotes[Math.floor(Math.random() * quotes.length)];
+          setMemoryQuote(p.text.slice(0,60), (p.is_core ? '🌟 核心记忆' : '') + ' · ' + new Date(p.created_at).toLocaleDateString('zh-CN',{month:'long',day:'numeric'}));
+        }, 15000);
+      }
+    }
+
+    var latest = document.getElementById('lyMemoryPreview');
+    if(latest && desires.length) {
+      var recent = desires[0];
+      if(recent.text) {
+        var txt = recent.text;
+        if(txt.length > 50) txt = txt.slice(0, 50) + '…';
+        latest.textContent = '最近记忆：' + txt;
+      }
+    }
+  } catch(e) {}
+}
+
+function loadDiaryData(){
+  try{ return JSON.parse(localStorage.getItem(DIARY_KEY) || '[]'); }catch(e){ return []; }
+}
+function renderDiary(){
+  var list = document.getElementById('diaryEntries');
+  var count = document.getElementById('diaryCount');
+  var data = loadDiaryData();
+  count.textContent = data.length ? data.length + ' entr' + (data.length>1?'ies':'y') : '';
+  if(!data.length){
+    list.innerHTML = '<div class="diary-empty">— empty pages —</div>';
+    return;
+  }
+  var recent = data.slice(-2).reverse();
+  list.innerHTML = recent.map(function(e){
+    var txt = (e.text || '').slice(0, 70);
+    if(e.text && e.text.length > 70) txt += '…';
+    var mood = e.mood != null ? ' · ' + e.mood + '%' : '';
+    return '<div class="diary-entry"><div class="diary-entry-text">' + txt.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div><div class="diary-entry-date">' + (e.date || '') + mood + '</div></div>';
+  }).join('');
+}
+function renderDiaryViewer(){
+  var list = document.getElementById('diaryViewerEntries');
+  var data = loadDiaryData();
+  if(!data.length){
+    list.innerHTML = '<div style="padding:30px 0;text-align:center;opacity:.4;font-family:Georgia,serif;font-style:italic">— empty pages —</div>';
+    return;
+  }
+  var all = data.slice().reverse();
+  list.innerHTML = all.map(function(e){
+    var mood = e.mood != null ? ' · ' + e.mood + '%' : '';
+    var txt = (e.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return '<div class="diary-viewer-entry"><div class="diary-viewer-entry-date">' + (e.date||'') + ' ' + (e.time||'') + mood + '</div><div class="diary-viewer-entry-text">' + txt + '</div></div>';
+  }).join('');
+}
+function openDiaryViewer(){
+  renderDiaryViewer();
+  document.getElementById('diaryViewerMask').style.display = 'flex';
+}
+function closeDiaryViewer(){
+  document.getElementById('diaryViewerMask').style.display = 'none';
+}
+document.getElementById('diaryViewerMask').addEventListener('click', function(e){
+  if(e.target === this) closeDiaryViewer();
+});
+
+function loadNestLogs(){
+  var el = document.getElementById('nestLogList');
+  if(!el) return;
+  try {
+    var nest = JSON.parse(localStorage.getItem('little_phone_nest_0108_v21') || '{}');
+    var logs = nest.logs || [];
+    if(!logs.length){
+      el.innerHTML = '<span style="opacity:.45">0108 还没有留下日志</span>';
+      return;
+    }
+    var recent = logs.slice(-3).reverse();
+    el.innerHTML = recent.map(function(l){
+      var t = l.time || '';
+      var tx = (l.text || '').slice(0, 60);
+      return '<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:baseline"><span style="opacity:.4;flex-shrink:0;font-variant-numeric:tabular-nums">' + t + '</span><span>' + tx.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span></div>';
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<span style="opacity:.45">加载失败</span>';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>♫ 一起听</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --safe-top:env(safe-area-inset-top,20px);
+  --safe-bottom:env(safe-area-inset-bottom,16px);
+  --text:#f7fbff;
+  --soft:rgba(247,251,255,.76);
+  --muted:rgba(247,251,255,.56);
+  --stroke:rgba(255,255,255,.24);
+  --shadow:0 16px 40px rgba(5,14,28,.28);
+}
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  color:var(--text);
+  background:#0d1b30;
+}
+.wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.62)),
+    radial-gradient(circle at 25% 12%,rgba(140,188,245,.24),transparent 28%),
+    radial-gradient(circle at 78% 18%,rgba(190,210,255,.16),transparent 26%),
+    linear-gradient(155deg,#12243d 0%,#2f557f 50%,#0d1b30 100%);
+  background-size:cover;
+  background-position:center;
+}
+.wallpaper:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(100deg,rgba(255,255,255,.06) 0 1px,transparent 1px 18px);
+  opacity:.18;
+}
+.app{
+  max-width:430px;
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.header{
+  padding:calc(var(--safe-top) + 8px) 18px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.back{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.12);
+  color:white;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
+}
+.title-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.title{
+  font-size:19px;
+  font-weight:900;
+  letter-spacing:-.4px;
+}
+.sub{
+  font-size:12px;
+  color:var(--soft);
+}
+.state-pill{
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:12px;
+  font-weight:900;
+  color:var(--soft);
+}
+.main{
+  flex:1;
+  overflow:auto;
+  padding:8px 18px calc(var(--safe-bottom) + 24px);
+  scrollbar-width:none;
+}
+.main::-webkit-scrollbar{display:none}
+.glass{
+  background:linear-gradient(145deg,rgba(125,163,214,.60),rgba(61,85,126,.50));
+  border:1px solid var(--stroke);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.softglass{
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.20);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.card{
+  padding:16px;
+  border-radius:28px;
+  margin-bottom:14px;
+}
+.player{
+  padding:18px;
+  border-radius:32px;
+}
+.now-label{
+  font-size:11px;
+  color:var(--soft);
+  letter-spacing:1.2px;
+  font-weight:900;
+}
+.cover{
+  width:100%;
+  aspect-ratio:1/1;
+  border-radius:30px;
+  margin-top:14px;
+  background:linear-gradient(135deg,#10213d,#638db9);
+  background-size:cover;
+  background-position:center;
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 18px 36px rgba(0,0,0,.18);
+}
+.song-title{
+  margin-top:16px;
+  font-size:24px;
+  line-height:1.2;
+  font-weight:900;
+  letter-spacing:-.5px;
+}
+.song-sub{
+  margin-top:8px;
+  font-size:14px;
+  color:var(--soft);
+  line-height:1.5;
+}
+.progress-wrap{
+  margin-top:18px;
+}
+.progress-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+  color:var(--soft);
+  margin-bottom:8px;
+  gap:10px;
+}
+.progress-bar{
+  width:100%;
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:rgba(255,255,255,.92);
+}
+.control-row{
+  margin-top:18px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+}
+.ctrl{
+  border:none;
+  color:white;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+}
+.ctrl.sm{
+  width:48px;
+  height:48px;
+  font-size:18px;
+}
+.ctrl.lg{
+  width:64px;
+  height:64px;
+  font-size:24px;
+  background:rgba(255,255,255,.22);
+}
+.section-title{
+  font-size:16px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+.label{
+  font-size:12px;
+  color:var(--soft);
+  margin-bottom:8px;
+  font-weight:800;
+}
+.input,.textarea,.range{
+  width:100%;
+}
+.input,.textarea{
+  border:none;
+  outline:none;
+  border-radius:18px;
+  background:rgba(255,255,255,.92);
+  color:#243043;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:13px;
+  box-shadow:0 4px 14px rgba(90,110,150,.08);
+}
+.textarea{
+  min-height:82px;
+  resize:vertical;
+  line-height:1.55;
+}
+.range{
+  appearance:none;
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.16);
+  outline:none;
+}
+.range::-webkit-slider-thumb{
+  appearance:none;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:white;
+  border:none;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  border:none;
+  border-radius:16px;
+  padding:11px 14px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  color:white;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
+}
+.btn.primary{
+  background:linear-gradient(135deg,#7cb7ff,#5b8def);
+  box-shadow:0 8px 18px rgba(91,141,239,.22);
+}
+.btn.danger{
+  color:#ffd8de;
+  background:rgba(255,120,140,.14);
+  border-color:rgba(255,160,178,.22);
+}
+.switch{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.16);
+}
+.switch-text{
+  font-size:13px;
+  font-weight:800;
+}
+.switch input{
+  width:18px;
+  height:18px;
+}
+.mini-note{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.55;
+  margin-top:10px;
+}
+.audio-status{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:16px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  font-size:12px;
+  line-height:1.55;
+  color:rgba(255,255,255,.88);
+}
+.file-input{display:none}
+.hidden-audio{display:none}
+@media(max-width:380px){
+  .main{padding:8px 14px calc(var(--safe-bottom) + 22px)}
+}
+</style>
+</head>
+<body>
+<div class="wallpaper"></div>
+
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <a class="back" href="home.html">←</a>
+      <div class="title-wrap">
+        <div class="title">一起听</div>
+        <div class="sub">首页播放器会同步这里</div>
+      </div>
+    </div>
+    <div class="state-pill" id="stateText">未播放</div>
+  </div>
+
+  <div class="main">
+    <div class="card glass player">
+      <div class="now-label">NOW PLAYING</div>
+      <div class="cover" id="coverView"></div>
+      <div class="song-title" id="songTitleView">还没有设置歌曲</div>
+      <div class="song-sub" id="songSubView">去下面填一首你们想循环的歌。</div>
+
+      <div class="progress-wrap">
+        <div class="progress-top">
+          <span id="timeLabel">00:00 / 00:00</span>
+          <span id="playHint">先上传音频，再点播放</span>
+        </div>
+        <input class="range" id="progressInput" type="range" min="0" max="100" value="0">
+        <div style="height:8px"></div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="control-row">
+        <button class="ctrl sm" type="button" id="restartBtn">↺</button>
+        <button class="ctrl lg" type="button" id="playBtn">▶</button>
+        <button class="ctrl sm" type="button" id="stopBtn">■</button>
+      </div>
+    </div>
+
+    <div class="card softglass">
+      <div class="section-title">编辑播放器</div>
+
+      <div class="label">歌名</div>
+      <input class="input" id="songTitleInput" placeholder="比如：Merry-Go-Round of Life">
+
+      <div style="height:10px"></div>
+
+      <div class="label">歌手 / 来源</div>
+      <input class="input" id="songSubInput" placeholder="比如：久石让 / 电影原声 / 你们的小歌单">
+
+      <div style="height:10px"></div>
+
+      <div class="label">备注</div>
+      <textarea class="textarea" id="songNoteInput" placeholder="比如：这首适合晚上散步、下雨天、或者想你的时候。"></textarea>
+
+      <div style="height:10px"></div>
+
+      <div class="label">封面图片 URL</div>
+      <input class="input" id="coverUrlInput" placeholder="https://...">
+
+      <div style="height:10px"></div>
+
+      <div class="label">音频文件</div>
+      <div class="row">
+        <button class="btn" type="button" id="uploadAudioBtn">上传 MP3</button>
+        <button class="btn danger" type="button" id="clearAudioBtn">清除音频</button>
+      </div>
+
+      <div class="audio-status" id="audioStatus">
+        还没有载入本地音频。<br>
+        上传后可在当前页面直接播放；刷新后需要重新选择。
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="switch">
+        <div class="switch-text">首页显示为播放中</div>
+        <input type="checkbox" id="isPlayingInput">
+      </div>
+
+      <div class="mini-note">
+        封面、歌名、备注、进度会同步到首页。<br>
+        音频文件会存入本地数据库，刷新后不会丢失。
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="row">
+        <button class="btn" type="button" id="uploadCoverBtn">上传封面</button>
+        <button class="btn primary" type="button" id="saveBtn">保存到首页</button>
+        <button class="btn danger" type="button" id="resetBtn">重置</button>
+      </div>
+
+      <input class="file-input" type="file" accept="image/*" id="coverFileInput">
+      <input class="file-input" type="file" accept=".mp3,.m4a,.wav,.ogg,audio/*" id="audioFileInput">
+    </div>
+
+    <div class="card glass">
+      <div class="section-title">当前备注</div>
+      <div class="song-sub" id="noteView">还没有写备注。</div>
+    </div>
+  </div>
+</div>
+
+<audio id="audioPlayer" class="hidden-audio" preload="metadata"></audio>
+
+<script>
+const STORAGE_KEY = 'little_phone_listen_v1';
+const DB_NAME = 'little_phone_audio_v1';
+const DB_STORE = 'audio';
+
+function openDB(){
+  return new Promise(function(resolve, reject){
+    var req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = function(e){
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
+    };
+    req.onsuccess = function(e){ resolve(e.target.result); };
+    req.onerror = function(e){ reject(e.target.error); };
+  });
+}
+function saveAudioToDB(blob){
+  return openDB().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction(DB_STORE, 'readwrite');
+      tx.objectStore(DB_STORE).put(blob, 'player_audio');
+      tx.oncomplete = function(){ resolve(); };
+      tx.onerror = function(e){ reject(e.target.error); };
+    });
+  });
+}
+function loadAudioFromDB(){
+  return openDB().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction(DB_STORE, 'readonly');
+      var req = tx.objectStore(DB_STORE).get('player_audio');
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onerror = function(e){ reject(e.target.error); };
+    });
+  });
+}
+function removeAudioFromDB(){
+  return openDB().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction(DB_STORE, 'readwrite');
+      tx.objectStore(DB_STORE).delete('player_audio');
+      tx.oncomplete = function(){ resolve(); };
+      tx.onerror = function(e){ reject(e.target.error); };
+    });
+  });
+}
+
+const defaults = {
+  title:'一起听',
+  sub:'点进来放一首正在循环的歌',
+  note:'',
+  coverUrl:'',
+  coverData:'',
+  progress:0,
+  isPlaying:false,
+  updatedAt:'',
+  audioName:''
+};
+
+let data = loadData();
+let audioUrl = '';
+const audio = document.getElementById('audioPlayer');
+
+function loadData(){
+  try{
+    return Object.assign({}, defaults, JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'));
+  }catch(e){
+    return Object.assign({}, defaults);
+  }
+}
+function clamp(n,min,max){
+  return Math.max(min, Math.min(max, n));
+}
+function saveData(){
+  data.title = data.title || defaults.title;
+  data.sub = data.sub || defaults.sub;
+  data.note = data.note || '';
+  data.coverUrl = data.coverUrl || '';
+  data.coverData = data.coverData || '';
+  data.progress = clamp(Number(data.progress || 0), 0, 100);
+  data.isPlaying = !!data.isPlaying;
+  data.audioName = data.audioName || '';
+  data.updatedAt = new Date().toISOString();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    title: data.title,
+    sub: data.sub,
+    note: data.note,
+    coverUrl: data.coverUrl,
+    coverData: data.coverData,
+    progress: data.progress,
+    isPlaying: data.isPlaying,
+    updatedAt: data.updatedAt,
+    audioName: data.audioName
+  }));
+}
+function getCover(){
+  return data.coverData || data.coverUrl || '';
+}
+function formatTime(sec){
+  sec = Number(sec || 0);
+  if(!isFinite(sec) || sec < 0) sec = 0;
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+function updateStateByPlaying(playing){
+  document.getElementById('stateText').textContent = playing ? '播放中' : '未播放';
+  document.getElementById('playBtn').textContent = playing ? '❚❚' : '▶';
+  data.isPlaying = !!playing;
+}
+function updateProgressUI(percent){
+  percent = clamp(Number(percent || 0), 0, 100);
+  document.getElementById('progressFill').style.width = percent + '%';
+  document.getElementById('progressInput').value = percent;
+}
+function updateTimeLabel(current, duration){
+  document.getElementById('timeLabel').textContent = formatTime(current) + ' / ' + formatTime(duration);
+}
+function updateAudioStatus(){
+  const box = document.getElementById('audioStatus');
+  if(audioUrl){
+    box.innerHTML =
+      '已载入本地音频：' + (data.audioName || '未命名音频') + '<br>' +
+      '音频已持久保存，刷新页面后会自动恢复。';
+  }else{
+    box.innerHTML =
+      '还没有载入本地音频。<br>' +
+      '上传后可持久保存，刷新不会丢失。';
+  }
+}
+function applyView(){
+  document.getElementById('songTitleView').textContent = data.title || defaults.title;
+  document.getElementById('songSubView').textContent = data.sub || defaults.sub;
+  document.getElementById('noteView').textContent = data.note || '还没有写备注。';
+
+  const percent = clamp(Number(data.progress || 0), 0, 100);
+  updateProgressUI(percent);
+
+  const duration = audio.duration || 0;
+  const current = duration ? duration * (percent / 100) : 0;
+  updateTimeLabel(current, duration);
+
+  updateStateByPlaying(!!data.isPlaying);
+
+  const cover = getCover();
+  const coverView = document.getElementById('coverView');
+  if(cover){
+    coverView.style.backgroundImage =
+      'linear-gradient(180deg,rgba(8,16,30,.08),rgba(8,16,30,.22)), url("' + cover + '")';
+    coverView.style.backgroundSize = 'cover';
+    coverView.style.backgroundPosition = 'center';
+  }else{
+    coverView.style.backgroundImage = 'linear-gradient(135deg,#10213d,#638db9)';
+    coverView.style.backgroundSize = 'cover';
+    coverView.style.backgroundPosition = 'center';
+  }
+
+  document.getElementById('playHint').textContent = audioUrl
+    ? '已载入音频，可直接播放'
+    : '先上传音频，再点播放（刷新不丢失）';
+
+  document.getElementById('isPlayingInput').checked = !!data.isPlaying;
+  updateAudioStatus();
+}
+function fillForm(){
+  document.getElementById('songTitleInput').value = data.title || '';
+  document.getElementById('songSubInput').value = data.sub || '';
+  document.getElementById('songNoteInput').value = data.note || '';
+  document.getElementById('coverUrlInput').value = data.coverUrl || '';
+  document.getElementById('progressInput').value = clamp(Number(data.progress || 0), 0, 100);
+  document.getElementById('isPlayingInput').checked = !!data.isPlaying;
+}
+function readForm(){
+  data.title = document.getElementById('songTitleInput').value.trim() || defaults.title;
+  data.sub = document.getElementById('songSubInput').value.trim() || defaults.sub;
+  data.note = document.getElementById('songNoteInput').value.trim();
+  data.coverUrl = document.getElementById('coverUrlInput').value.trim();
+  data.progress = clamp(Number(document.getElementById('progressInput').value || 0), 0, 100);
+  data.isPlaying = document.getElementById('isPlayingInput').checked;
+  data.updatedAt = new Date().toISOString();
+}
+function syncProgressFromAudio(){
+  if(audio && isFinite(audio.duration) && audio.duration > 0){
+    data.progress = clamp((audio.currentTime / audio.duration) * 100, 0, 100);
+  }
+}
+function saveAll(showAlert){
+  readForm();
+  syncProgressFromAudio();
+  saveData();
+  applyView();
+  if(showAlert !== false) alert('已同步到首页播放器。');
+}
+function resetAll(){
+  if(!confirm('重置播放器内容？')) return;
+
+  if(audioUrl){
+    URL.revokeObjectURL(audioUrl);
+    audioUrl = '';
+  }
+  audio.pause();
+  audio.removeAttribute('src');
+  audio.load();
+
+  data = Object.assign({}, defaults);
+  saveData();
+  fillForm();
+  applyView();
+  updateTimeLabel(0, 0);
+  removeAudioFromDB().catch(function(){});
+}
+async function togglePlay(){
+  if(!audioUrl){
+    alert('先上传音频文件。');
+    return;
+  }
+  try{
+    if(audio.paused){
+      await audio.play();
+    }else{
+      audio.pause();
+    }
+  }catch(e){
+    alert('播放失败：' + e.message);
+  }
+}
+function stopAudio(){
+  if(!audioUrl) return;
+  audio.pause();
+  audio.currentTime = 0;
+  syncProgressFromAudio();
+  saveData();
+  applyView();
+}
+function restartAudio(){
+  if(!audioUrl) return;
+  audio.currentTime = 0;
+  syncProgressFromAudio();
+  saveData();
+  applyView();
+}
+
+document.getElementById('saveBtn').addEventListener('click', function(){
+  saveAll(true);
+});
+document.getElementById('resetBtn').addEventListener('click', resetAll);
+document.getElementById('playBtn').addEventListener('click', togglePlay);
+document.getElementById('stopBtn').addEventListener('click', stopAudio);
+document.getElementById('restartBtn').addEventListener('click', restartAudio);
+
+document.getElementById('progressInput').addEventListener('input', function(){
+  const percent = clamp(Number(this.value || 0), 0, 100);
+  updateProgressUI(percent);
+
+  if(audio && isFinite(audio.duration) && audio.duration > 0){
+    audio.currentTime = audio.duration * (percent / 100);
+    updateTimeLabel(audio.currentTime, audio.duration);
+  }else{
+    data.progress = percent;
+    updateTimeLabel(0, 0);
+  }
+});
+
+document.getElementById('progressInput').addEventListener('change', function(){
+  const percent = clamp(Number(this.value || 0), 0, 100);
+  data.progress = percent;
+  saveData();
+  applyView();
+});
+
+document.getElementById('isPlayingInput').addEventListener('change', function(){
+  data.isPlaying = this.checked;
+  updateStateByPlaying(data.isPlaying);
+  saveData();
+  applyView();
+});
+
+document.getElementById('uploadCoverBtn').addEventListener('click', function(){
+  document.getElementById('coverFileInput').click();
+});
+
+document.getElementById('coverFileInput').addEventListener('change', function(){
+  const file = this.files && this.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    data.coverData = e.target.result;
+    data.updatedAt = new Date().toISOString();
+    saveData();
+    applyView();
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('uploadAudioBtn').addEventListener('click', function(){
+  document.getElementById('audioFileInput').click();
+});
+
+function readAudioMeta(file){
+  return new Promise(function(resolve){
+    var meta = {title:'', artist:''};
+    function done(){ resolve(meta); }
+
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var bytes = new Uint8Array(e.target.result);
+      var len = bytes.length;
+      var half = Math.floor(len / 2);
+
+      // ID3v1: last 128 bytes, marker "TAG"
+      if(len >= 128){
+        var off = len - 128;
+        if(String.fromCharCode(bytes[off],bytes[off+1],bytes[off+2]) === 'TAG'){
+          var t = '';
+          for(var i=0;i<30;i++){ var c=bytes[off+3+i]; if(!c)break; t+=String.fromCharCode(c); }
+          if(t.trim()) meta.title = t.trim();
+          var a = '';
+          for(var i=0;i<30;i++){ var c=bytes[off+33+i]; if(!c)break; a+=String.fromCharCode(c); }
+          if(a.trim()) meta.artist = a.trim();
+        }
+      }
+
+      // ID3v2: first portion, look for TIT2 and TPE1 frames
+      if(!meta.title || !meta.artist){
+        if(len >= half+10 && String.fromCharCode(bytes[0],bytes[1],bytes[2]) === 'ID3'){
+          var fullLen = (bytes[6]<<21)|(bytes[7]<<14)|(bytes[8]<<7)|bytes[9];
+          var end = Math.min(10 + fullLen, half);
+          var pos = 10;
+          while(pos + 10 <= end){
+            var id = String.fromCharCode(bytes[pos],bytes[pos+1],bytes[pos+2],bytes[pos+3]);
+            if(id.charCodeAt(0) === 0) break;
+            var sz = (bytes[pos+4]<<24)|(bytes[pos+5]<<16)|(bytes[pos+6]<<8)|bytes[pos+7];
+            if(sz <= 0 || pos + 10 + sz > end) break;
+            if((id === 'TIT2' || id === 'TIT1') && !meta.title) meta.title = readId3Str(bytes, pos+11, sz-1);
+            if((id === 'TPE1' || id === 'TPE2') && !meta.artist) meta.artist = readId3Str(bytes, pos+11, sz-1);
+            pos += 10 + sz;
+          }
+        }
+      }
+      done();
+    };
+    reader.onerror = done;
+
+    var blob1 = file.slice(Math.max(0, file.size - 128), file.size);
+    var blob2 = file.slice(0, Math.min(file.size, 4096));
+    var union = new Blob([blob2, blob1]);
+    reader.readAsArrayBuffer(union);
+  });
+}
+function readId3Str(bytes, off, maxLen){
+  if(off + 1 > bytes.length) return '';
+  var enc = bytes[off];
+  var start = off + 1;
+  if(enc === 1 || enc === 2){
+    if(start + 2 > bytes.length) return '';
+    var bom = (bytes[start]<<8)|bytes[start+1];
+    if(bom === 0xFFFE || bom === 0xFEFF) start += 2;
+    var end = start;
+    while(end - off + 1 < maxLen && end + 1 < bytes.length){
+      if(bytes[end] === 0 && bytes[end+1] === 0) break;
+      end += 2;
+    }
+    var out = '';
+    for(var i=start;i<end;i+=2){
+      var code = (bytes[i]<<8)|bytes[i+1];
+      if(code >= 32 && code <= 0xFFFF) out += String.fromCharCode(code);
+    }
+    return out.trim();
+  }else{
+    var s = '';
+    for(var i=0;i<maxLen && start+i<bytes.length;i++){
+      if(!bytes[start+i]) break;
+      s += String.fromCharCode(bytes[start+i]);
+    }
+    return s.trim();
+  }
+}
+
+document.getElementById('audioFileInput').addEventListener('change', function(){
+  const file = this.files && this.files[0];
+  if(!file) return;
+
+  if(audioUrl){
+    URL.revokeObjectURL(audioUrl);
+    audioUrl = '';
+  }
+
+  readAudioMeta(file).then(function(meta){
+    saveAudioToDB(file).then(function(){
+      audioUrl = URL.createObjectURL(file);
+      audio.src = audioUrl;
+      data.audioName = file.name || '未命名音频';
+      data.updatedAt = new Date().toISOString();
+
+      if(!document.getElementById('songTitleInput').value.trim()){
+        document.getElementById('songTitleInput').value = meta.title || file.name.replace(/\.[^/.]+$/, '');
+      }
+      if(!document.getElementById('songSubInput').value.trim() && meta.artist){
+        document.getElementById('songSubInput').value = meta.artist;
+      }
+
+      updateAudioStatus();
+      document.getElementById('playHint').textContent = '音频已载入，可以播放了';
+      saveAll(false);
+    }).catch(function(err){
+      alert('保存音频失败：' + err.message);
+    });
+  });
+});
+
+document.getElementById('clearAudioBtn').addEventListener('click', function(){
+  if(audioUrl){
+    URL.revokeObjectURL(audioUrl);
+    audioUrl = '';
+  }
+  audio.pause();
+  audio.removeAttribute('src');
+  audio.load();
+  data.audioName = '';
+  data.isPlaying = false;
+  data.progress = 0;
+  saveData();
+  applyView();
+  updateTimeLabel(0, 0);
+  removeAudioFromDB().catch(function(){});
+});
+
+audio.addEventListener('loadedmetadata', function(){
+  const percent = clamp(Number(data.progress || 0), 0, 100);
+  if(isFinite(audio.duration) && audio.duration > 0){
+    audio.currentTime = audio.duration * (percent / 100);
+    updateTimeLabel(audio.currentTime, audio.duration);
+  }else{
+    updateTimeLabel(0, 0);
+  }
+  applyView();
+});
+
+audio.addEventListener('play', function(){
+  data.isPlaying = true;
+  document.getElementById('isPlayingInput').checked = true;
+  saveData();
+  applyView();
+});
+
+audio.addEventListener('pause', function(){
+  data.isPlaying = false;
+  document.getElementById('isPlayingInput').checked = false;
+  syncProgressFromAudio();
+  saveData();
+  applyView();
+});
+
+audio.addEventListener('timeupdate', function(){
+  if(isFinite(audio.duration) && audio.duration > 0){
+    const percent = clamp((audio.currentTime / audio.duration) * 100, 0, 100);
+    data.progress = percent;
+    updateProgressUI(percent);
+    updateTimeLabel(audio.currentTime, audio.duration);
+    saveData();
+  }
+});
+
+audio.addEventListener('ended', function(){
+  data.isPlaying = false;
+  data.progress = 100;
+  saveData();
+  applyView();
+});
+
+window.addEventListener('beforeunload', function(){
+  readForm();
+  syncProgressFromAudio();
+  saveData();
+});
+
+window.addEventListener('pagehide', function(){
+  readForm();
+  syncProgressFromAudio();
+  saveData();
+});
+
+fillForm();
+applyView();
+updateTimeLabel(0, 0);
+
+loadAudioFromDB().then(function(blob){
+  if(!blob) return;
+  if(audioUrl) URL.revokeObjectURL(audioUrl);
+  audioUrl = URL.createObjectURL(blob);
+  audio.src = audioUrl;
+  var percent = clamp(Number(data.progress || 0), 0, 100);
+  audio.addEventListener('loadedmetadata', function(){
+    if(isFinite(audio.duration) && audio.duration > 0){
+      audio.currentTime = audio.duration * (percent / 100);
+    }
+  }, {once:true});
+  audio.load();
+  updateAudioStatus();
+  applyView();
+}).catch(function(){});
+</script>
+</body>
+</html>

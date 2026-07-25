@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>♡ 纪念日</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --safe-top:env(safe-area-inset-top,20px);
+  --safe-bottom:env(safe-area-inset-bottom,16px);
+  --text:#f7fbff;
+  --soft:rgba(247,251,255,.76);
+  --muted:rgba(247,251,255,.56);
+  --stroke:rgba(255,255,255,.24);
+  --shadow:0 16px 40px rgba(5,14,28,.30);
+}
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  background:#0d1b30;
+  color:var(--text);
+}
+.wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.62)),
+    radial-gradient(circle at 22% 14%,rgba(140,188,245,.22),transparent 28%),
+    radial-gradient(circle at 80% 20%,rgba(255,196,220,.12),transparent 24%),
+    linear-gradient(155deg,#12243d 0%,#2f557f 50%,#0d1b30 100%);
+}
+.wallpaper:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(100deg,rgba(255,255,255,.05) 0 1px,transparent 1px 18px);
+  opacity:.18;
+}
+.app{
+  max-width:430px;
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+}
+.header{
+  padding:calc(var(--safe-top) + 8px) 18px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.back{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.12);
+  color:#fff;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.title-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.title{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:-.4px;
+}
+.sub{
+  font-size:12px;
+  color:var(--soft);
+}
+.state-pill{
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:12px;
+  font-weight:900;
+  color:var(--soft);
+}
+.main{
+  flex:1;
+  overflow:auto;
+  padding:8px 18px calc(var(--safe-bottom) + 24px);
+  scrollbar-width:none;
+}
+.main::-webkit-scrollbar{display:none}
+.glass{
+  background:linear-gradient(145deg,rgba(125,163,214,.60),rgba(61,85,126,.50));
+  border:1px solid var(--stroke);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.softglass{
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.20);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.card{
+  border-radius:30px;
+  padding:18px;
+  margin-bottom:14px;
+}
+.preview-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+.preview-title{
+  font-size:18px;
+  font-weight:900;
+}
+.preview-sub{
+  margin-top:6px;
+  font-size:13px;
+  color:var(--soft);
+  line-height:1.55;
+}
+.preview-badge{
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.preview-date{
+  margin-top:14px;
+  padding:14px 16px;
+  border-radius:20px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  font-size:15px;
+  font-weight:900;
+  line-height:1.55;
+}
+.preview-count{
+  margin-top:10px;
+  padding:14px 16px;
+  border-radius:20px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  font-size:14px;
+  line-height:1.6;
+  font-weight:800;
+}
+.section-title{
+  font-size:16px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+.label{
+  display:block;
+  margin-bottom:8px;
+  font-size:12px;
+  font-weight:800;
+  color:var(--soft);
+}
+.input,.textarea{
+  width:100%;
+  border:none;
+  outline:none;
+  border-radius:18px;
+  background:rgba(255,255,255,.94);
+  color:#243043;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:13px;
+  box-shadow:0 4px 14px rgba(90,110,150,.08);
+}
+.textarea{
+  min-height:88px;
+  resize:vertical;
+  line-height:1.55;
+}
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  border:none;
+  border-radius:16px;
+  padding:11px 14px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  color:white;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
+}
+.btn.primary{
+  background:linear-gradient(135deg,#7cb7ff,#5b8def);
+  box-shadow:0 8px 18px rgba(91,141,239,.22);
+}
+.btn.danger{
+  color:#ffd8de;
+  background:rgba(255,120,140,.14);
+  border-color:rgba(255,160,178,.22);
+}
+.mini-note{
+  margin-top:10px;
+  font-size:11px;
+  line-height:1.55;
+  color:var(--muted);
+}
+@media(max-width:380px){
+  .main{padding:8px 14px calc(var(--safe-bottom) + 22px)}
+}
+</style>
+</head>
+<body>
+<div class="wallpaper"></div>
+
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <a class="back" href="home.html">←</a>
+      <div class="title-wrap">
+        <div class="title">纪念日</div>
+        <div class="sub">选一个值得被反复想起的日子</div>
+      </div>
+    </div>
+    <div class="state-pill" id="saveState">未保存</div>
+  </div>
+
+  <div class="main">
+    <section class="card glass">
+      <div class="preview-top">
+        <div>
+          <div class="preview-title" id="previewTitle">纪念日</div>
+          <div class="preview-sub" id="previewSub">留一个值得反复想起的日期。</div>
+        </div>
+        <div class="preview-badge" id="previewBadge">--</div>
+      </div>
+
+      <div class="preview-date" id="previewDate">年度纪念日：--</div>
+      <div class="preview-count" id="previewCount">请选择一个日期。</div>
+    </section>
+
+    <section class="card softglass">
+      <div class="section-title">编辑纪念日</div>
+
+      <label class="label">纪念日标题</label>
+      <input class="input" id="memoryTitleInput" placeholder="比如：第一次见面 / 在一起 / 小镇创建日">
+
+      <div style="height:10px"></div>
+
+      <label class="label">纪念日说明</label>
+      <textarea class="textarea" id="memorySubInput" placeholder="比如：这是我们第一次认真记住彼此的那天。"></textarea>
+
+      <div style="height:10px"></div>
+
+      <label class="label">纪念日日期</label>
+      <input class="input" id="memoryDateInput" type="date">
+
+      <div class="mini-note">
+        保存后会写入首页同一个本地配置。<br>
+        首页之后只要读取 <code>memoryTitle</code> / <code>memorySub</code> / <code>memoryDate</code> 就能直接用。
+      </div>
+
+      <div style="height:14px"></div>
+
+      <div class="row">
+        <button class="btn primary" type="button" id="saveBtn">保存纪念日</button>
+        <button class="btn" type="button" id="previewBtn">刷新预览</button>
+        <button class="btn danger" type="button" id="resetBtn">恢复默认</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const SETTINGS_KEY = 'little_phone_theme_v1';
+
+const defaults = {
+  memoryTitle:'纪念日',
+  memorySub:'留一个值得反复想起的日期。',
+  memoryDate:'2026-10-08'
+};
+
+let settings = loadSettings();
+
+function loadSettings(){
+  try{
+    return Object.assign({}, defaults, JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'));
+  }catch(e){
+    return Object.assign({}, defaults);
+  }
+}
+
+function saveSettings(){
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+function daysBetween(start, end){
+  return Math.floor((end - start) / 86400000);
+}
+
+function formatMonthDay(date){
+  if(!(date instanceof Date) || isNaN(date.getTime())) return '--';
+  return (date.getMonth() + 1) + '月' + date.getDate() + '日';
+}
+
+function updatePreview(){
+  const title = document.getElementById('memoryTitleInput').value.trim() || defaults.memoryTitle;
+  const sub = document.getElementById('memorySubInput').value.trim() || defaults.memorySub;
+  const dateStr = document.getElementById('memoryDateInput').value;
+
+  document.getElementById('previewTitle').textContent = title;
+  document.getElementById('previewSub').textContent = sub;
+
+  if(!dateStr){
+    document.getElementById('previewBadge').textContent = '--';
+    document.getElementById('previewDate').textContent = '年度纪念日：--';
+    document.getElementById('previewCount').textContent = '请选择一个日期。';
+    return;
+  }
+
+  const baseDate = new Date(dateStr + 'T00:00:00');
+  if(isNaN(baseDate.getTime())){
+    document.getElementById('previewBadge').textContent = '--';
+    document.getElementById('previewDate').textContent = '年度纪念日：--';
+    document.getElementById('previewCount').textContent = '日期格式无效。';
+    return;
+  }
+
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const base = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+
+  const passed = Math.max(1, daysBetween(base, today) + 1);
+  document.getElementById('previewBadge').textContent = '已过 ' + passed + ' 天';
+  document.getElementById('previewDate').textContent = '年度纪念日：' + formatMonthDay(base);
+
+  let next = new Date(today.getFullYear(), base.getMonth(), base.getDate());
+  if(next < today){
+    next = new Date(today.getFullYear() + 1, base.getMonth(), base.getDate());
+  }
+
+  const left = Math.max(0, daysBetween(today, next));
+  if(left === 0){
+    document.getElementById('previewCount').textContent = '今天就是「' + title + '」。';
+  }else{
+    document.getElementById('previewCount').textContent =
+      '距离下一次 ' + formatMonthDay(base) + ' 还有 ' + left + ' 天。';
+  }
+}
+
+function fillForm(){
+  document.getElementById('memoryTitleInput').value = settings.memoryTitle || defaults.memoryTitle;
+  document.getElementById('memorySubInput').value = settings.memorySub || defaults.memorySub;
+  document.getElementById('memoryDateInput').value = settings.memoryDate || defaults.memoryDate;
+  updatePreview();
+}
+
+function markSaved(text){
+  document.getElementById('saveState').textContent = text;
+}
+
+function commitSave(){
+  settings.memoryTitle = document.getElementById('memoryTitleInput').value.trim() || defaults.memoryTitle;
+  settings.memorySub = document.getElementById('memorySubInput').value.trim() || defaults.memorySub;
+  settings.memoryDate = document.getElementById('memoryDateInput').value || defaults.memoryDate;
+  saveSettings();
+  updatePreview();
+  markSaved('已保存');
+  alert('纪念日已保存到首页配置。');
+}
+
+function resetMemory(){
+  if(!confirm('恢复默认纪念日？')) return;
+  settings.memoryTitle = defaults.memoryTitle;
+  settings.memorySub = defaults.memorySub;
+  settings.memoryDate = defaults.memoryDate;
+  saveSettings();
+  fillForm();
+  markSaved('已重置');
+}
+
+document.getElementById('saveBtn').addEventListener('click', commitSave);
+document.getElementById('previewBtn').addEventListener('click', function(){
+  updatePreview();
+  markSaved('预览已刷新');
+});
+document.getElementById('resetBtn').addEventListener('click', resetMemory);
+
+['memoryTitleInput','memorySubInput','memoryDateInput'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', function(){
+    markSaved('未保存');
+    updatePreview();
+  });
+});
+
+fillForm();
+markSaved('已加载');
+</script>
+</body>
+</html>

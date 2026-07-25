@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>账本</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --safe-top:env(safe-area-inset-top,20px);
+  --safe-bottom:env(safe-area-inset-bottom,16px);
+  --text:#f7fbff;
+  --soft:rgba(247,251,255,.74);
+  --dim:rgba(247,251,255,.52);
+  --stroke:rgba(255,255,255,.18);
+  --card:rgba(255,255,255,.12);
+  --accent:#8dbdff;
+  --accent-2:#74a8ff;
+  --danger:#ff9cab;
+}
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  color:var(--text);
+  background:#0d1b30;
+}
+.wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.68)),
+    radial-gradient(circle at 25% 12%,rgba(140,188,245,.24),transparent 28%),
+    radial-gradient(circle at 78% 18%,rgba(190,210,255,.16),transparent 26%),
+    linear-gradient(155deg,#12243d 0%,#2f557f 50%,#0d1b30 100%);
+  background-size:cover;
+  background-position:center;
+}
+.wallpaper:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(100deg,rgba(255,255,255,.055) 0 1px,transparent 1px 18px);
+  opacity:.22;
+}
+.app{
+  width:100%;
+  max-width:500px;
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.header{
+  padding:calc(var(--safe-top) + 10px) 10px 10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+  background:linear-gradient(180deg,rgba(8,16,30,.50),rgba(8,16,30,.12));
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+.round{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.24);
+  background:rgba(255,255,255,.12);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  font-size:18px;
+  flex-shrink:0;
+}
+.head-mark{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.30);
+  background:rgba(255,255,255,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  color:var(--accent);
+  flex-shrink:0;
+}
+.head-info{flex:1;min-width:0}
+.head-name{
+  font-size:17px;
+  line-height:1.15;
+  font-weight:900;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.head-sub{
+  margin-top:2px;
+  font-size:12px;
+  color:var(--soft);
+}
+.head-actions{
+  display:flex;
+  gap:6px;
+  flex-shrink:0;
+}
+.head-btn{
+  border:none;
+  border-radius:999px;
+  padding:8px 10px;
+  color:white;
+  font-size:11px;
+  font-weight:850;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+}
+.content{
+  flex:1;
+  overflow-y:auto;
+  padding:14px 10px calc(var(--safe-bottom) + 22px);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  scrollbar-width:none;
+}
+.content::-webkit-scrollbar{display:none}
+.card{
+  border-radius:24px;
+  padding:14px;
+  background:var(--card);
+  border:1px solid var(--stroke);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 10px 26px rgba(5,14,28,.16);
+}
+.card-title{
+  font-size:15px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.summary-item{
+  border-radius:18px;
+  padding:12px 10px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+}
+.summary-label{
+  font-size:11px;
+  color:var(--soft);
+  margin-bottom:6px;
+}
+.summary-value{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.3px;
+}
+.summary-sub{
+  margin-top:4px;
+  font-size:11px;
+  color:var(--dim);
+}
+.form{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.form-row{
+  display:flex;
+  gap:10px;
+}
+.input,
+.select,
+.textarea{
+  width:100%;
+  border:none;
+  outline:none;
+  border-radius:16px;
+  background:rgba(255,255,255,.12);
+  color:white;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:14px;
+  border:1px solid rgba(255,255,255,.14);
+}
+.input::placeholder,
+.textarea::placeholder{
+  color:rgba(255,255,255,.42);
+}
+.select{
+  appearance:none;
+  -webkit-appearance:none;
+}
+.select option{
+  color:#1d2940;
+}
+.textarea{
+  min-height:82px;
+  resize:vertical;
+}
+.btn-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  border:none;
+  border-radius:16px;
+  padding:11px 14px;
+  font-size:13px;
+  font-weight:900;
+  color:white;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+}
+.btn.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+}
+.btn.danger{
+  background:rgba(255,156,171,.14);
+  color:#ffd8de;
+  border:1px solid rgba(255,156,171,.26);
+}
+.btn.ghost{
+  background:rgba(255,255,255,.08);
+}
+.filters{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.record{
+  border-radius:20px;
+  padding:12px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.14);
+}
+.record-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.record-model{
+  font-size:15px;
+  font-weight:900;
+  line-height:1.35;
+}
+.record-amount{
+  font-size:16px;
+  font-weight:900;
+  color:#dbeafe;
+  white-space:nowrap;
+}
+.record-meta{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:7px;
+}
+.tag{
+  font-size:11px;
+  color:var(--soft);
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+}
+.record-note{
+  margin-top:9px;
+  font-size:13px;
+  line-height:1.6;
+  color:#eef5ff;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.record-actions{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+}
+.small-btn{
+  border:none;
+  border-radius:12px;
+  padding:8px 10px;
+  font-size:12px;
+  font-weight:800;
+  color:white;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+}
+.small-btn.danger{
+  color:#ffd8de;
+  background:rgba(255,156,171,.12);
+  border:1px solid rgba(255,156,171,.22);
+}
+.empty{
+  text-align:center;
+  color:var(--dim);
+  padding:26px 10px 10px;
+  line-height:1.7;
+}
+.tiny{
+  font-size:11px;
+  color:var(--dim);
+  line-height:1.6;
+}
+@media(max-width:380px){
+  .summary-grid{grid-template-columns:1fr}
+  .form-row{flex-direction:column}
+  .head-btn{padding:7px 8px;font-size:10px}
+  .round,.head-mark{width:40px;height:40px}
+}
+</style>
+</head>
+<body>
+<div class="wallpaper"></div>
+
+<div class="app">
+  <div class="header">
+    <a href="home.html" class="round">←</a>
+    <div class="head-mark">¥</div>
+    <div class="head-info">
+      <div class="head-name">账本</div>
+      <div class="head-sub">模型花费记录</div>
+    </div>
+    <div class="head-actions">
+      <button class="head-btn" onclick="exportLedger()">导出</button>
+      <button class="head-btn" onclick="clearAllRecords()">清空</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-title">汇总</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-label">今天</div>
+          <div class="summary-value" id="sumToday">0.00</div>
+          <div class="summary-sub">元</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">本月</div>
+          <div class="summary-value" id="sumMonth">0.00</div>
+          <div class="summary-sub">元</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-label">总计</div>
+          <div class="summary-value" id="sumAll">0.00</div>
+          <div class="summary-sub">元</div>
+        </div>
+      </div>
+      <div class="tiny" style="margin-top:10px" id="countInfo">0 条记录</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" id="formTitle">新增记录</div>
+      <div class="form">
+        <div class="form-row">
+          <input class="input" type="date" id="dateInput">
+          <input class="input" type="text" id="modelInput" placeholder="模型名，如 GPT-4o">
+        </div>
+        <div class="form-row">
+          <input class="input" type="number" step="0.01" id="amountInput" placeholder="金额，如 12.5">
+        </div>
+        <textarea class="textarea" id="noteInput" placeholder="备注，可选"></textarea>
+        <div class="btn-row">
+          <button class="btn primary" id="saveBtn" onclick="saveRecord()">保存记录</button>
+          <button class="btn ghost" id="cancelEditBtn" onclick="cancelEdit()" style="display:none">取消编辑</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">筛选</div>
+      <div class="filters">
+        <input class="input" type="text" id="searchInput" placeholder="搜索模型或备注" oninput="renderAll()">
+        <select class="select" id="modelFilter" onchange="renderAll()">
+          <option value="">全部模型</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">记录列表</div>
+      <div class="list" id="recordList"></div>
+      <div class="empty" id="emptyState" style="display:none">
+        还没有记录。<br>先记一笔吧。
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var LEDGER_KEY = 'model_cost_ledger_v1';
+var editingId = null;
+
+function todayStr(){
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2,'0');
+  var day = String(d.getDate()).padStart(2,'0');
+  return y + '-' + m + '-' + day;
+}
+function loadLedger(){
+  try{
+    var arr = JSON.parse(localStorage.getItem(LEDGER_KEY) || '[]');
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){
+    return [];
+  }
+}
+function saveLedger(list){
+  localStorage.setItem(LEDGER_KEY, JSON.stringify(list || []));
+}
+function money(n){
+  return Number(n || 0).toFixed(2);
+}
+function sum(list){
+  var total = 0;
+  for(var i=0;i<list.length;i++) total += Number(list[i].amount || 0);
+  return total;
+}
+function escapeHtml(s){
+  return String(s || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+function sortDesc(list){
+  return list.slice().sort(function(a,b){
+    var at = Number(a.createdAt || 0);
+    var bt = Number(b.createdAt || 0);
+    if((b.date || '') !== (a.date || '')) return (b.date || '').localeCompare(a.date || '');
+    return bt - at;
+  });
+}
+function refreshModelFilter(){
+  var list = loadLedger();
+  var sel = document.getElementById('modelFilter');
+  var current = sel.value;
+  var map = {};
+  for(var i=0;i<list.length;i++){
+    if(list[i].model) map[list[i].model] = true;
+  }
+  var names = Object.keys(map).sort();
+  sel.innerHTML = '<option value="">全部模型</option>';
+  for(var j=0;j<names.length;j++){
+    var op = document.createElement('option');
+    op.value = names[j];
+    op.textContent = names[j];
+    sel.appendChild(op);
+  }
+  sel.value = map[current] ? current : '';
+}
+function getFilteredList(){
+  var list = loadLedger();
+  var keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+  var model = document.getElementById('modelFilter').value.trim();
+
+  return sortDesc(list).filter(function(item){
+    var hitModel = !model || item.model === model;
+    var text = ((item.model || '') + ' ' + (item.note || '')).toLowerCase();
+    var hitSearch = !keyword || text.indexOf(keyword) > -1;
+    return hitModel && hitSearch;
+  });
+}
+function renderSummary(){
+  var list = loadLedger();
+  var today = todayStr();
+  var month = today.slice(0,7);
+
+  var todayList = list.filter(function(x){ return x.date === today; });
+  var monthList = list.filter(function(x){ return String(x.date || '').slice(0,7) === month; });
+
+  document.getElementById('sumToday').textContent = money(sum(todayList));
+  document.getElementById('sumMonth').textContent = money(sum(monthList));
+  document.getElementById('sumAll').textContent = money(sum(list));
+  document.getElementById('countInfo').textContent = list.length + ' 条记录';
+}
+function recordItemHtml(item){
+  return `
+    <div class="record">
+      <div class="record-top">
+        <div>
+          <div class="record-model">${escapeHtml(item.model || '未命名模型')}</div>
+          <div class="record-meta">
+            <span class="tag">${escapeHtml(item.date || '')}</span>
+            <span class="tag">¥ ${money(item.amount)}</span>
+          </div>
+        </div>
+        <div class="record-amount">¥ ${money(item.amount)}</div>
+      </div>
+      ${item.note ? '<div class="record-note">' + escapeHtml(item.note) + '</div>' : ''}
+      <div class="record-actions">
+        <button class="small-btn" onclick="editRecord('${escapeHtml(item.id)}')">编辑</button>
+        <button class="small-btn danger" onclick="deleteRecord('${escapeHtml(item.id)}')">删除</button>
+      </div>
+    </div>
+  `;
+}
+function renderList(){
+  var list = getFilteredList();
+  var box = document.getElementById('recordList');
+  var empty = document.getElementById('emptyState');
+
+  if(!list.length){
+    box.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  var html = '';
+  for(var i=0;i<list.length;i++){
+    html += recordItemHtml(list[i]);
+  }
+  box.innerHTML = html;
+}
+function renderAll(){
+  refreshModelFilter();
+  renderSummary();
+  renderList();
+}
+function resetForm(){
+  editingId = null;
+  document.getElementById('formTitle').textContent = '新增记录';
+  document.getElementById('saveBtn').textContent = '保存记录';
+  document.getElementById('cancelEditBtn').style.display = 'none';
+  document.getElementById('dateInput').value = todayStr();
+  document.getElementById('modelInput').value = '';
+  document.getElementById('amountInput').value = '';
+  document.getElementById('noteInput').value = '';
+}
+function saveRecord(){
+  var date = document.getElementById('dateInput').value || todayStr();
+  var model = document.getElementById('modelInput').value.trim();
+  var amount = Number(document.getElementById('amountInput').value);
+  var note = document.getElementById('noteInput').value.trim();
+
+  if(!model){
+    alert('填一下模型名。');
+    return;
+  }
+  if(!Number.isFinite(amount) || amount < 0){
+    alert('金额不对。');
+    return;
+  }
+
+  var list = loadLedger();
+
+  if(editingId){
+    for(var i=0;i<list.length;i++){
+      if(list[i].id === editingId){
+        list[i].date = date;
+        list[i].model = model;
+        list[i].amount = amount;
+        list[i].note = note;
+        break;
+      }
+    }
+  }else{
+    list.push({
+      id:'cost_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+      date:date,
+      model:model,
+      amount:amount,
+      note:note,
+      createdAt:Date.now()
+    });
+  }
+
+  saveLedger(list);
+  resetForm();
+  renderAll();
+}
+function editRecord(id){
+  var list = loadLedger();
+  for(var i=0;i<list.length;i++){
+    if(list[i].id === id){
+      var item = list[i];
+      editingId = item.id;
+      document.getElementById('formTitle').textContent = '编辑记录';
+      document.getElementById('saveBtn').textContent = '保存修改';
+      document.getElementById('cancelEditBtn').style.display = 'inline-flex';
+      document.getElementById('dateInput').value = item.date || todayStr();
+      document.getElementById('modelInput').value = item.model || '';
+      document.getElementById('amountInput').value = item.amount != null ? item.amount : '';
+      document.getElementById('noteInput').value = item.note || '';
+      window.scrollTo({top:0,behavior:'smooth'});
+      break;
+    }
+  }
+}
+function cancelEdit(){
+  resetForm();
+}
+function deleteRecord(id){
+  if(!confirm('删除这条记录？')) return;
+  var list = loadLedger().filter(function(item){ return item.id !== id; });
+  saveLedger(list);
+  if(editingId === id) resetForm();
+  renderAll();
+}
+function clearAllRecords(){
+  if(!confirm('清空全部账本记录？')) return;
+  localStorage.removeItem(LEDGER_KEY);
+  resetForm();
+  renderAll();
+}
+function exportLedger(){
+  var list = loadLedger();
+  var blob = new Blob([JSON.stringify(list,null,2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'ledger-' + todayStr() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+resetForm();
+renderAll();
+</script>
+</body>
+</html>

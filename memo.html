@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>⟁ 备忘录</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --safe-top:env(safe-area-inset-top,20px);
+  --safe-bottom:env(safe-area-inset-bottom,16px);
+  --text:#f7fbff;
+  --soft:rgba(247,251,255,.76);
+  --muted:rgba(247,251,255,.56);
+  --stroke:rgba(255,255,255,.24);
+  --shadow:0 16px 40px rgba(5,14,28,.28);
+  --danger:#ff9aaa;
+}
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  color:var(--text);
+  background:#0d1b30;
+}
+.wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.62)),
+    radial-gradient(circle at 25% 12%,rgba(140,188,245,.24),transparent 28%),
+    radial-gradient(circle at 78% 18%,rgba(190,210,255,.16),transparent 26%),
+    linear-gradient(155deg,#12243d 0%,#2f557f 50%,#0d1b30 100%);
+  background-size:cover;
+  background-position:center;
+}
+.wallpaper:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(100deg,rgba(255,255,255,.06) 0 1px,transparent 1px 18px);
+  opacity:.18;
+}
+.app{
+  max-width:430px;
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+.header{
+  padding:calc(var(--safe-top) + 8px) 18px 8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.back{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.12);
+  color:white;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
+}
+.title-wrap{display:flex;flex-direction:column;gap:3px}
+.title{
+  font-size:19px;
+  font-weight:900;
+  letter-spacing:-.4px;
+}
+.sub{
+  font-size:12px;
+  color:var(--soft);
+}
+.count{
+  font-size:12px;
+  color:var(--soft);
+  font-weight:800;
+}
+.main{
+  flex:1;
+  overflow:auto;
+  padding:8px 18px calc(var(--safe-bottom) + 24px);
+  scrollbar-width:none;
+}
+.main::-webkit-scrollbar{display:none}
+.glass{
+  background:linear-gradient(145deg,rgba(125,163,214,.60),rgba(61,85,126,.50));
+  border:1px solid var(--stroke);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+.softglass{
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.20);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.card{
+  padding:16px;
+  border-radius:28px;
+  margin-bottom:14px;
+}
+.section-title{
+  font-size:16px;
+  font-weight:900;
+  margin-bottom:12px;
+}
+.label{
+  font-size:12px;
+  color:var(--soft);
+  margin-bottom:8px;
+  font-weight:800;
+}
+.input,.textarea{
+  width:100%;
+  border:none;
+  outline:none;
+  border-radius:18px;
+  background:rgba(255,255,255,.92);
+  color:#243043;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:13px;
+  box-shadow:0 4px 14px rgba(90,110,150,.08);
+}
+.textarea{
+  min-height:92px;
+  resize:vertical;
+  line-height:1.55;
+}
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  border:none;
+  border-radius:16px;
+  padding:11px 14px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  color:white;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
+}
+.btn.primary{
+  background:linear-gradient(135deg,#7cb7ff,#5b8def);
+  box-shadow:0 8px 18px rgba(91,141,239,.22);
+}
+.btn.danger{
+  color:#ffd8de;
+  background:rgba(255,120,140,.14);
+  border-color:rgba(255,160,178,.22);
+}
+.small{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.55;
+}
+.search-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.memo-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.memo{
+  padding:14px;
+  border-radius:22px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.16);
+}
+.memo-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.memo-title{
+  font-size:15px;
+  font-weight:900;
+  line-height:1.35;
+}
+.memo-meta{
+  margin-top:6px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.tag{
+  font-size:10px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+  color:#eef6ff;
+  border:1px solid rgba(255,255,255,.14);
+}
+.tag.pin{
+  background:rgba(170,150,255,.18);
+}
+.tag.time{
+  color:rgba(247,251,255,.72);
+}
+.memo-text{
+  margin-top:10px;
+  font-size:13px;
+  line-height:1.6;
+  color:#f7fbff;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.memo-actions{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:18px 10px;
+  font-size:13px;
+  line-height:1.6;
+}
+.footer-space{height:8px}
+@media(max-width:380px){
+  .main{padding:8px 14px calc(var(--safe-bottom) + 22px)}
+}
+</style>
+</head>
+<body>
+<div class="wallpaper"></div>
+
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <a class="back" href="home.html">←</a>
+      <div class="title-wrap">
+        <div class="title">备忘录</div>
+        <div class="sub">本地保存，不上传</div>
+      </div>
+    </div>
+    <div class="count" id="countText">0 条</div>
+  </div>
+
+  <div class="main">
+    <div class="card glass">
+      <div class="section-title">新增备忘</div>
+
+      <div class="label">标题</div>
+      <input class="input" id="titleInput" placeholder="比如：买牛奶 / 明天提醒 / 灵感">
+
+      <div style="height:10px"></div>
+
+      <div class="label">内容</div>
+      <textarea class="textarea" id="contentInput" placeholder="写点什么都行。"></textarea>
+
+      <div style="height:10px"></div>
+
+      <div class="label">标签（可选）</div>
+      <input class="input" id="tagInput" placeholder="比如：待办,重要,灵感">
+
+      <div style="height:12px"></div>
+
+      <div class="row">
+        <button class="btn primary" id="saveBtn">保存</button>
+        <button class="btn" id="clearBtn">清空表单</button>
+      </div>
+
+      <div style="height:10px"></div>
+      <div class="small">
+        存在手机本地。<br>
+        关页面也不会丢。
+      </div>
+    </div>
+
+    <div class="card softglass">
+      <div class="label">搜索</div>
+      <div class="search-row">
+        <input class="input" id="searchInput" placeholder="按标题、内容、标签搜索">
+      </div>
+    </div>
+
+    <div class="card glass">
+      <div class="section-title">备忘列表</div>
+      <div class="memo-list" id="memoList"></div>
+    </div>
+
+    <div class="footer-space"></div>
+  </div>
+</div>
+
+<script>
+var STORAGE_KEY = 'local_memos_v1';
+var memos = [];
+var editId = '';
+
+function uid() {
+  return 'memo_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
+function nowText() {
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  var h = String(d.getHours()).padStart(2, '0');
+  var min = String(d.getMinutes()).padStart(2, '0');
+  return y + '-' + m + '-' + day + ' ' + h + ':' + min;
+}
+
+function loadMemos() {
+  try {
+    memos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch (e) {
+    memos = [];
+  }
+  renderMemos();
+}
+
+function saveMemos() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(memos));
+}
+
+function escapeHtml(t) {
+  var d = document.createElement('div');
+  d.textContent = String(t || '');
+  return d.innerHTML;
+}
+
+function normalizeTags(raw) {
+  if (!raw) return [];
+  return raw.split(',').map(function(s) {
+    return s.trim();
+  }).filter(Boolean);
+}
+
+function getVisibleMemos() {
+  var q = document.getElementById('searchInput').value.trim().toLowerCase();
+  var list = memos.slice().sort(function(a, b) {
+    if ((b.pinned ? 1 : 0) !== (a.pinned ? 1 : 0)) return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+    return (b.createdAt || '').localeCompare(a.createdAt || '');
+  });
+
+  if (!q) return list;
+
+  return list.filter(function(m) {
+    var text = [m.title, m.content, (m.tags || []).join(' ')].join(' ').toLowerCase();
+    return text.indexOf(q) >= 0;
+  });
+}
+
+function renderMemos() {
+  var box = document.getElementById('memoList');
+  var list = getVisibleMemos();
+  document.getElementById('countText').textContent = memos.length + ' 条';
+
+  if (!list.length) {
+    box.innerHTML = '<div class="empty">没有找到备忘。<br>或者你还没写。</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var m = list[i];
+    html += '<div class="memo">';
+    html += '<div class="memo-top">';
+    html += '<div style="min-width:0;flex:1">';
+    html += '<div class="memo-title">' + escapeHtml(m.title || '未命名') + '</div>';
+    html += '<div class="memo-meta">';
+    if (m.pinned) html += '<span class="tag pin">置顶</span>';
+    html += '<span class="tag time">' + escapeHtml(m.createdAt || '') + '</span>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    if (m.content) {
+      html += '<div class="memo-text">' + escapeHtml(m.content) + '</div>';
+    }
+
+    if (m.tags && m.tags.length) {
+      html += '<div class="memo-meta" style="margin-top:10px">';
+      for (var j = 0; j < m.tags.length; j++) {
+        html += '<span class="tag">' + escapeHtml(m.tags[j]) + '</span>';
+      }
+      html += '</div>';
+    }
+
+    html += '<div class="memo-actions">';
+    html += '<button class="btn" onclick="togglePin(\'' + m.id + '\')">' + (m.pinned ? '取消置顶' : '置顶') + '</button>';
+    html += '<button class="btn" onclick="editMemo(\'' + m.id + '\')">编辑</button>';
+    html += '<button class="btn danger" onclick="deleteMemo(\'' + m.id + '\')">删除</button>';
+    html += '</div>';
+    html += '</div>';
+  }
+
+  box.innerHTML = html;
+}
+
+function clearForm() {
+  editId = '';
+  document.getElementById('titleInput').value = '';
+  document.getElementById('contentInput').value = '';
+  document.getElementById('tagInput').value = '';
+  document.getElementById('saveBtn').textContent = '保存';
+}
+
+function saveMemo() {
+  var title = document.getElementById('titleInput').value.trim();
+  var content = document.getElementById('contentInput').value.trim();
+  var tags = normalizeTags(document.getElementById('tagInput').value.trim());
+
+  if (!title && !content) {
+    alert('至少写点什么。');
+    return;
+  }
+
+  if (editId) {
+    for (var i = 0; i < memos.length; i++) {
+      if (memos[i].id === editId) {
+        memos[i].title = title || '未命名';
+        memos[i].content = content;
+        memos[i].tags = tags;
+        break;
+      }
+    }
+  } else {
+    memos.unshift({
+      id: uid(),
+      title: title || '未命名',
+      content: content,
+      tags: tags,
+      pinned: false,
+      createdAt: nowText()
+    });
+  }
+
+  saveMemos();
+  clearForm();
+  renderMemos();
+}
+
+function editMemo(id) {
+  var m = memos.find(function(x) { return x.id === id; });
+  if (!m) return;
+
+  editId = id;
+  document.getElementById('titleInput').value = m.title || '';
+  document.getElementById('contentInput').value = m.content || '';
+  document.getElementById('tagInput').value = (m.tags || []).join(', ');
+  document.getElementById('saveBtn').textContent = '更新';
+  document.querySelector('.main').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deleteMemo(id) {
+  if (!confirm('删除这条备忘？')) return;
+  memos = memos.filter(function(x) { return x.id !== id; });
+  if (editId === id) clearForm();
+  saveMemos();
+  renderMemos();
+}
+
+function togglePin(id) {
+  for (var i = 0; i < memos.length; i++) {
+    if (memos[i].id === id) {
+      memos[i].pinned = !memos[i].pinned;
+      break;
+    }
+  }
+  saveMemos();
+  renderMemos();
+}
+
+document.getElementById('saveBtn').addEventListener('click', saveMemo);
+document.getElementById('clearBtn').addEventListener('click', clearForm);
+document.getElementById('searchInput').addEventListener('input', renderMemos);
+
+loadMemos();
+</script>
+</body>
+</html>

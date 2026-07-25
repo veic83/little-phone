@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+<title>⟁ MCP 管理</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg1:#eef4ff;
+  --bg2:#f7f9ff;
+  --bg3:#f4f0ff;
+  --text:#243043;
+  --sub:#6f7f95;
+  --muted:#9aa8ba;
+  --accent:#5b8def;
+  --accent2:#8b5cf6;
+  --ok:#33b679;
+  --bad:#e35d6a;
+  --warn:#f0a43a;
+  --card:rgba(255,255,255,.78);
+  --stroke:rgba(126,155,200,.18);
+  --shadow:0 14px 34px rgba(90,110,150,.12);
+  --safe-top:env(safe-area-inset-top,20px);
+  --safe-bottom:env(safe-area-inset-bottom,16px);
+}
+html,body{
+  height:100%;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(91,141,239,.14), transparent 25%),
+    radial-gradient(circle at 82% 18%, rgba(139,92,246,.12), transparent 24%),
+    linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 48%,var(--bg3) 100%);
+  color:var(--text);
+  overflow:hidden;
+}
+.app{
+  max-width:430px;
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  padding-top:var(--safe-top);
+}
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 16px 8px;
+}
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.back{
+  width:38px;height:38px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(130,150,180,.16);
+  box-shadow:0 6px 18px rgba(100,120,160,.08);
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;color:#617089;flex-shrink:0;font-size:16px;
+}
+.title-wrap{display:flex;flex-direction:column;gap:2px}
+.title{font-size:19px;font-weight:900;letter-spacing:-.4px}
+.sub{font-size:12px;color:var(--sub)}
+.main{
+  flex:1;
+  overflow:auto;
+  padding:8px 16px calc(var(--safe-bottom) + 18px);
+  scrollbar-width:none;
+}
+.main::-webkit-scrollbar{display:none}
+.hero,.card{
+  padding:16px;
+  border-radius:24px;
+  background:rgba(255,255,255,.74);
+  border:1px solid rgba(130,150,180,.14);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  margin-bottom:12px;
+}
+.hero-title{font-size:24px;font-weight:950;letter-spacing:-.8px}
+.hero-sub{margin-top:8px;font-size:13px;line-height:1.6;color:var(--sub)}
+.stat{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 11px;border-radius:999px;
+  background:rgba(91,141,239,.10);color:var(--accent);
+  font-size:11px;font-weight:900;margin-bottom:10px;
+}
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;
+}
+.section-title{font-size:16px;font-weight:900;letter-spacing:-.3px}
+.section-sub{font-size:12px;color:var(--sub)}
+.mode-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 11px;border-radius:999px;
+  background:rgba(91,141,239,.08);color:var(--accent);
+  font-size:11px;font-weight:900;
+}
+.mode-pill.edit{background:rgba(139,92,246,.10);color:var(--accent2)}
+.label{
+  font-size:12px;color:var(--sub);margin-bottom:8px;font-weight:800;
+}
+.input,.textarea,.select{
+  width:100%;
+  border-radius:18px;
+  border:1px solid rgba(130,150,180,.18);
+  background:rgba(255,255,255,.92);
+  color:var(--text);
+  padding:12px 14px;
+  font-family:inherit;
+  outline:none;
+  font-size:13px;
+  transition:.18s ease;
+}
+.input:focus,.textarea:focus,.select:focus{
+  border-color:rgba(91,141,239,.36);
+  box-shadow:0 0 0 4px rgba(91,141,239,.08);
+}
+.textarea{min-height:90px;resize:vertical;line-height:1.5}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{
+  border:none;border-radius:16px;padding:11px 14px;
+  font-size:13px;font-weight:800;cursor:pointer;
+  color:#425064;background:rgba(255,255,255,.90);
+  border:1px solid rgba(130,150,180,.14);
+  box-shadow:0 4px 14px rgba(90,110,150,.06);
+}
+.btn.primary{
+  color:white;background:linear-gradient(135deg,#7cb7ff,#5b8def);
+  box-shadow:0 8px 18px rgba(91,141,239,.20);
+}
+.btn.secondary{
+  color:#6a57d2;background:rgba(139,92,246,.08);
+  border-color:rgba(139,92,246,.14);
+}
+.btn.danger{
+  color:#a34b5a;background:rgba(255,235,238,.92);
+  border-color:rgba(233,123,140,.18);
+}
+.btn:disabled{opacity:.45;cursor:default}
+.small{font-size:11px;color:var(--muted);line-height:1.55}
+.inline-note{
+  margin-top:8px;padding:10px 12px;border-radius:16px;
+  background:rgba(91,141,239,.06);color:var(--sub);
+  font-size:12px;line-height:1.55;
+}
+.statusbar{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:16px;
+  font-size:12px;
+  line-height:1.55;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(130,150,180,.14);
+  color:var(--sub);
+}
+.statusbar.ok{background:rgba(51,182,121,.08);border-color:rgba(51,182,121,.16);color:#257a56}
+.statusbar.bad{background:rgba(227,93,106,.08);border-color:rgba(227,93,106,.16);color:#a34b5a}
+.statusbar.warn{background:rgba(240,164,58,.10);border-color:rgba(240,164,58,.20);color:#a86b11}
+.list{display:flex;flex-direction:column;gap:10px}
+.server{
+  padding:14px;border-radius:20px;background:rgba(255,255,255,.84);
+  border:1px solid rgba(130,150,180,.14);
+}
+.server.active{border-color:rgba(91,141,239,.34);box-shadow:0 0 0 4px rgba(91,141,239,.08)}
+.server.editing{border-color:rgba(139,92,246,.30);box-shadow:0 0 0 4px rgba(139,92,246,.08)}
+.server-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+.server-name{font-size:15px;font-weight:900;margin-bottom:4px;line-height:1.35}
+.server-url{font-size:11px;color:var(--sub);word-break:break-all;line-height:1.45}
+.server-actions{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{
+  font-size:10px;padding:5px 8px;border-radius:999px;
+  background:rgba(91,141,239,.08);color:var(--accent);font-weight:800;
+}
+.tag.ok{background:rgba(51,182,121,.10);color:var(--ok)}
+.tag.edit{background:rgba(139,92,246,.10);color:var(--accent2)}
+.empty{
+  padding:14px;border-radius:18px;background:rgba(255,255,255,.54);
+  font-size:12px;color:var(--sub);line-height:1.6;
+  border:1px dashed rgba(130,150,180,.18);
+}
+.result{
+  white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.58;
+  color:var(--text);padding:14px;border-radius:18px;
+  background:rgba(255,255,255,.88);border:1px solid rgba(130,150,180,.12);min-height:88px;
+}
+.result.muted{color:var(--sub)}
+.toolbox{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(130,150,180,.18)}
+@media(max-width:380px){.split{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <a class="back" href="home.html">←</a>
+      <div class="title-wrap">
+        <div class="title">MCP 管理</div>
+        <div class="sub">本地保存服务器配置</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <section class="hero">
+      <div class="stat" id="heroStat">0 个服务器</div>
+      <div class="hero-title">连接你的 MCP</div>
+      <div class="hero-sub">添加、编辑、选中并测试 MCP 配置。现在这版带了调试提示，点保存没反应也会告诉你原因。</div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">添加 / 编辑</div>
+          <div class="section-sub">保存到 localStorage</div>
+        </div>
+        <div class="mode-pill" id="formMode">新建模式</div>
+      </div>
+
+      <div class="inline-note">
+        浏览器前端只能连允许跨域的 HTTP MCP。这里先保证“能添加、能保存、能选中”。
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="label">名称</div>
+      <input class="input" id="nameInput" placeholder="例如：小镇 / 年轮 / 论坛" />
+
+      <div style="height:10px"></div>
+
+      <div class="label">地址</div>
+      <input class="input" id="urlInput" placeholder="https://example.com/mcp" />
+
+      <div style="height:10px"></div>
+
+      <div class="split">
+        <div>
+          <div class="label">协议</div>
+          <select class="select" id="typeInput">
+            <option value="streamable-http">Streamable HTTP</option>
+            <option value="sse">SSE</option>
+          </select>
+        </div>
+        <div>
+          <div class="label">示例</div>
+          <button class="btn" id="exampleBtn" style="width:100%">填请求头示例</button>
+        </div>
+      </div>
+
+      <div style="height:10px"></div>
+
+      <div class="label">请求头 JSON</div>
+      <textarea class="textarea" id="headersInput" placeholder='例如：
+{
+  "Authorization": "Bearer xxx"
+}'></textarea>
+
+      <div style="height:12px"></div>
+
+      <div class="row">
+        <button class="btn primary" id="saveBtn" type="button">保存</button>
+        <button class="btn secondary" id="newBtn" type="button">新建一项</button>
+        <button class="btn" id="clearBtn" type="button">清空表单</button>
+      </div>
+
+      <div id="statusBar" class="statusbar">准备就绪。</div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">已保存服务器</div>
+          <div class="section-sub">选中 / 编辑 / 删除</div>
+        </div>
+      </div>
+      <div class="list" id="serverList"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <div class="section-title">测试连接</div>
+          <div class="section-sub">对当前选中项发 initialize / tools/list</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn primary" id="testBtn" disabled type="button">测试选中项</button>
+        <button class="btn" id="refreshBtn" type="button">刷新列表</button>
+      </div>
+
+      <div class="toolbox">
+        <div class="label">返回结果</div>
+        <div class="result muted" id="resultBox">先添加一个服务器。</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var STORAGE_KEY = 'mcp_servers_debug_v1';
+  var SELECTED_KEY = 'mcp_selected_debug_v1';
+
+  var servers = [];
+  var selectedId = '';
+  var editingId = '';
+
+  function $(id){ return document.getElementById(id); }
+
+  function uid(){
+    return 'mcp_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+  }
+
+  function setStatus(text, type){
+    var el = $('statusBar');
+    el.textContent = text || '';
+    el.className = 'statusbar' + (type ? ' ' + type : '');
+  }
+
+  function setResult(text, muted){
+    var box = $('resultBox');
+    box.className = 'result' + (muted ? ' muted' : '');
+    box.textContent = text;
+  }
+
+  function updateHero(){
+    $('heroStat').textContent = servers.length + ' 个服务器';
+  }
+
+  function updateMode(){
+    var el = $('formMode');
+    if(editingId){
+      el.textContent = '编辑模式';
+      el.className = 'mode-pill edit';
+    }else{
+      el.textContent = '新建模式';
+      el.className = 'mode-pill';
+    }
+  }
+
+  function readStorage(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      servers = raw ? JSON.parse(raw) : [];
+      if(!Array.isArray(servers)) servers = [];
+    }catch(err){
+      servers = [];
+      setStatus('读取本地配置失败：' + err.message, 'bad');
+    }
+
+    try{
+      selectedId = localStorage.getItem(SELECTED_KEY) || '';
+    }catch(err){
+      selectedId = '';
+    }
+  }
+
+  function writeStorage(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(servers));
+    localStorage.setItem(SELECTED_KEY, selectedId || '');
+  }
+
+  function clearForm(exitEdit){
+    $('nameInput').value = '';
+    $('urlInput').value = '';
+    $('typeInput').value = 'streamable-http';
+    $('headersInput').value = '';
+    if(exitEdit){
+      editingId = '';
+      updateMode();
+    }
+  }
+
+  function findById(id){
+    for(var i=0;i<servers.length;i++){
+      if(servers[i].id === id) return servers[i];
+    }
+    return null;
+  }
+
+  function currentServer(){
+    return findById(selectedId);
+  }
+
+  function renderServers(){
+    var box = $('serverList');
+
+    if(!servers.length){
+      box.innerHTML = '<div class="empty">还没有服务器。填完上面的名称和地址，点“保存”。</div>';
+      $('testBtn').disabled = true;
+      updateHero();
+      updateMode();
+      return;
+    }
+
+    var html = '';
+    for(var i=0;i<servers.length;i++){
+      var s = servers[i];
+      var active = s.id === selectedId;
+      var editing = s.id === editingId;
+
+      html += '<div class="server ' + (active ? 'active ' : '') + (editing ? 'editing' : '') + '">';
+      html +=   '<div class="server-head">';
+      html +=     '<div style="min-width:0;flex:1">';
+      html +=       '<div class="server-name">' + esc(s.name) + '</div>';
+      html +=       '<div class="server-url">' + esc(s.url) + '</div>';
+      html +=     '</div>';
+      html +=     '<div class="server-actions">';
+      html +=       '<button class="btn pick-btn" data-id="' + esc(s.id) + '" type="button" style="padding:8px 10px">选中</button>';
+      html +=       '<button class="btn secondary edit-btn" data-id="' + esc(s.id) + '" type="button" style="padding:8px 10px">编辑</button>';
+      html +=       '<button class="btn danger del-btn" data-id="' + esc(s.id) + '" type="button" style="padding:8px 10px">删除</button>';
+      html +=     '</div>';
+      html +=   '</div>';
+      html +=   '<div class="badges">';
+      html +=     '<span class="tag">' + esc(s.type || '') + '</span>';
+      if(active) html += '<span class="tag ok">当前选中</span>';
+      if(editing) html += '<span class="tag edit">编辑中</span>';
+      html +=   '</div>';
+      html += '</div>';
+    }
+
+    box.innerHTML = html;
+
+    var pickBtns = box.querySelectorAll('.pick-btn');
+    for(var p=0;p<pickBtns.length;p++){
+      pickBtns[p].onclick = function(){
+        selectServer(this.getAttribute('data-id'));
+      };
+    }
+
+    var editBtns = box.querySelectorAll('.edit-btn');
+    for(var e=0;e<editBtns.length;e++){
+      editBtns[e].onclick = function(){
+        startEdit(this.getAttribute('data-id'));
+      };
+    }
+
+    var delBtns = box.querySelectorAll('.del-btn');
+    for(var d=0;d<delBtns.length;d++){
+      delBtns[d].onclick = function(){
+        deleteServer(this.getAttribute('data-id'));
+      };
+    }
+
+    $('testBtn').disabled = !selectedId;
+    updateHero();
+    updateMode();
+  }
+
+  function esc(t){
+    var div = document.createElement('div');
+    div.textContent = String(t || '');
+    return div.innerHTML;
+  }
+
+  function selectServer(id){
+    selectedId = id || '';
+    try{
+      localStorage.setItem(SELECTED_KEY, selectedId);
+    }catch(err){}
+    renderServers();
+
+    var s = currentServer();
+    if(s){
+      setStatus('已选中：' + s.name, 'ok');
+      setResult('已选中：' + s.name, false);
+    }else{
+      setStatus('选中失败：没找到对应项。', 'bad');
+    }
+  }
+
+  function startEdit(id){
+    var s = findById(id);
+    if(!s){
+      setStatus('编辑失败：没找到对应项。', 'bad');
+      return;
+    }
+    editingId = id;
+    $('nameInput').value = s.name || '';
+    $('urlInput').value = s.url || '';
+    $('typeInput').value = s.type || 'streamable-http';
+    $('headersInput').value = JSON.stringify(s.headers || {}, null, 2);
+    updateMode();
+    renderServers();
+    setStatus('正在编辑：' + s.name, 'warn');
+  }
+
+  function deleteServer(id){
+    var s = findById(id);
+    if(!s){
+      setStatus('删除失败：没找到对应项。', 'bad');
+      return;
+    }
+    if(!confirm('删除这个 MCP 服务器？\n\n' + s.name)) return;
+
+    var next = [];
+    for(var i=0;i<servers.length;i++){
+      if(servers[i].id !== id) next.push(servers[i]);
+    }
+    servers = next;
+
+    if(selectedId === id) selectedId = '';
+    if(editingId === id){
+      editingId = '';
+      clearForm(false);
+    }
+
+    try{
+      writeStorage();
+      renderServers();
+      setStatus('已删除：' + s.name, 'ok');
+      setResult('已删除：' + s.name, false);
+    }catch(err){
+      setStatus('删除后写入失败：' + err.message, 'bad');
+    }
+  }
+
+  function saveServer(){
+    try{
+      var name = $('nameInput').value.trim();
+      var url = $('urlInput').value.trim();
+      var type = $('typeInput').value;
+      var headersRaw = $('headersInput').value.trim();
+
+      if(!name){
+        setStatus('请输入名称。', 'bad');
+        return;
+      }
+      if(!url){
+        setStatus('请输入地址。', 'bad');
+        return;
+      }
+      if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(url)){
+        url = 'https://' + url;
+      }
+
+      var headers = {};
+      if(headersRaw){
+        try{
+          headers = JSON.parse(headersRaw);
+          if(typeof headers !== 'object' || headers === null || Array.isArray(headers)){
+            setStatus('请求头 JSON 必须是对象。', 'bad');
+            return;
+          }
+        }catch(err){
+          setStatus('请求头 JSON 解析失败：' + err.message, 'bad');
+          return;
+        }
+      }
+
+      if(editingId){
+        var found = findById(editingId);
+        if(!found){
+          setStatus('编辑目标不存在，请重新选择。', 'bad');
+          editingId = '';
+          updateMode();
+          return;
+        }
+
+        found.name = name;
+        found.url = url;
+        found.type = type;
+        found.headers = headers;
+        found.updated_at = new Date().toISOString();
+
+        if(!selectedId) selectedId = found.id;
+
+        writeStorage();
+        renderServers();
+        setStatus('已更新：' + name, 'ok');
+        setResult('已更新：' + name, false);
+        return;
+      }
+
+      var item = {
+        id: uid(),
+        name: name,
+        url: url,
+        type: type,
+        headers: headers,
+        created_at: new Date().toISOString()
+      };
+
+      servers.unshift(item);
+      selectedId = item.id;
+      editingId = item.id;
+
+      writeStorage();
+      renderServers();
+      setStatus('已新增：' + name, 'ok');
+      setResult('已新增：' + name + '\n地址：' + url, false);
+    }catch(err){
+      setStatus('保存时发生错误：' + err.message, 'bad');
+      setResult('保存失败：' + err.stack, false);
+    }
+  }
+
+  function enterNewMode(){
+    editingId = '';
+    clearForm(false);
+    updateMode();
+    renderServers();
+    setStatus('已切到新建模式。现在点保存会新增。', 'warn');
+  }
+
+  function fillExample(){
+    $('headersInput').value = '{\n  "Authorization": "Bearer xxx"\n}';
+    setStatus('已填入请求头示例。', 'ok');
+  }
+
+  async function mcpRequest(server, method, params){
+    var body = {
+      jsonrpc:'2.0',
+      id:Date.now(),
+      method:method
+    };
+    if(params !== undefined) body.params = params;
+
+    var headers = {
+      'Content-Type':'application/json',
+      'Accept':'application/json, text/event-stream'
+    };
+
+    if(server.headers && typeof server.headers === 'object'){
+      for(var k in server.headers){
+        headers[k] = server.headers[k];
+      }
+    }
+
+    var resp = await fetch(server.url,{
+      method:'POST',
+      headers:headers,
+      body:JSON.stringify(body)
+    });
+
+    var text = await resp.text();
+    if(!resp.ok) throw new Error('HTTP ' + resp.status + ': ' + text);
+    return text;
+  }
+
+  async function testSelected(){
+    var s = currentServer();
+    if(!s){
+      setStatus('请先选中一个服务器。', 'bad');
+      return;
+    }
+
+    try{
+      setStatus('正在测试：' + s.name + ' ...', 'warn');
+      setResult('正在测试：' + s.name + ' ...', false);
+
+      var initText = await mcpRequest(s, 'initialize', {
+        protocolVersion:'2024-11-05',
+        clientInfo:{ name:'⟁ 小手机', version:'1.0.0' },
+        capabilities:{}
+      });
+
+      var out = '连接成功。\n\n初始化返回：\n' + initText;
+
+      try{
+        var toolsText = await mcpRequest(s, 'tools/list', {});
+        out += '\n\n工具列表返回：\n' + toolsText;
+      }catch(e){
+        out += '\n\ntools/list 失败：' + e.message;
+      }
+
+      setStatus('测试完成：' + s.name, 'ok');
+      setResult(out, false);
+    }catch(err){
+      setStatus('测试失败：' + err.message, 'bad');
+      setResult(
+        '测试失败：' + err.message + '\n\n可能原因：\n' +
+        '1. 目标 MCP 不允许浏览器跨域\n' +
+        '2. 地址不是 HTTP MCP 入口\n' +
+        '3. 需要认证请求头\n' +
+        '4. SSE 服务不能直接这样 POST 测试',
+        false
+      );
+    }
+  }
+
+  function bindEvents(){
+    $('saveBtn').onclick = saveServer;
+    $('newBtn').onclick = enterNewMode;
+    $('clearBtn').onclick = function(){
+      clearForm(true);
+      renderServers();
+      setStatus('表单已清空，并退出编辑模式。', 'warn');
+    };
+    $('exampleBtn').onclick = fillExample;
+    $('refreshBtn').onclick = function(){
+      readStorage();
+      renderServers();
+      setStatus('列表已刷新。', 'ok');
+    };
+    $('testBtn').onclick = testSelected;
+
+    $('nameInput').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        saveServer();
+      }
+    });
+    $('urlInput').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        saveServer();
+      }
+    });
+  }
+
+  function init(){
+    bindEvents();
+    readStorage();
+    renderServers();
+    setStatus('页面已初始化。你现在可以直接填写后点保存。', 'ok');
+  }
+
+  window.addEventListener('error', function(e){
+    setStatus('脚本错误：' + e.message, 'bad');
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

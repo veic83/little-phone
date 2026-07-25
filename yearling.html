@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>⟁ 年轮 v3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --safe-top:env(safe-area-inset-top,20px);
+  --safe-bottom:env(safe-area-inset-bottom,16px);
+
+  --text:#f7fbff;
+  --soft:rgba(247,251,255,.74);
+  --dim:rgba(247,251,255,.52);
+
+  --accent:#8dbdff;
+  --purple:#d2a8ff;
+  --gold:#ffd700;
+
+  --glass:rgba(82,116,165,.46);
+  --glass2:rgba(255,255,255,.12);
+  --stroke:rgba(255,255,255,.22);
+  --shadow:0 18px 46px rgba(5,14,28,.36);
+}
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+  color:var(--text);
+  background:#0d1b30;
+}
+.wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.72)),
+    radial-gradient(circle at 25% 12%,rgba(140,188,245,.24),transparent 28%),
+    radial-gradient(circle at 78% 18%,rgba(190,210,255,.16),transparent 26%),
+    linear-gradient(155deg,#12243d 0%,#2f557f 50%,#0d1b30 100%);
+  background-size:cover;
+  background-position:center;
+}
+.wallpaper:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:repeating-linear-gradient(100deg,rgba(255,255,255,.055) 0 1px,transparent 1px 18px);
+  opacity:.22;
+}
+.app{
+  width:100%;
+  max-width:500px;
+  height:100%;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+/* Header */
+.header{
+  padding:calc(var(--safe-top) + 10px) 14px 12px;
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:linear-gradient(180deg,rgba(8,16,30,.58),rgba(8,16,30,.16));
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.10);
+  flex-shrink:0;
+}
+.header-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.back-btn{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid var(--stroke);
+  background:rgba(255,255,255,.12);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  font-size:19px;
+  flex-shrink:0;
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
+}
+.title-wrap{
+  flex:1;
+  min-width:0;
+}
+.header h1{
+  font-size:20px;
+  font-weight:900;
+  color:var(--text);
+  line-height:1.15;
+  letter-spacing:.2px;
+}
+.header .sub{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--soft);
+}
+.refresh-btn{
+  border:none;
+  border-radius:999px;
+  padding:9px 12px;
+  color:white;
+  font-size:12px;
+  font-weight:850;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+}
+
+/* Scroll */
+.main{
+  flex:1;
+  overflow-y:auto;
+  scrollbar-width:none;
+  padding-bottom:calc(var(--safe-bottom) + 18px);
+}
+.main::-webkit-scrollbar{display:none}
+
+/* Stats */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  padding:14px 12px 8px;
+}
+.stat-card{
+  min-height:74px;
+  border-radius:22px;
+  padding:10px 6px;
+  text-align:center;
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.07));
+  border:1px solid var(--stroke);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 22px rgba(5,14,28,.16);
+}
+.stat-num{
+  font-size:22px;
+  line-height:1;
+  font-weight:900;
+  color:var(--accent);
+}
+.stat-label{
+  font-size:11px;
+  color:var(--soft);
+  margin-top:8px;
+  font-weight:800;
+}
+
+/* Common */
+.section-header{
+  font-size:15px;
+  font-weight:900;
+  color:var(--text);
+  padding:16px 16px 9px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.list{padding:0 12px 16px}
+.divider{
+  height:1px;
+  background:rgba(255,255,255,.14);
+  margin:8px 16px;
+}
+.empty{
+  text-align:center;
+  padding:70px 20px;
+  color:var(--soft);
+  font-size:14px;
+}
+.empty-icon{
+  font-size:42px;
+  display:block;
+  margin-bottom:12px;
+}
+.loading{
+  text-align:center;
+  padding:50px 20px;
+  color:var(--soft);
+  font-size:14px;
+}
+
+/* Entry */
+.entry{
+  background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.07));
+  border:1px solid var(--stroke);
+  border-left:4px solid rgba(255,255,255,.24);
+  border-radius:10px 24px 24px 10px;
+  padding:14px 15px;
+  margin-bottom:10px;
+  position:relative;
+  overflow:hidden;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 22px rgba(5,14,28,.16);
+}
+.entry:active{transform:scale(.985)}
+.entry.emotion-book{
+  border-left-color:var(--gold);
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,215,0,.08));
+  border-color:rgba(255,215,0,.32);
+}
+.entry-bg{
+  position:absolute;
+  top:-20px;
+  right:-20px;
+  width:120px;
+  height:120px;
+  filter:blur(34px);
+  opacity:.22;
+  border-radius:50%;
+  pointer-events:none;
+}
+.entry-id{
+  font-size:11px;
+  color:var(--dim);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  margin-bottom:7px;
+  position:relative;
+  z-index:1;
+}
+.entry-text{
+  font-size:14px;
+  line-height:1.65;
+  color:var(--text);
+  margin-bottom:10px;
+  position:relative;
+  z-index:1;
+}
+.entry-meta{
+  display:flex;
+  align-items:center;
+  position:relative;
+  z-index:1;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.emo-badge{
+  padding:2px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  letter-spacing:.4px;
+  font-size:11px;
+}
+.badge{
+  font-size:11px;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+}
+.entry-time{
+  font-size:11px;
+  color:var(--dim);
+  margin-left:auto;
+}
+.entry-detail{
+  margin-top:11px;
+  padding-top:11px;
+  border-top:1px solid rgba(255,255,255,.14);
+  position:relative;
+  z-index:1;
+  display:none;
+}
+.entry.open .entry-detail{display:block}
+.note-item{
+  font-size:12px;
+  color:var(--soft);
+  margin-bottom:5px;
+  padding-left:12px;
+  position:relative;
+  line-height:1.55;
+}
+.note-item::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:8px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--bullet-color,var(--accent));
+}
+
+/* Links */
+.link-section{
+  margin-top:9px;
+  padding-top:9px;
+  border-top:1px dashed rgba(255,255,255,.16);
+}
+.link-section-title{
+  font-size:11px;
+  color:var(--purple);
+  margin-bottom:6px;
+  font-weight:800;
+}
+.link-item{
+  font-size:12px;
+  color:var(--soft);
+  padding:4px 0 4px 14px;
+  position:relative;
+  line-height:1.5;
+  cursor:pointer;
+}
+.link-item:active{opacity:.6}
+.link-item::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:11px;
+  width:8px;
+  height:1px;
+  background:var(--purple);
+}
+.link-item-type{
+  display:inline-block;
+  font-size:10px;
+  color:var(--purple);
+  background:rgba(210,168,255,.12);
+  padding:1px 5px;
+  border-radius:5px;
+  margin-right:4px;
+}
+.link-item-target{color:var(--text)}
+.link-item-str{
+  color:var(--dim);
+  font-size:10px;
+}
+.link-item.dead{
+  opacity:.42;
+  cursor:default;
+  text-decoration:line-through;
+}
+
+/* Chain */
+.chain-section{padding:0 12px 14px}
+.chain-title{
+  font-size:13px;
+  color:var(--purple);
+  margin:4px 4px 10px;
+  padding-left:10px;
+  border-left:3px solid var(--purple);
+  font-weight:900;
+}
+.chain-node{
+  background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.07));
+  border:1px solid var(--stroke);
+  border-radius:20px;
+  padding:12px 14px;
+  margin-bottom:8px;
+  cursor:pointer;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 22px rgba(5,14,28,.14);
+}
+.chain-node:active{transform:scale(.985)}
+.chain-node.core{
+  border-color:rgba(210,168,255,.38);
+  background:linear-gradient(145deg,rgba(210,168,255,.16),rgba(255,255,255,.06));
+}
+.chain-node.emotion-book{
+  border-color:rgba(255,215,0,.36);
+  background:linear-gradient(145deg,rgba(255,215,0,.14),rgba(255,255,255,.06));
+}
+.chain-node-name{
+  font-size:13px;
+  color:var(--text);
+  line-height:1.55;
+  margin-bottom:4px;
+}
+.chain-node-id{
+  font-size:10px;
+  color:var(--dim);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+.chain-core-tag{
+  font-size:10px;
+  color:var(--purple);
+  background:rgba(210,168,255,.15);
+  padding:2px 6px;
+  border-radius:6px;
+  margin-right:6px;
+}
+.chain-emotion-tag{
+  font-size:10px;
+  color:var(--gold);
+  background:rgba(255,215,0,.15);
+  padding:2px 6px;
+  border-radius:6px;
+  margin-right:6px;
+}
+.chain-links{
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px solid rgba(255,255,255,.13);
+}
+.chain-link{
+  font-size:12px;
+  color:var(--soft);
+  padding:3px 0 3px 14px;
+  position:relative;
+  line-height:1.5;
+  cursor:pointer;
+}
+.chain-link:active{opacity:.6}
+.chain-link::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:10px;
+  width:8px;
+  height:1px;
+  background:var(--accent);
+}
+.chain-link-type{
+  display:inline-block;
+  font-size:10px;
+  color:var(--accent);
+  background:rgba(141,189,255,.12);
+  padding:1px 5px;
+  border-radius:5px;
+  margin-right:4px;
+}
+.chain-link-target{color:var(--text)}
+.chain-link-str{
+  color:var(--dim);
+  font-size:10px;
+}
+.chain-orphan{
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:15px;
+  padding:9px 12px;
+  margin-bottom:7px;
+  font-size:12px;
+  color:var(--soft);
+  line-height:1.55;
+}
+.highlight{animation:flash .7s ease-out}
+@keyframes flash{
+  0%{box-shadow:0 0 0 3px rgba(141,189,255,.55),0 8px 22px rgba(5,14,28,.16)}
+  100%{box-shadow:0 8px 22px rgba(5,14,28,.16)}
+}
+@media(max-width:380px){
+  .stats{gap:6px;padding-left:8px;padding-right:8px}
+  .stat-card{border-radius:18px}
+  .stat-num{font-size:20px}
+  .header h1{font-size:18px}
+}
+</style>
+</head>
+<body>
+<div class="wallpaper" id="wallpaper"></div>
+
+<div class="app">
+  <div class="header">
+    <div class="header-row">
+      <a class="back-btn" href="home.html">←</a>
+      <div class="title-wrap">
+        <h1>⟁ 年轮 v3</h1>
+        <div class="sub">凌漪的潜意识浮现引擎</div>
+      </div>
+      <button class="refresh-btn" onclick="loadAll()">刷新</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="stats">
+      <div class="stat-card"><div class="stat-num" id="s-total">-</div><div class="stat-label">欲望</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-links">-</div><div class="stat-label">关联</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-notes">-</div><div class="stat-label">足迹</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-today">-</div><div class="stat-label">今日</div></div>
+    </div>
+
+    <div id="content"><div class="loading">正在下潜...</div></div>
+  </div>
+</div>
+
+<script>
+var supabaseUrl = '', supabaseKey = '';
+var allDesires = [], allNotes = [], allLinks = [];
+
+var EMOTION_BOOK_ID = 'b19f4e5b';
+
+var REL_LABELS = {
+  'related':'相关',
+  'caused_by':'起因',
+  'blocks':'阻碍',
+  'extends':'延伸'
+};
+
+function relLabel(type){
+  return REL_LABELS[type] || type || '相关';
+}
+
+function applyTheme(){
+  try{
+    var theme = JSON.parse(localStorage.getItem('little_phone_theme_v1') || '{}');
+    var bg = theme.bgData || theme.bgUrl || '';
+    if(bg){
+      document.getElementById('wallpaper').style.backgroundImage =
+        'linear-gradient(180deg,rgba(6,12,24,.18),rgba(6,12,24,.72)), url("' + bg + '")';
+    }
+  }catch(e){}
+}
+
+function sbFetch(table, query){
+  return fetch(supabaseUrl + '/rest/v1/' + table + (query || ''), {
+    headers:{
+      'apikey':supabaseKey,
+      'Authorization':'Bearer ' + supabaseKey
+    }
+  }).then(function(r){
+    if(!r.ok){
+      return r.text().then(function(t){
+        throw new Error('Supabase ' + r.status + ': ' + t.slice(0,120));
+      });
+    }
+    return r.json();
+  });
+}
+
+function esc(t){
+  if(!t)return '';
+  var d = document.createElement('div');
+  d.textContent = String(t);
+  return d.innerHTML;
+}
+
+function fmtDate(ts){
+  if(!ts)return '';
+  var d = new Date(ts);
+  return (d.getMonth()+1) + '/' + d.getDate() + ' ' +
+    String(d.getHours()).padStart(2,'0') + ':' +
+    String(d.getMinutes()).padStart(2,'0');
+}
+
+function getColor(v, a, isCore){
+  if(isCore)return '#d2a8ff';
+  v = v || 0;
+  a = a || 0;
+
+  if(v < -30 && a > 50)return '#ff7b72';
+  if(v > 30 && a > 50)return '#d2a8ff';
+  if(v < -30 && a <= 50)return '#8b949e';
+  if(v >= -30 && v <= 30 && a <= 40)return '#87CEEB';
+  if(v > 30 && a <= 50)return '#3fb950';
+
+  return '#58a6ff';
+}
+
+function getNodeLinks(id){
+  var r = [];
+  for(var i=0;i<allLinks.length;i++){
+    if(allLinks[i].from_id === id || allLinks[i].to_id === id)r.push(allLinks[i]);
+  }
+  return r;
+}
+
+function findDesire(id){
+  for(var i=0;i<allDesires.length;i++){
+    if(allDesires[i].id === id)return allDesires[i];
+  }
+  return null;
+}
+
+function isEmotionBook(d){
+  return d && d.id === EMOTION_BOOK_ID;
+}
+
+function toggleEntry(el){
+  if(el.className.indexOf('open') >= 0){
+    el.className = el.className.replace(' open','');
+  }else{
+    el.className += ' open';
+  }
+}
+
+function scrollToEntry(id){
+  var el = document.getElementById('entry-' + id);
+  if(!el)return;
+
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+  el.classList.add('highlight');
+
+  if(el.className.indexOf('open') < 0)el.className += ' open';
+
+  setTimeout(function(){
+    el.classList.remove('highlight');
+  }, 750);
+}
+
+function buildNode(d, isCore){
+  var isEmo = isEmotionBook(d);
+  var nodeClass = 'chain-node' + (isEmo ? ' emotion-book' : (isCore ? ' core' : ''));
+
+  var html = '<div class="' + nodeClass + '" onclick="scrollToEntry(\'' + esc(d.id) + '\')">';
+  html += '<div style="margin-bottom:5px">';
+
+  if(isEmo)html += '<span class="chain-emotion-tag">📸 表情簿</span>';
+  else if(isCore)html += '<span class="chain-core-tag">🌟 核心</span>';
+
+  html += '<span class="chain-node-id">[' + esc(d.id) + ']</span></div>';
+
+  var name = d.text || '';
+  if(name.length > 50)name = name.slice(0,50) + '…';
+
+  html += '<div class="chain-node-name">' + esc(name) + '</div>';
+
+  var links = getNodeLinks(d.id);
+
+  if(links.length > 0){
+    html += '<div class="chain-links">';
+
+    for(var j=0;j<links.length;j++){
+      var l = links[j];
+      var tid = (l.from_id === d.id) ? l.to_id : l.from_id;
+      var target = findDesire(tid);
+      var tname = target ? (target.text || tid) : tid;
+
+      if(tname.length > 30)tname = tname.slice(0,30) + '…';
+
+      var arrow = (l.from_id === d.id) ? '→' : '←';
+
+      if(!target){
+        html += '<div class="chain-link" style="opacity:.4;cursor:default">';
+      }else{
+        html += '<div class="chain-link" onclick="event.stopPropagation();scrollToEntry(\'' + esc(tid) + '\')">';
+      }
+
+      html += '<span class="chain-link-type">' + esc(relLabel(l.relation_type)) + '</span>';
+      html += arrow + ' <span class="chain-link-target">' + esc(tname) + '</span> ';
+      html += '<span class="chain-link-str">(' + (l.strength || 50) + ')</span>';
+      html += '</div>';
+    }
+
+    html += '</div>';
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function render(){
+  if(allDesires.length === 0){
+    document.getElementById('content').innerHTML =
+      '<div class="empty"><span class="empty-icon">📭</span>潜意识为空</div>';
+    return;
+  }
+
+  var today = new Date().toISOString().slice(0,10);
+  var todayCount = 0;
+
+  for(var i=0;i<allNotes.length;i++){
+    if(allNotes[i].created_at && allNotes[i].created_at.slice(0,10) === today)todayCount++;
+  }
+
+  document.getElementById('s-total').textContent = allDesires.length;
+  document.getElementById('s-links').textContent = allLinks.length;
+  document.getElementById('s-notes').textContent = allNotes.length;
+  document.getElementById('s-today').textContent = todayCount;
+
+  var html = '';
+
+  if(allLinks.length > 0){
+    html += '<div class="section-header">🔗 记忆链</div>';
+
+    var cores = [], linked = [], orphans = [];
+
+    for(var i=0;i<allDesires.length;i++){
+      var d = allDesires[i];
+      var hasLink = getNodeLinks(d.id).length > 0;
+
+      if(d.is_core === true)cores.push(d);
+      else if(hasLink)linked.push(d);
+      else orphans.push(d);
+    }
+
+    if(cores.length > 0){
+      html += '<div class="chain-section"><div class="chain-title">🌟 核心 (' + cores.length + ')</div>';
+      for(var i=0;i<cores.length;i++)html += buildNode(cores[i], true);
+      html += '</div>';
+    }
+
+    if(linked.length > 0){
+      html += '<div class="chain-section"><div class="chain-title">🔗 已关联 (' + linked.length + ')</div>';
+      for(var i=0;i<linked.length;i++)html += buildNode(linked[i], false);
+      html += '</div>';
+    }
+
+    if(orphans.length > 0){
+      html += '<div class="chain-section"><div class="chain-title">💫 游离 (' + orphans.length + ')</div>';
+
+      var max = orphans.length < 10 ? orphans.length : 10;
+
+      for(var i=0;i<max;i++){
+        var t = orphans[i].text || '';
+        if(t.length > 35)t = t.slice(0,35) + '…';
+        html += '<div class="chain-orphan">[' + esc(orphans[i].id) + '] ' + esc(t) + '</div>';
+      }
+
+      if(orphans.length > 10){
+        html += '<div style="font-size:11px;color:rgba(247,251,255,.52);padding:4px 12px">...还有 ' + (orphans.length - 10) + ' 个</div>';
+      }
+
+      html += '</div>';
+    }
+
+    html += '<div class="divider"></div>';
+  }
+
+  html += '<div class="section-header">📖 账本</div><div class="list">';
+
+  for(var i=0;i<allDesires.length;i++){
+    var d = allDesires[i];
+    var notes = [];
+
+    for(var j=0;j<allNotes.length;j++){
+      if(allNotes[j].desire_id === d.id)notes.push(allNotes[j]);
+    }
+
+    var links = getNodeLinks(d.id);
+    var isCore = d.is_core === true;
+    var isEmo = isEmotionBook(d);
+    var color = isEmo ? '#FFD700' : getColor(d.valence, d.arousal, isCore);
+    var entryClass = 'entry' + (isEmo ? ' emotion-book' : '');
+
+    html += '<div class="' + entryClass + '" id="entry-' + esc(d.id) + '" onclick="toggleEntry(this)" style="' + (isEmo ? '' : 'border-left-color:' + color) + '">';
+    html += '<div class="entry-bg" style="background:' + color + '"></div>';
+
+    html += '<div class="entry-id">';
+    if(isEmo)html += '📸 ';
+    html += '[' + esc(d.id) + '] <span class="emo-badge" style="color:' + color + '">V:' + (d.valence || 0) + ' A:' + (d.arousal || 0) + '</span>';
+    if(isCore && !isEmo)html += ' <span style="font-size:10px;color:#d2a8ff">🌟</span>';
+    html += '</div>';
+
+    html += '<div class="entry-text">' + esc(d.text) + '</div>';
+
+    html += '<div class="entry-meta">';
+    html += '<span class="badge" style="color:' + color + ';background:' + color + '1a">' + notes.length + ' 足迹</span>';
+
+    if(links.length > 0){
+      html += '<span class="badge" style="color:#d2a8ff;background:rgba(210,168,255,.1)">' + links.length + ' 关联</span>';
+    }
+
+    html += '<span class="entry-time">' + fmtDate(d.created_at) + '</span>';
+    html += '</div>';
+
+    if(notes.length > 0 || links.length > 0){
+      html += '<div class="entry-detail">';
+
+      if(notes.length > 0){
+        var showMax = notes.length < 5 ? notes.length : 5;
+
+        for(var k=0;k<showMax;k++){
+          html += '<div class="note-item" style="--bullet-color:' + color + '">' +
+            esc(notes[k].note) +
+            ' <span style="opacity:.5">' + fmtDate(notes[k].created_at) + '</span></div>';
+        }
+
+        if(notes.length > 5){
+          html += '<div class="note-item" style="color:' + color + '">...还有 ' + (notes.length - 5) + ' 条</div>';
+        }
+      }
+
+      if(links.length > 0){
+        html += '<div class="link-section"><div class="link-section-title">🔗 关联 (' + links.length + ')</div>';
+
+        for(var k=0;k<links.length;k++){
+          var l = links[k];
+          var tid = (l.from_id === d.id) ? l.to_id : l.from_id;
+          var target = findDesire(tid);
+          var tname = target ? (target.text || tid) : tid;
+
+          if(tname.length > 30)tname = tname.slice(0,30) + '…';
+
+          var arrow = (l.from_id === d.id) ? '→' : '←';
+          var isDead = !target;
+
+          if(isDead){
+            html += '<div class="link-item dead">';
+          }else{
+            html += '<div class="link-item" onclick="event.stopPropagation();scrollToEntry(\'' + esc(tid) + '\')">';
+          }
+
+          html += '<span class="link-item-type">' + esc(relLabel(l.relation_type)) + '</span>';
+          html += arrow + ' <span class="link-item-target">' + esc(tname) + '</span> ';
+          html += '<span class="link-item-str">(' + (l.strength || 50) + ')</span>';
+          html += '</div>';
+        }
+
+        html += '</div>';
+      }
+
+      html += '</div>';
+    }
+
+    html += '</div>';
+  }
+
+  html += '</div>';
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function loadAll(){
+  document.getElementById('content').innerHTML = '<div class="loading">正在下潜...</div>';
+
+  Promise.all([
+    sbFetch('desires_view','?order=weight.desc'),
+    sbFetch('desire_notes','?order=created_at.desc'),
+    sbFetch('desire_links','')
+  ]).then(function(results){
+    allDesires = Array.isArray(results[0]) ? results[0] : [];
+    allNotes = Array.isArray(results[1]) ? results[1] : [];
+    allLinks = Array.isArray(results[2]) ? results[2] : [];
+    render();
+  }).catch(function(e){
+    document.getElementById('content').innerHTML =
+      '<div class="empty"><span class="empty-icon">⚠️</span>' + esc(e.message) + '</div>';
+  });
+}
+</script>
+
+<script src="config.js"></script>
+<script>
+applyTheme();
+
+try{
+  supabaseUrl = SUPABASE_URL;
+  supabaseKey = SUPABASE_KEY;
+  loadAll();
+}catch(e){
+  document.getElementById('content').innerHTML =
+    '<div class="empty"><span class="empty-icon">⚠️</span>config.js 没读到 Supabase 配置</div>';
+}
+</script>
+</body>
+</html>
