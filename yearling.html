@@ -465,11 +465,6 @@ body{
   .header h1{font-size:18px}
 }
 
-.dock{position:fixed;left:0;right:0;bottom:0;padding:0 18px calc(var(--safe-bottom) + 12px);display:flex;justify-content:center;pointer-events:none;z-index:30}
-.dock-bar{width:min(390px,100%);height:86px;border-radius:36px;background:linear-gradient(145deg,rgba(86,108,145,.72),rgba(48,65,95,.64));border:1px solid rgba(255,255,255,.28);box-shadow:0 18px 48px rgba(6,15,28,.38);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:space-around;pointer-events:auto}
-.dock-item{width:60px;height:60px;border-radius:22px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:white;text-decoration:none;display:flex;align-items:center;justify-content:center;font-size:26px}
-.dock-item.active{background:rgba(255,255,255,.20)}
-@media(max-width:380px){.dock-bar{height:80px}.dock-item{width:56px;height:56px}}
 </style>
 </head>
 <body>
@@ -858,7 +853,5 @@ try{
     '<div class="empty"><span class="empty-icon">⚠️</span>config.js 没读到 Supabase 配置</div>';
 }
 </script>
-
-<nav class="dock"><div class="dock-bar"><a class="dock-item" href="chat.html">✦</a><a class="dock-item" href="home.html">⌂</a><a class="dock-item active" href="yearling.html">⟁</a></div></nav>
 </body>
 </html>

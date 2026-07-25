@@ -245,7 +245,7 @@ html,body{
   font-weight:850;
   color:rgba(255,255,255,.90);
 }
-.two-grid{
+.REMOVED-two-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
@@ -1223,7 +1223,6 @@ function loadHomeMemos(){
         <span id="todayLunar" style="opacity:.5"></span>
       </div>
 
->
     
       <div style="margin-top:16px">
         <div style="font-size:13px;font-weight:900;color:var(--soft);padding:2px 0 0;letter-spacing:.5px">MEMOS</div>
@@ -1261,16 +1260,6 @@ function loadHomeMemos(){
         <div class="quote-sub" id="quoteSub">这里写第二行说明。</div>
       </section>
 
-      <div class="two-grid">
-        <a class="tile softglass" href="yearling.html">
-          <div class="tile-icon">◇</div>
-          <div class="tile-label">档案馆</div>
-        </a>
-        <a class="tile softglass" href="javascript:void(0)" onclick="openDiaryViewer()">
-          <div class="tile-icon">📔</div>
-          <div class="tile-label">日记</div>
-        </a>
-      </div>
 
       <div class="diary-card" id="diaryCard" onclick="openDiaryViewer()">
         <div class="diary-ribbon"></div>
@@ -1922,7 +1911,6 @@ function restorePageIndex(){
 applySettings();
 
 loadHomeMemos();
-loadLingyiStatus();
 loadMemoriesForHome();
 renderDiary();
 
@@ -1931,7 +1919,6 @@ window.addEventListener('focus', function(){
   applySettings();
   initHomeAudio();
   loadHomeMemos();
-  loadLingyiStatus();
 });
 
 bindHomeAudioEvents();
@@ -1957,7 +1944,6 @@ window.addEventListener('storage', function(e){
   }
   if(e.key === LISTEN_KEY){ updateListenWidget(); initHomeAudio(); }
   if(e.key === MEMO_KEY){ loadHomeMemos(); }
-  if(e.key === 'little_phone_nest_0108_v21'){ loadLingyiStatus(); }
   if(e.key === DIARY_KEY){ renderDiary(); }
 });
 
