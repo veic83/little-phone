@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>⟁备忘录</title>
+<title>⟁ 备忘录</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon_48.png" type="image/png">
+<link rel="apple-touch-icon" href="icon_192.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -256,13 +259,13 @@ html,body{
 <div class="app">
   <div class="header">
     <div class="header-left">
-      <a class="back" href="home.html">⟁?/a>
+      <a class="back" href="home.html">←</a>
       <div class="title-wrap">
-        <div class="title">备忘⟁?/div>
+        <div class="title">备忘录</div>
         <div class="sub">本地保存，不上传</div>
       </div>
     </div>
-    <div class="count" id="countText">0 ⟁?/div>
+    <div class="count" id="countText">0 条</div>
   </div>
 
   <div class="main">
@@ -275,12 +278,12 @@ html,body{
       <div style="height:10px"></div>
 
       <div class="label">内容</div>
-      <textarea class="textarea" id="contentInput" placeholder="写点什么都行⟁?></textarea>
+      <textarea class="textarea" id="contentInput" placeholder="写点什么都行。"></textarea>
 
       <div style="height:10px"></div>
 
       <div class="label">标签（可选）</div>
-      <input class="input" id="tagInput" placeholder="比如：待⟁?重要,灵感">
+      <input class="input" id="tagInput" placeholder="比如：待办,重要,灵感">
 
       <div style="height:12px"></div>
 
@@ -291,14 +294,15 @@ html,body{
 
       <div style="height:10px"></div>
       <div class="small">
-        存在手机本地⟁?br>
-        关页面也不会丢⟁?      </div>
+        存在手机本地。<br>
+        关页面也不会丢。
+      </div>
     </div>
 
     <div class="card softglass">
       <div class="label">搜索</div>
       <div class="search-row">
-        <input class="input" id="searchInput" placeholder="按标题、内容、标签搜⟁?>
+        <input class="input" id="searchInput" placeholder="按标题、内容、标签搜索">
       </div>
     </div>
 
@@ -374,10 +378,10 @@ function getVisibleMemos() {
 function renderMemos() {
   var box = document.getElementById('memoList');
   var list = getVisibleMemos();
-  document.getElementById('countText').textContent = memos.length + ' ⟁?;
+  document.getElementById('countText').textContent = memos.length + ' 条';
 
   if (!list.length) {
-    box.innerHTML = '<div class="empty">没有找到备忘⟁?br>或者你还没写⟁?/div>';
+    box.innerHTML = '<div class="empty">没有找到备忘。<br>或者你还没写。</div>';
     return;
   }
 
@@ -387,7 +391,7 @@ function renderMemos() {
     html += '<div class="memo">';
     html += '<div class="memo-top">';
     html += '<div style="min-width:0;flex:1">';
-    html += '<div class="memo-title">' + escapeHtml(m.title || '未命⟁?) + '</div>';
+    html += '<div class="memo-title">' + escapeHtml(m.title || '未命名') + '</div>';
     html += '<div class="memo-meta">';
     if (m.pinned) html += '<span class="tag pin">置顶</span>';
     html += '<span class="tag time">' + escapeHtml(m.createdAt || '') + '</span>';
@@ -432,14 +436,14 @@ function saveMemo() {
   var tags = normalizeTags(document.getElementById('tagInput').value.trim());
 
   if (!title && !content) {
-    alert('至少写点什么⟁?);
+    alert('至少写点什么。');
     return;
   }
 
   if (editId) {
     for (var i = 0; i < memos.length; i++) {
       if (memos[i].id === editId) {
-        memos[i].title = title || '未命⟁?;
+        memos[i].title = title || '未命名';
         memos[i].content = content;
         memos[i].tags = tags;
         break;
@@ -448,7 +452,7 @@ function saveMemo() {
   } else {
     memos.unshift({
       id: uid(),
-      title: title || '未命⟁?,
+      title: title || '未命名',
       content: content,
       tags: tags,
       pinned: false,
@@ -474,7 +478,7 @@ function editMemo(id) {
 }
 
 function deleteMemo(id) {
-  if (!confirm('删除这条备忘⟁?)) return;
+  if (!confirm('删除这条备忘？')) return;
   memos = memos.filter(function(x) { return x.id !== id; });
   if (editId === id) clearForm();
   saveMemos();

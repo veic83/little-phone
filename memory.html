@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>⟁纪念日</title>
+<title>♡ 纪念日</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon_48.png" type="image/png">
+<link rel="apple-touch-icon" href="icon_192.png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -237,53 +240,54 @@ html,body{
 <div class="app">
   <div class="header">
     <div class="header-left">
-      <a class="back" href="home.html">⟁?/a>
+      <a class="back" href="home.html">←</a>
       <div class="title-wrap">
-        <div class="title">纪念⟁?/div>
+        <div class="title">纪念日</div>
         <div class="sub">选一个值得被反复想起的日子</div>
       </div>
     </div>
-    <div class="state-pill" id="saveState">未保⟁?/div>
+    <div class="state-pill" id="saveState">未保存</div>
   </div>
 
   <div class="main">
     <section class="card glass">
       <div class="preview-top">
         <div>
-          <div class="preview-title" id="previewTitle">纪念⟁?/div>
-          <div class="preview-sub" id="previewSub">留一个值得反复想起的日期⟁?/div>
+          <div class="preview-title" id="previewTitle">纪念日</div>
+          <div class="preview-sub" id="previewSub">留一个值得反复想起的日期。</div>
         </div>
         <div class="preview-badge" id="previewBadge">--</div>
       </div>
 
       <div class="preview-date" id="previewDate">年度纪念日：--</div>
-      <div class="preview-count" id="previewCount">请选择一个日期⟁?/div>
+      <div class="preview-count" id="previewCount">请选择一个日期。</div>
     </section>
 
     <section class="card softglass">
-      <div class="section-title">编辑纪念⟁?/div>
+      <div class="section-title">编辑纪念日</div>
 
-      <label class="label">纪念日标⟁?/label>
-      <input class="input" id="memoryTitleInput" placeholder="比如：第一次见⟁?/ 在一⟁?/ 小镇创建⟁?>
-
-      <div style="height:10px"></div>
-
-      <label class="label">纪念日说⟁?/label>
-      <textarea class="textarea" id="memorySubInput" placeholder="比如：这是我们第一次认真记住彼此的那天⟁?></textarea>
+      <label class="label">纪念日标题</label>
+      <input class="input" id="memoryTitleInput" placeholder="比如：第一次见面 / 在一起 / 小镇创建日">
 
       <div style="height:10px"></div>
 
-      <label class="label">纪念日日⟁?/label>
+      <label class="label">纪念日说明</label>
+      <textarea class="textarea" id="memorySubInput" placeholder="比如：这是我们第一次认真记住彼此的那天。"></textarea>
+
+      <div style="height:10px"></div>
+
+      <label class="label">纪念日日期</label>
       <input class="input" id="memoryDateInput" type="date">
 
       <div class="mini-note">
-        保存后会写入首页同一个本地配置⟁?br>
-        首页之后只要读取 <code>memoryTitle</code> / <code>memorySub</code> / <code>memoryDate</code> 就能直接用⟁?      </div>
+        保存后会写入首页同一个本地配置。<br>
+        首页之后只要读取 <code>memoryTitle</code> / <code>memorySub</code> / <code>memoryDate</code> 就能直接用。
+      </div>
 
       <div style="height:14px"></div>
 
       <div class="row">
-        <button class="btn primary" type="button" id="saveBtn">保存纪念⟁?/button>
+        <button class="btn primary" type="button" id="saveBtn">保存纪念日</button>
         <button class="btn" type="button" id="previewBtn">刷新预览</button>
         <button class="btn danger" type="button" id="resetBtn">恢复默认</button>
       </div>
@@ -295,8 +299,8 @@ html,body{
 const SETTINGS_KEY = 'little_phone_theme_v1';
 
 const defaults = {
-  memoryTitle:'纪念⟁?,
-  memorySub:'留一个值得反复想起的日期⟁?,
+  memoryTitle:'纪念日',
+  memorySub:'留一个值得反复想起的日期。',
   memoryDate:'2026-10-08'
 };
 
@@ -320,7 +324,7 @@ function daysBetween(start, end){
 
 function formatMonthDay(date){
   if(!(date instanceof Date) || isNaN(date.getTime())) return '--';
-  return (date.getMonth() + 1) + '⟁? + date.getDate() + '⟁?;
+  return (date.getMonth() + 1) + '月' + date.getDate() + '日';
 }
 
 function updatePreview(){
@@ -334,7 +338,7 @@ function updatePreview(){
   if(!dateStr){
     document.getElementById('previewBadge').textContent = '--';
     document.getElementById('previewDate').textContent = '年度纪念日：--';
-    document.getElementById('previewCount').textContent = '请选择一个日期⟁?;
+    document.getElementById('previewCount').textContent = '请选择一个日期。';
     return;
   }
 
@@ -342,7 +346,7 @@ function updatePreview(){
   if(isNaN(baseDate.getTime())){
     document.getElementById('previewBadge').textContent = '--';
     document.getElementById('previewDate').textContent = '年度纪念日：--';
-    document.getElementById('previewCount').textContent = '日期格式无效⟁?;
+    document.getElementById('previewCount').textContent = '日期格式无效。';
     return;
   }
 
@@ -351,7 +355,7 @@ function updatePreview(){
   const base = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
 
   const passed = Math.max(1, daysBetween(base, today) + 1);
-  document.getElementById('previewBadge').textContent = '已过 ' + passed + ' ⟁?;
+  document.getElementById('previewBadge').textContent = '已过 ' + passed + ' 天';
   document.getElementById('previewDate').textContent = '年度纪念日：' + formatMonthDay(base);
 
   let next = new Date(today.getFullYear(), base.getMonth(), base.getDate());
@@ -361,10 +365,10 @@ function updatePreview(){
 
   const left = Math.max(0, daysBetween(today, next));
   if(left === 0){
-    document.getElementById('previewCount').textContent = '今天就是⟁? + title + '」⟁?;
+    document.getElementById('previewCount').textContent = '今天就是「' + title + '」。';
   }else{
     document.getElementById('previewCount').textContent =
-      '距离下一⟁?' + formatMonthDay(base) + ' 还有 ' + left + ' 天⟁?;
+      '距离下一次 ' + formatMonthDay(base) + ' 还有 ' + left + ' 天。';
   }
 }
 
@@ -385,8 +389,8 @@ function commitSave(){
   settings.memoryDate = document.getElementById('memoryDateInput').value || defaults.memoryDate;
   saveSettings();
   updatePreview();
-  markSaved('已保⟁?);
-  alert('纪念日已保存到首页配置⟁?);
+  markSaved('已保存');
+  alert('纪念日已保存到首页配置。');
 }
 
 function resetMemory(){
@@ -396,25 +400,25 @@ function resetMemory(){
   settings.memoryDate = defaults.memoryDate;
   saveSettings();
   fillForm();
-  markSaved('已重⟁?);
+  markSaved('已重置');
 }
 
 document.getElementById('saveBtn').addEventListener('click', commitSave);
 document.getElementById('previewBtn').addEventListener('click', function(){
   updatePreview();
-  markSaved('预览已刷⟁?);
+  markSaved('预览已刷新');
 });
 document.getElementById('resetBtn').addEventListener('click', resetMemory);
 
 ['memoryTitleInput','memorySubInput','memoryDateInput'].forEach(function(id){
   document.getElementById(id).addEventListener('input', function(){
-    markSaved('未保⟁?);
+    markSaved('未保存');
     updatePreview();
   });
 });
 
 fillForm();
-markSaved('已加⟁?);
+markSaved('已加载');
 </script>
 </body>
 </html>

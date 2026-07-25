@@ -337,7 +337,7 @@ html,body{
 
 <div class="app">
   <div class="header">
-    <a href="home.html" class="round">⟁?/a>
+    <a href="home.html" class="round">←</a>
     <div class="head-mark">¥</div>
     <div class="head-info">
       <div class="head-name">账本</div>
@@ -351,25 +351,25 @@ html,body{
 
   <div class="content">
     <div class="card">
-      <div class="card-title">汇⟁?/div>
+      <div class="card-title">汇总</div>
       <div class="summary-grid">
         <div class="summary-item">
           <div class="summary-label">今天</div>
           <div class="summary-value" id="sumToday">0.00</div>
-          <div class="summary-sub">⟁?/div>
+          <div class="summary-sub">元</div>
         </div>
         <div class="summary-item">
           <div class="summary-label">本月</div>
           <div class="summary-value" id="sumMonth">0.00</div>
-          <div class="summary-sub">⟁?/div>
+          <div class="summary-sub">元</div>
         </div>
         <div class="summary-item">
           <div class="summary-label">总计</div>
           <div class="summary-value" id="sumAll">0.00</div>
-          <div class="summary-sub">⟁?/div>
+          <div class="summary-sub">元</div>
         </div>
       </div>
-      <div class="tiny" style="margin-top:10px" id="countInfo">0 条记⟁?/div>
+      <div class="tiny" style="margin-top:10px" id="countInfo">0 条记录</div>
     </div>
 
     <div class="card">
@@ -377,12 +377,12 @@ html,body{
       <div class="form">
         <div class="form-row">
           <input class="input" type="date" id="dateInput">
-          <input class="input" type="text" id="modelInput" placeholder="模型名，⟁?GPT-4o">
+          <input class="input" type="text" id="modelInput" placeholder="模型名，如 GPT-4o">
         </div>
         <div class="form-row">
           <input class="input" type="number" step="0.01" id="amountInput" placeholder="金额，如 12.5">
         </div>
-        <textarea class="textarea" id="noteInput" placeholder="备注，可⟁?></textarea>
+        <textarea class="textarea" id="noteInput" placeholder="备注，可选"></textarea>
         <div class="btn-row">
           <button class="btn primary" id="saveBtn" onclick="saveRecord()">保存记录</button>
           <button class="btn ghost" id="cancelEditBtn" onclick="cancelEdit()" style="display:none">取消编辑</button>
@@ -391,9 +391,9 @@ html,body{
     </div>
 
     <div class="card">
-      <div class="card-title">筛⟁?/div>
+      <div class="card-title">筛选</div>
       <div class="filters">
-        <input class="input" type="text" id="searchInput" placeholder="搜索模型或备⟁? oninput="renderAll()">
+        <input class="input" type="text" id="searchInput" placeholder="搜索模型或备注" oninput="renderAll()">
         <select class="select" id="modelFilter" onchange="renderAll()">
           <option value="">全部模型</option>
         </select>
@@ -404,7 +404,8 @@ html,body{
       <div class="card-title">记录列表</div>
       <div class="list" id="recordList"></div>
       <div class="empty" id="emptyState" style="display:none">
-        还没有记录⟁?br>先记一笔吧⟁?      </div>
+        还没有记录。<br>先记一笔吧。
+      </div>
     </div>
   </div>
 </div>
@@ -496,14 +497,14 @@ function renderSummary(){
   document.getElementById('sumToday').textContent = money(sum(todayList));
   document.getElementById('sumMonth').textContent = money(sum(monthList));
   document.getElementById('sumAll').textContent = money(sum(list));
-  document.getElementById('countInfo').textContent = list.length + ' 条记⟁?;
+  document.getElementById('countInfo').textContent = list.length + ' 条记录';
 }
 function recordItemHtml(item){
   return `
     <div class="record">
       <div class="record-top">
         <div>
-          <div class="record-model">${escapeHtml(item.model || '未命名模⟁?)}</div>
+          <div class="record-model">${escapeHtml(item.model || '未命名模型')}</div>
           <div class="record-meta">
             <span class="tag">${escapeHtml(item.date || '')}</span>
             <span class="tag">¥ ${money(item.amount)}</span>
@@ -559,11 +560,11 @@ function saveRecord(){
   var note = document.getElementById('noteInput').value.trim();
 
   if(!model){
-    alert('填一下模型名⟁?);
+    alert('填一下模型名。');
     return;
   }
   if(!Number.isFinite(amount) || amount < 0){
-    alert('金额不对⟁?);
+    alert('金额不对。');
     return;
   }
 
@@ -616,14 +617,14 @@ function cancelEdit(){
   resetForm();
 }
 function deleteRecord(id){
-  if(!confirm('删除这条记录⟁?)) return;
+  if(!confirm('删除这条记录？')) return;
   var list = loadLedger().filter(function(item){ return item.id !== id; });
   saveLedger(list);
   if(editingId === id) resetForm();
   renderAll();
 }
 function clearAllRecords(){
-  if(!confirm('清空全部账本记录⟁?)) return;
+  if(!confirm('清空全部账本记录？')) return;
   localStorage.removeItem(LEDGER_KEY);
   resetForm();
   renderAll();
