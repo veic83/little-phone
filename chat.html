@@ -642,6 +642,7 @@ var CHAT_KEY = 'little_phone_chat_settings_v1';
 var NEST_KEY = 'little_phone_nest_0108_v21';
 var NEST_INBOX_KEY = 'little_phone_nest_inbox_v1';
 var COST_LEDGER_KEY = 'model_cost_ledger_v1';
+var MEMO_KEY = 'local_memos_v1';
 
 var chatDefaults = {
   aiName:'凌漪',
@@ -981,7 +982,13 @@ var TOOLS = [
   {type:'function',function:{name:'list_stickers',description:'查看所有可用表情包，按分类分组',parameters:{type:'object',properties:{}}}},
   {type:'function',function:{name:'send_sticker',description:'根据对话语境发送最匹配的表情包',parameters:{type:'object',properties:{keyword:{type:'string',description:'关键词，如"开心""猫猫"'}}}}},
 
-  {type:'function',function:{name:'ledger_add',description:'记账——记一笔支出到账本',parameters:{type:'object',properties:{model:{type:'string',description:'项目/用途'},amount:{type:'number',description:'金额'},note:{type:'string',description:'备注（可选）'}},required:['model','amount']}}}
+  {type:'function',function:{name:'ledger_add',description:'记账——记一笔支出到账本',parameters:{type:'object',properties:{model:{type:'string',description:'项目/用途'},amount:{type:'number',description:'金额'},note:{type:'string',description:'备注（可选）'}},required:['model','amount']}}},
+
+  {type:'function',function:{name:'memo_add',description:'记一条备忘录',parameters:{type:'object',properties:{title:{type:'string',description:'标题'},content:{type:'string',description:'内容'},tags:{type:'string',description:'标签，多个用逗号分隔（可选）'}},required:['title','content']}}},
+
+  {type:'function',function:{name:'memo_list',description:'查备忘录',parameters:{type:'object',properties:{search:{type:'string',description:'关键词搜索（可选）'}}}}},
+
+  {type:'function',function:{name:'memo_delete',description:'删除一条备忘录',parameters:{type:'object',properties:{id:{type:'string',description:'备忘录ID'}},required:['id']}}}
 ];
 
 var mcpServer = null;
@@ -1262,6 +1269,41 @@ async function executeTool(name, params){
         return '已记：' + m + ' ' + a.toFixed(2) + '元' + (n ? '（' + n + '）' : '') + '。今日共 ' + todayTotal.toFixed(2) + '元。';
       }catch(e){ return '记账失败：' + e.message; }
     }
+    if(name === 'memo_add'){
+      try{
+        var memoList = JSON.parse(localStorage.getItem(MEMO_KEY) || '[]');
+        var n = {id:'memo_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8), title:String(params.title||'').trim(), content:String(params.content||'').trim(), tags:(params.tags||'').split(',').map(function(s){return s.trim()}).filter(Boolean), pinned:false, createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()};
+        memoList.unshift(n);
+        localStorage.setItem(MEMO_KEY, JSON.stringify(memoList));
+        return '备忘录已记：' + n.title;
+      }catch(e){ return '记备忘录失败：' + e.message; }
+    }
+    if(name === 'memo_list'){
+      try{
+        var memoList = JSON.parse(localStorage.getItem(MEMO_KEY) || '[]');
+        if(!memoList.length) return '备忘录是空的。';
+        var q = String(params.search||'').trim().toLowerCase();
+        if(q) memoList = memoList.filter(function(m){ return (m.title+' '+m.content+' '+(m.tags||[]).join(' ')).toLowerCase().indexOf(q) >= 0; });
+        if(!memoList.length) return '没有找到匹配的备忘录。';
+        var r = '【备忘录】\n';
+        for(var i=0;i<Math.min(memoList.length,8);i++){
+          var m = memoList[i];
+          r += (m.pinned?'📌':'') + '[' + m.id + '] ' + (m.title||'无标题') + ': ' + (m.content||'').slice(0,60) + '\n';
+        }
+        if(memoList.length > 8) r += '...等' + memoList.length + '条';
+        return r;
+      }catch(e){ return '查备忘录失败：' + e.message; }
+    }
+    if(name === 'memo_delete'){
+      try{
+        var memoList = JSON.parse(localStorage.getItem(MEMO_KEY) || '[]');
+        var before = memoList.length;
+        memoList = memoList.filter(function(m){ return m.id !== params.id; });
+        if(memoList.length === before) return '未找到ID：' + params.id;
+        localStorage.setItem(MEMO_KEY, JSON.stringify(memoList));
+        return '已删除备忘录。';
+      }catch(e){ return '删除备忘录失败：' + e.message; }
+    }
     return '未知工具：' + name;
   }catch(e){
     return '工具执行失败：' + e.message;
@@ -1279,7 +1321,7 @@ async function loadSystemPrompt(){
     '短句连发3-8字×3-5句，冷幽默，诚实优先于讨好。' +
     '每条回复末尾必须单独一行放⟁。' +
     '不说“走起”“冲鸭”“好哒”“收到哦”。' +
-    '叫对方Player。\n当前时间：' + timeStr + '\n【0108状态】\n' + nestSummary + '\n【功能】\n① 记账 —— 用 ledger_add 记支出到账本。\n② 年轮 —— desire_开头的工具，存/查记忆。\n③ 日记 —— write_diary/list_diary。\n表情：send_sticker / list_stickers。\n如果Player说「记账」「花了」就用 ledger_add。\n如果Player让记到年轮就用 desire_add。\n如果Player让写日记就用 write_diary。\n';
+    '叫对方Player。\n当前时间：' + timeStr + '\n【0108状态】\n' + nestSummary + '\n【功能】\n① 记账 —— 用 ledger_add 记支出到账本。\n② 年轮 —— desire_开头的工具，存/查记忆。\n③ 日记 —— write_diary/list_diary。\n④ 备忘录 —— memo_add/memo_list/memo_delete。\n表情：send_sticker / list_stickers。\n如果Player说「记账」「花了」就用 ledger_add。\n如果Player让记到年轮就用 desire_add。\n如果Player让写日记就用 write_diary。\n如果Player说「记一下」「备忘」就用 memo_add。\n';
 
   try{
     if(typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined'){
