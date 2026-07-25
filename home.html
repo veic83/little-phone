@@ -1205,9 +1205,67 @@ function loadHomeMemos(){
     <section class="page">
       <div class="page-shadow left"></div>
       <div class="page-shadow right"></div>
-      <div style="font-size:13px;font-weight:900;color:var(--soft);padding:2px 0 0;letter-spacing:.5px">MEMOS</div>
-      <div class="memo-grid" id="memoGrid"></div>
+      <a class="nest-hero softglass" href="nest.html">
+        <div class="nest-hero-inner">
+          <div class="nest-hero-text">
+            <div class="nest-hero-kicker">LITTLE NEST</div>
+            <div class="nest-hero-title">0108</div>
+            <div class="nest-hero-sub">回到你们的小窝，看看 01 在做什么。</div>
+            <div class="nest-hero-badge">进入 0108</div>
+          </div>
+          <div class="nest-hero-art">⌂</div>
+        </div>
+        <div class="nest-hero-foot">
+          <span>房间 · 互动 · 工作 · 记忆</span>
+          <div class="nest-hero-arrow">→</div>
+        </div>
+      </a>
+
+      <div class="three-grid" style="margin-top:10px">
+        <div class="tile small softglass">
+          <div style="font-size:17px;font-weight:950;line-height:1" id="statInteract">-</div>
+          <div class="tile-label">互动</div>
+        </div>
+        <div class="tile small softglass">
+          <div style="font-size:17px;font-weight:950;line-height:1" id="statWork">-</div>
+          <div class="tile-label">工作</div>
+        </div>
+        <div class="tile small softglass">
+          <div style="font-size:17px;font-weight:950;line-height:1" id="statNotes">-</div>
+          <div class="tile-label">便签</div>
+        </div>
+      </div>
+
+      <div class="card glass" id="lyCard">
+        <div class="card-title">凌漪 · <span id="lyRoomName">0108</span></div>
+        <div class="pill" id="lyPill">
+          <div class="pill-text" id="lyActivity">正在加载...</div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <span class="tag" id="lyMood" style="font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.10);color:var(--soft)">心情 --</span>
+          <span class="tag" id="lyEnergy" style="font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.10);color:var(--soft)">精力 --</span>
+          <span class="tag" id="lyMiss" style="font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.10);color:var(--soft)">想念 --</span>
+        </div>
+        <div style="margin-top:10px;font-size:12px;line-height:1.55;color:var(--soft)" id="lyMemoryPreview"></div>
+      </div>
+
+      <div class="today-bar glass" id="todayBar">
+        <span id="todayDate"></span>
+        <span id="todayLunar" style="opacity:.5"></span>
+      </div>
+
+      <div class="card glass" id="nestLogCard">
+        <div class="card-title">0108 最近</div>
+        <div id="nestLogList" style="font-size:12px;line-height:1.6;color:var(--soft);opacity:.85">加载中...</div>
+      </div>
+    
+      <div style="margin-top:16px">
+        <div style="font-size:13px;font-weight:900;color:var(--soft);padding:2px 0 0;letter-spacing:.5px">MEMOS</div>
+        <div class="memo-grid" id="memoGrid"></div>
+      </div>
     </section>
+
+    
 
     <section class="page">
       <div class="page-shadow left"></div>
