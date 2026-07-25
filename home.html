@@ -1018,6 +1018,7 @@ html,body{
 }
 </style>
 <script src="config.js"></script>
+<audio id="homeAudio" preload="auto"></audio>
 </head>
 <body>
 <div class="wallpaper" id="wallpaper"></div>
@@ -1046,7 +1047,7 @@ html,body{
         </div>
       </section>
 
-      <a class="player-widget glass" href="listen.html">
+      <div class="player-widget glass" id="playerWidget">
         <div class="player-row">
           <div class="player-cover" id="playerCover"></div>
           <div class="player-info">
@@ -1060,7 +1061,7 @@ html,body{
           <div class="player-side" id="playerAction">♫</div>
         </div>
         <div class="player-meta" id="playerMeta">还没有同步播放内容</div>
-      </a>
+      </div>
 
       <a class="widget softglass" href="album.html">
         <div class="widget-top">
@@ -1627,8 +1628,101 @@ function updateListenWidget(){
     coverEl.style.backgroundSize = 'cover';
     coverEl.style.backgroundPosition = 'center';
   }
+  // Sync play state with actual audio element
+  var ha = document.getElementById('homeAudio');
+  if(ha && ha._loaded){
+    if(listen.isPlaying && ha.paused) ha.play().catch(function(){});
+    else if(!listen.isPlaying && !ha.paused) ha.pause();
+  }
 }
 
+/* ── 首页音频播放 ── */
+var homeAudioUrl = null;
+
+function openAudioDB(){
+  return new Promise(function(resolve, reject){
+    var req = indexedDB.open('little_phone_audio_v1', 1);
+    req.onupgradeneeded = function(e){
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains('audio')) db.createObjectStore('audio');
+    };
+    req.onsuccess = function(e){ resolve(e.target.result); };
+    req.onerror = function(e){ reject(e.target.error); };
+  });
+}
+function loadAudioFromDB2(){
+  return openAudioDB().then(function(db){
+    return new Promise(function(resolve, reject){
+      var tx = db.transaction('audio', 'readonly');
+      var req = tx.objectStore('audio').get('player_audio');
+      req.onsuccess = function(){ resolve(req.result); };
+      req.onerror = function(e){ reject(e.target.error); };
+    });
+  });
+}
+function initHomeAudio(){
+  var ha = document.getElementById('homeAudio');
+  if(!ha) return;
+  homeAudio = ha;
+  if(homeAudio._loading) return; homeAudio._loading = true;
+  loadAudioFromDB2().then(function(blob){
+    homeAudio._loading = false;
+    if(!blob){ homeAudio._loaded = false; return; }
+    if(homeAudioUrl) URL.revokeObjectURL(homeAudioUrl);
+    homeAudioUrl = URL.createObjectURL(blob);
+    homeAudio.src = homeAudioUrl;
+    homeAudio._loaded = true;
+    homeAudio.load();
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      if(d.progress && homeAudio.duration)
+        homeAudio.currentTime = (homeAudio.duration * d.progress) / 100;
+    }catch(e){}
+    updateListenWidget();
+  }).catch(function(){ homeAudio._loading = false; });
+}
+function bindHomeAudioEvents(){
+  var ha = document.getElementById('homeAudio');
+  if(!ha || ha._bound) return;
+  ha._bound = true;
+  ha.addEventListener('timeupdate', function(){
+    if(!this.duration) return;
+    var p = (this.currentTime / this.duration) * 100;
+    document.getElementById('playerProgress').style.width = p + '%';
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      d.progress = p; d.title = d.title || '一起听';
+      localStorage.setItem(LISTEN_KEY, JSON.stringify(d));
+    }catch(e){}
+  });
+  ha.addEventListener('ended', function(){
+    document.getElementById('playerAction').textContent = '♫';
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      d.isPlaying = false; d.progress = 0;
+      localStorage.setItem(LISTEN_KEY, JSON.stringify(d));
+    }catch(e){}
+    updateListenWidget();
+  });
+  ha.addEventListener('play', function(){
+    document.getElementById('playerAction').textContent = '❚❚';
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      d.isPlaying = true;
+      localStorage.setItem(LISTEN_KEY, JSON.stringify(d));
+    }catch(e){}
+    updateListenWidget();
+  });
+  ha.addEventListener('pause', function(){
+    document.getElementById('playerAction').textContent = '♫';
+    try{
+      var d = JSON.parse(localStorage.getItem(LISTEN_KEY) || '{}');
+      d.isPlaying = false;
+      localStorage.setItem(LISTEN_KEY, JSON.stringify(d));
+    }catch(e){}
+    updateListenWidget();
+  });
+}
 function formatAlbumTime(iso){
   if(!iso) return '还没有更新';
   const d = new Date(iso);
@@ -1756,6 +1850,23 @@ renderDiary();
 window.addEventListener('focus', function(){
   settings = loadSettings();
   applySettings();
+  initHomeAudio();
+});
+
+bindHomeAudioEvents();
+
+document.addEventListener('DOMContentLoaded', function(){
+  initHomeAudio();
+  var w = document.getElementById('playerWidget');
+  if(w){
+    w.onclick = function(e){
+      e.preventDefault();
+      var ha = document.getElementById('homeAudio');
+      if(!ha || !ha._loaded){ location.href='listen.html'; return; }
+      if(ha.paused) ha.play().catch(function(){});
+      else ha.pause();
+    };
+  }
 });
 
 window.addEventListener('storage', function(e){
@@ -1763,6 +1874,7 @@ window.addEventListener('storage', function(e){
     settings = loadSettings();
     applySettings();
   }
+  if(e.key === LISTEN_KEY){ updateListenWidget(); initHomeAudio(); }
   if(e.key === 'little_phone_nest_0108_v21'){ loadLingyiStatus(); loadNestLogs(); }
   if(e.key === DIARY_KEY){ renderDiary(); }
 });
