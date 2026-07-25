@@ -15,10 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inject config
-        run: echo "$CONFIG_B64" | base64 -d > config.js
-        env:
-          CONFIG_B64: ${{ secrets.CONFIG_JS_CONTENT }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

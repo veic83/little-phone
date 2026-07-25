@@ -1,0 +1,37 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>初始设置</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#111;color:#eee;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}.box{background:#1e1e2e;border-radius:16px;padding:32px 24px;width:360px;max-width:100%}h1{font-size:22px;margin-bottom:6px}p{color:#9ca3af;font-size:13px;margin-bottom:20px;line-height:1.5}label{display:block;font-size:12px;color:#9ca3af;margin-bottom:4px;margin-top:14px}input{width:100%;padding:10px 12px;border:1px solid #374151;border-radius:8px;background:#0d0d0d;color:#eee;font-size:14px;outline:none}input:focus{border-color:#3b82f6}.hint{font-size:11px;color:#6b7280;margin-top:3px}button{width:100%;padding:12px;margin-top:20px;background:#3b82f6;border:none;border-radius:8px;color:#fff;font-size:15px;font-weight:600;cursor:pointer}button:active{opacity:.8}.ok{color:#34d399;font-size:13px;margin-top:8px;display:none}
+</style></head><body><div class="box"><h1>⚙️ 初始设置</h1><p>填入你的密钥，保存后自动跳回。</p><label>Supabase URL</label><input id="su" placeholder="https://xxx.supabase.co"><div class="hint">你的 Supabase 项目地址</div><label>Supabase Anon Key</label><input id="sk" placeholder="eyJ..."><div class="hint">Settings → API → anon public key</div><label>DeepSeek API Key</label><input id="dk" placeholder="sk-..."><div class="hint">platform.deepseek.com API keys</div><button id="btn">保存</button><div id="msg" class="ok">已保存，正在跳转...</div></div><script>
+(function(){
+  var KEY = 'lil_phone_cfg';
+  var saved = null;
+  try{ var raw = localStorage.getItem(KEY); if(raw) saved = JSON.parse(raw); }catch(e){}
+  if(saved){
+    document.getElementById('su').value = saved.su || '';
+    document.getElementById('sk').value = saved.sk || '';
+    document.getElementById('dk').value = saved.dk || '';
+  }
+
+  document.getElementById('btn').onclick = function(){
+    var su = document.getElementById('su').value.trim();
+    var sk = document.getElementById('sk').value.trim();
+    var dk = document.getElementById('dk').value.trim();
+    if(!su || !sk || !dk){ alert('请填完所有字段'); return; }
+
+    var cfg = {
+      su: su,
+      sk: sk,
+      dk: dk,
+      th: { accent:'#3b82f6', mode:'dark' },
+      mu: '',
+      mh: {}
+    };
+    localStorage.setItem(KEY, JSON.stringify(cfg));
+    document.getElementById('msg').style.display = 'block';
+    document.getElementById('btn').disabled = true;
+    document.getElementById('btn').textContent = '已保存';
+
+    var params = new URLSearchParams(location.search);
+    var from = params.get('from') || 'home.html';
+    setTimeout(function(){ location.href = from; }, 800);
+  };
+})();
+</script></body></html>
