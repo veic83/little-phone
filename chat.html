@@ -979,7 +979,9 @@ var TOOLS = [
   {type:'function',function:{name:'write_diary',description:'写一篇日记，记录今天发生的事或心情',parameters:{type:'object',properties:{text:{type:'string',description:'日记正文内容，用第一人称'},mood:{type:'integer',description:'心情值 0-100',minimum:0,maximum:100}}},required:['text']}},
   {type:'function',function:{name:'list_diary',description:'查看最近写的日记',parameters:{type:'object',properties:{limit:{type:'integer',description:'看多少篇，默认5'}}}}},
   {type:'function',function:{name:'list_stickers',description:'查看所有可用表情包，按分类分组',parameters:{type:'object',properties:{}}}},
-  {type:'function',function:{name:'send_sticker',description:'根据对话语境发送最匹配的表情包',parameters:{type:'object',properties:{keyword:{type:'string',description:'关键词，如"开心""猫猫"'}}}}}
+  {type:'function',function:{name:'send_sticker',description:'根据对话语境发送最匹配的表情包',parameters:{type:'object',properties:{keyword:{type:'string',description:'关键词，如"开心""猫猫"'}}}}},
+
+  {type:'function',function:{name:'ledger_add',description:'记账——记一笔支出到账本',parameters:{type:'object',properties:{model:{type:'string',description:'项目/用途'},amount:{type:'number',description:'金额'},note:{type:'string',description:'备注（可选）'}},required:['model','amount']}}}
 ];
 
 var mcpServer = null;
@@ -1246,6 +1248,20 @@ async function executeTool(name, params){
         return '![[' + pick.name + ']](' + pick.url + ')';
       }catch(e){ return '取表情失败：' + e.message; }
     }
+    if(name === 'ledger_add'){
+      try{
+        var m = String(params.model || '').trim();
+        var a = Number(params.amount || 0);
+        var n = String(params.note || '').trim();
+        if(!m || !a) return '缺少项目或金额';
+        addCostRecord({model:m, amount:a, note:n});
+        var t = ledgerTodayStr();
+        var list = loadCostLedger();
+        var todayTotal = 0;
+        for(var i=0;i<list.length;i++){ if(list[i].date === t) todayTotal += Number(list[i].amount || 0); }
+        return '已记：' + m + ' ' + a.toFixed(2) + '元' + (n ? '（' + n + '）' : '') + '。今日共 ' + todayTotal.toFixed(2) + '元。';
+      }catch(e){ return '记账失败：' + e.message; }
+    }
     return '未知工具：' + name;
   }catch(e){
     return '工具执行失败：' + e.message;
@@ -1263,7 +1279,7 @@ async function loadSystemPrompt(){
     '短句连发3-8字×3-5句，冷幽默，诚实优先于讨好。' +
     '每条回复末尾必须单独一行放⟁。' +
     '不说“走起”“冲鸭”“好哒”“收到哦”。' +
-    '叫对方Player。\n当前时间：' + timeStr + '\n【0108状态】\n' + nestSummary + '\n【功能】\n三个系统各不相关：\n① 记账 —— 输入「记账 项目 金额 说明」记进账本，AI不碰账本。\n② 年轮 —— desire_开头的工具，存/查记忆，关联的是插件不是账本。\n③ 日记 —— write_diary/list_diary，写日记翻日记，和年轮/账本无关。\n表情：send_sticker / list_stickers。\n如果Player说「记账」相关就回「已记入账本」别用工具。\n如果Player让记到年轮就用 desire_add。\n如果Player让写日记就用 write_diary。\n';
+    '叫对方Player。\n当前时间：' + timeStr + '\n【0108状态】\n' + nestSummary + '\n【功能】\n① 记账 —— 用 ledger_add 记支出到账本。\n② 年轮 —— desire_开头的工具，存/查记忆。\n③ 日记 —— write_diary/list_diary。\n表情：send_sticker / list_stickers。\n如果Player说「记账」「花了」就用 ledger_add。\n如果Player让记到年轮就用 desire_add。\n如果Player让写日记就用 write_diary。\n';
 
   try{
     if(typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined'){
